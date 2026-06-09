@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bobby's Breakfast Cafe & Bar — 810 College St, Toronto</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--p:#2C1810;--a:#E8A838;--bg:#FAF6F0;--sage:#7A8B6F;--latte:#D4C4B0;--t:#3A3A3A;--w:#FFFDF9}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--w);color:var(--p);-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
+nav{position:fixed;top:0;width:100%;z-index:100;padding:18px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(250,246,240,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(44,24,16,0.06)}
+.nl{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-0.5px}.nl span{color:var(--a)}
+.nk{display:flex;gap:32px;list-style:none;align-items:center}.nk a{text-decoration:none;color:var(--t);font-size:13px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;transition:color .2s}.nk a:hover{color:var(--a)}
+.nc{background:var(--p)!important;color:var(--bg)!important;padding:10px 24px!important;border-radius:24px;transition:background .2s!important}.nc:hover{background:var(--a)!important;color:var(--p)!important}
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.hc{display:flex;flex-direction:column;justify-content:center;padding:140px 60px 80px;background:var(--bg);position:relative}
+.he{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--sage);margin-bottom:24px}
+.hc h1{font-family:'DM Serif Display',serif;font-size:clamp(44px,5vw,76px);line-height:1.02;letter-spacing:-2px}
+.hc h1 em{font-family:'Playfair Display',serif;font-style:italic;color:var(--a);font-weight:400}
+.hs{margin-top:24px;font-size:17px;line-height:1.7;color:var(--t);max-width:440px;opacity:.8}
+.rating{display:flex;align-items:center;gap:8px;margin-top:20px}
+.rating-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--a)}
+.rating-stars{font-size:18px;color:var(--a)}
+.rating-count{font-size:13px;color:var(--sage)}
+.hd{margin-top:36px;display:flex;gap:36px;flex-wrap:wrap}.hdi{display:flex;flex-direction:column;gap:4px}
+.hdl{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--sage)}
+.hdv{font-family:'DM Serif Display',serif;font-size:18px}
+.hi{position:relative;overflow:hidden}.hi img{min-height:100vh}
+.hio{position:absolute;bottom:0;left:0;right:0;padding:32px;background:linear-gradient(to top,rgba(44,24,16,.6),transparent)}.hio p{font-size:14px;color:#fff;font-weight:500}
+.ss{background:var(--p);padding:52px 60px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+.sst{font-family:'DM Serif Display',serif;font-size:26px;color:var(--bg);letter-spacing:-.5px}.sst em{font-family:'Playfair Display',serif;font-style:italic;color:var(--a);font-weight:400}
+.si{display:flex;gap:48px}.sii{text-align:center}.sin{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--a);margin-bottom:4px}.sid{font-size:13px;color:var(--latte)}
+.pg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.pgi{aspect-ratio:1;overflow:hidden}.pgi img{transition:transform .5s}.pgi:hover img{transform:scale(1.08)}
+.ab{padding:100px 60px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto}
+.abi{aspect-ratio:4/5;border-radius:12px;overflow:hidden;position:relative}
+.abb{position:absolute;bottom:20px;left:20px;background:var(--a);color:var(--p);padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.abc h2{font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;line-height:1.15;margin-bottom:24px}
+.abc p{font-size:16px;line-height:1.8;color:var(--t);opacity:.8;margin-bottom:16px}
+.abt{display:inline-block;padding:8px 16px;background:rgba(122,139,111,.1);border-radius:20px;font-size:13px;font-weight:500;color:var(--sage);margin-right:8px;margin-bottom:8px}
+.mp{background:var(--bg);padding:100px 60px}
+.sh{text-align:center;margin-bottom:64px}.sh h2{font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;margin-bottom:12px}.sh p{font-size:16px;color:var(--t);opacity:.6}
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;max-width:1100px;margin:0 auto}
+.mc{background:var(--w);border-radius:16px;overflow:hidden;transition:transform .3s,box-shadow .3s;border:1px solid rgba(44,24,16,.04)}.mc:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(44,24,16,.08)}
+.mci{aspect-ratio:4/3;overflow:hidden}.mci img{transition:transform .5s}.mc:hover .mci img{transform:scale(1.06)}
+.mcb{padding:28px 24px}.mcb h3{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:10px;letter-spacing:-.5px}.mcb p{font-size:14px;line-height:1.7;color:var(--t);opacity:.7}
+.mct{display:inline-block;margin-top:14px;padding:6px 14px;background:rgba(232,168,56,.12);border-radius:16px;font-size:11px;font-weight:600;color:var(--a);letter-spacing:.5px;text-transform:uppercase}
+.rs{padding:60px;text-align:center}.rs blockquote{font-family:'Playfair Display',serif;font-size:24px;font-style:italic;color:var(--p);max-width:700px;margin:0 auto 16px;line-height:1.5}.rs cite{font-family:'Inter',sans-serif;font-size:13px;color:var(--sage);font-style:normal}
+.lo{padding:100px 60px;display:grid;grid-template-columns:1fr 1fr;gap:80px;max-width:1200px;margin:0 auto}
+.loi h2{font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;margin-bottom:32px}
+.hg{display:grid;gap:12px;margin-bottom:40px}.hr{display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid rgba(44,24,16,.06)}
+.hrd{font-weight:500;font-size:15px}.hrt{font-size:15px;color:var(--t);opacity:.7}
+.la{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.6;color:var(--t)}.la svg{flex-shrink:0;margin-top:3px}
+.lom{border-radius:16px;overflow:hidden;min-height:400px;position:relative}.lom img{min-height:400px;filter:saturate(.5) brightness(.9)}
+.ml{position:absolute;bottom:20px;left:20px;background:var(--p);color:var(--bg);padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500}
+.ig{background:var(--p);padding:80px 60px}.igt{text-align:center;margin-bottom:48px}
+.igt h2{font-family:'DM Serif Display',serif;font-size:40px;color:var(--bg);letter-spacing:-1px;margin-bottom:12px}
+.igt p{font-size:16px;color:var(--latte);margin-bottom:28px}
+.igb{display:inline-flex;align-items:center;gap:10px;background:var(--a);color:var(--p);padding:14px 32px;border-radius:28px;text-decoration:none;font-weight:600;font-size:15px;transition:transform .2s}.igb:hover{transform:scale(1.04)}
+.igg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:1000px;margin:0 auto}
+.igi{aspect-ratio:1;border-radius:10px;overflow:hidden}.igi img{transition:transform .5s}.igi:hover img{transform:scale(1.08)}
+.cb{background:var(--a);padding:48px 60px;text-align:center}
+.cb h3{font-family:'DM Serif Display',serif;font-size:28px;color:var(--p);margin-bottom:12px}
+.cb p{font-size:15px;color:var(--p);opacity:.8;margin-bottom:24px}
+.cb a{display:inline-block;background:var(--p);color:var(--bg);padding:14px 36px;border-radius:28px;text-decoration:none;font-weight:600;font-size:14px;letter-spacing:.5px;transition:transform .2s}.cb a:hover{transform:scale(1.04)}
+footer{padding:40px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(44,24,16,.08);flex-wrap:wrap;gap:20px}
+.fl{font-family:'DM Serif Display',serif;font-size:20px}.fl span{color:var(--a)}.fc{font-size:13px;color:var(--t);opacity:.5}
+.fb{font-size:12px;color:var(--t);opacity:.4;padding:6px 14px;border:1px solid rgba(44,24,16,.1);border-radius:16px}
+@media(max-width:900px){
+nav{padding:14px 20px}.nk{display:none}.hero{grid-template-columns:1fr}.hc{padding:120px 24px 60px}.hi{max-height:50vh}.hi img{min-height:50vh}
+.ss{padding:36px 24px;flex-direction:column;text-align:center}.si{gap:28px;flex-wrap:wrap;justify-content:center}
+.pg{grid-template-columns:repeat(2,1fr)}.ab{padding:60px 24px;grid-template-columns:1fr;gap:40px}
+.mp{padding:60px 24px}.mg{grid-template-columns:1fr}.lo{padding:60px 24px;grid-template-columns:1fr;gap:40px}
+.ig{padding:60px 24px}.igg{grid-template-columns:repeat(2,1fr)}footer{padding:28px 24px;flex-direction:column;text-align:center}
+.sh h2,.abc h2,.loi h2,.igt h2{font-size:32px}.cb{padding:36px 24px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nl">Bobby<span>'s</span></div>
+  <ul class="nk">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#hours">Hours</a></li>
+    <li><a href="#" class="nc">Order Now</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hc">
+    <div class="he">810 College St · Bickford Park · Toronto</div>
+    <h1>Breakfast done <em>right.</em></h1>
+    <p class="hs">A neighbourhood cafe on College Street where the coffee is strong, the owners know your name, and The Lazy Apple is worth the trip across town.</p>
+    <div class="rating">
+      <span class="rating-num">4.7</span>
+      <span class="rating-stars">★★★★★</span>
+      <span class="rating-count">(182 Google reviews)</span>
+    </div>
+    <div class="hd">
+      <div class="hdi"><span class="hdl">Open Daily</span><span class="hdv">9am – 3pm</span></div>
+      <div class="hdi"><span class="hdl">Dine In</span><span class="hdv">Walk-ins welcome</span></div>
+      <div class="hdi"><span class="hdl">Delivery</span><span class="hdv">Uber Eats</span></div>
+    </div>
+  </div>
+  <div class="hi">
+    <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=900&q=80" alt="Bobby's Breakfast Cafe">
+    <div class="hio"><p>📍 College Street · Little Italy · Toronto</p></div>
+  </div>
+</section>
+
+<div class="ss">
+  <div class="sst">Come for the coffee. Stay for <em>The Lazy Apple.</em></div>
+  <div class="si">
+    <div class="sii"><div class="sin">The Lazy Apple</div><div class="sid">The one they can't stop talking about</div></div>
+    <div class="sii"><div class="sin">Bang It Bagel</div><div class="sid">Loaded & legendary</div></div>
+    <div class="sii"><div class="sin">Sammy Benny</div><div class="sid">Eggs benny, reimagined</div></div>
+  </div>
+</div>
+
+<div class="pg">
+  <div class="pgi"><img src="https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600&q=80" alt="Food"></div>
+  <div class="pgi"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80" alt="Coffee"></div>
+  <div class="pgi"><img src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=600&q=80" alt="Interior"></div>
+  <div class="pgi"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80" alt="Morning"></div>
+</div>
+
+<section class="ab" id="about">
+  <div class="abi">
+    <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=700&q=80" alt="Bobby's">
+    <div class="abb">Owner-Operated</div>
+  </div>
+  <div class="abc">
+    <h2>No pretense.<br>Just great food.</h2>
+    <p>Bobby's is the kind of place where the owners come check on your table and the baristas stay cheerful even during the Saturday rush. We took over the beloved space at 810 College and made it ours — coffee-focused, food that holds its own, and a clean space that feels like home.</p>
+    <p>Whether it's a quick caffeine run before work or a long catch-up with friends, pull up a chair. The vanilla almond latte pairs perfectly with The Lazy Apple.</p>
+    <div>
+      <span class="abt">Coffee-forward</span>
+      <span class="abt">Owner-operated</span>
+      <span class="abt">Bickford Park</span>
+      <span class="abt">Walk-in friendly</span>
+    </div>
+  </div>
+</section>
+
+<section class="mp" id="menu">
+  <div class="sh"><h2>What We're Known For</h2><p>Breakfast & brunch done simply, done well.</p></div>
+  <div class="mg">
+    <div class="mc"><div class="mci"><img src="https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=500&q=80" alt="Lazy Apple"></div>
+    <div class="mcb"><h3>🍎 The Lazy Apple</h3><p>The one everyone talks about. The combination with our vanilla almond latte is what people keep coming back for.</p><span class="mct">Fan Favourite</span></div></div>
+
+    <div class="mc"><div class="mci"><img src="https://images.unsplash.com/photo-1585325701165-351af679e300?w=500&q=80" alt="Bagel"></div>
+    <div class="mcb"><h3>🥯 Bang It Bagel</h3><p>Stacked, loaded, and built for people who take their bagels seriously. Not your average schmear situation.</p><span class="mct">House Special</span></div></div>
+
+    <div class="mc"><div class="mci"><img src="https://images.unsplash.com/photo-1608039829572-26b0cf0caad8?w=500&q=80" alt="Eggs Benedict"></div>
+    <div class="mcb"><h3>🍳 Sammy Benny</h3><p>One of the best bennys in the neighbourhood. Perfectly poached, house hollandaise, and fresh fruit on the side.</p><span class="mct">Must Try</span></div></div>
+
+    <div class="mc"><div class="mci"><img src="https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=500&q=80" alt="Espresso"></div>
+    <div class="mcb"><h3>☕ Vanilla Almond Latte</h3><p>Our coffee program is the backbone of the cafe. Strong, smooth, and the iced version is a highlight.</p></div></div>
+
+    <div class="mc"><div class="mci"><img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&q=80" alt="Classic Breakfast"></div>
+    <div class="mcb"><h3>🥞 Classic Breakfast</h3><p>Eggs your way, toast, your choice of protein, and crispy home fries. Honest food, no gimmicks.</p></div></div>
+
+    <div class="mc"><div class="mci"><img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&q=80" alt="Bar"></div>
+    <div class="mcb"><h3>🍹 Bar Menu</h3><p>Because sometimes brunch needs a Caesar. Weekend cocktails, local craft beers, and a curated wine list.</p></div></div>
+  </div>
+</section>
+
+<div class="rs">
+  <blockquote>"Loved this place! Delicious, strong coffee, clean space, and the staff were so cheerful. The combination of vanilla almond latte and lazy apple was really great."</blockquote>
+  <cite>— Google Reviews · 4.7 ★ from 182 reviews</cite>
+</div>
+
+<section class="lo" id="hours">
+  <div class="loi">
+    <h2>Find Us on College</h2>
+    <div class="hg">
+      <div class="hr"><span class="hrd">Monday – Friday</span><span class="hrt">9:00 AM – 3:00 PM</span></div>
+      <div class="hr"><span class="hrd">Saturday</span><span class="hrt">9:00 AM – 3:00 PM</span></div>
+      <div class="hr"><span class="hrd">Sunday</span><span class="hrt">9:00 AM – 3:00 PM</span></div>
+    </div>
+    <div class="la">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div>
+        <strong>810 College Street</strong><br>
+        Toronto, ON M6G 1C8<br>
+        Little Italy · Bickford Park neighbourhood<br><br>
+        <strong style="color:var(--sage)">Phone:</strong> (416) 533-3444
+      </div>
+    </div>
+  </div>
+  <div class="lom">
+    <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=700&q=80" alt="Toronto">
+    <div class="ml">📍 810 College St — Walk-ins welcome</div>
+  </div>
+</section>
+
+<section class="ig">
+  <div class="igt">
+    <h2>Follow Along</h2>
+    <p>Catch the daily specials, behind-the-counter moments, and brunch inspo.</p>
+    <a href="https://instagram.com/bobbystoronto" class="igb" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+      @bobbystoronto
+    </a>
+  </div>
+  <div class="igg">
+    <div class="igi"><img src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=400&q=80" alt="Post"></div>
+    <div class="igi"><img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?w=400&q=80" alt="Post"></div>
+    <div class="igi"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80" alt="Post"></div>
+    <div class="igi"><img src="https://images.unsplash.com/photo-1493770348161-369560ae357d?w=400&q=80" alt="Post"></div>
+  </div>
+</section>
+
+<div class="cb">
+  <h3>Like what you see?</h3>
+  <p>This mockup was built for you by The Web Guys. Let's make it real.</p>
+  <a href="https://thewebguys.ca" target="_blank">Get In Touch →</a>
+</div>
+
+<footer>
+  <div class="fl">Bobby<span>'s</span></div>
+  <span class="fc">© 2026 Bobby's Breakfast Cafe & Bar · 810 College St, Toronto</span>
+  <span class="fb">Built by The Web Guys · thewebguys.ca</span>
+</footer>
+
+</body>
+</html>
