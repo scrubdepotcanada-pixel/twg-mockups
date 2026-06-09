@@ -589,7 +589,6 @@ export default function MockupAdmin() {
                   <button onClick={() => { navigator.clipboard.writeText(publishedUrl); }} style={{ ...S.actionBtn(false), fontSize: 11 }}>Copy Link</button>
                 </div>
               )}
-              </div>
 
               {businessData && (
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
