@@ -272,12 +272,65 @@ export default function MockupAdmin() {
   const [photoSource, setPhotoSource] = useState(""); // "google" or "stock"
   const [error, setError] = useState("");
 
-  // History
+  // History & Published
   const [history, setHistory] = useState([]);
+  const [published, setPublished] = useState([]);
+  const [publishing, setPublishing] = useState(false);
+  const [publishedUrl, setPublishedUrl] = useState("");
+
+  const loadPublished = async (p) => {
+    try {
+      const res = await fetch("/api/mockup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "list", pin: p }),
+      });
+      const data = await res.json();
+      if (data.success) setPublished(data.mockups || []);
+    } catch {}
+  };
+
+  const publishMockup = async () => {
+    if (!mockupHTML || !businessData) return;
+    setPublishing(true); setPublishedUrl("");
+    const slug = (businessData.name || name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+    try {
+      const res = await fetch("/api/mockup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "save", pin: storedPin, slug,
+          business_name: businessData.name || name,
+          business_data: businessData,
+          photo_urls: [],
+          html: mockupHTML,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPublishedUrl(`${window.location.origin}/mockups/${slug}`);
+        loadPublished(storedPin);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally { setPublishing(false); }
+  };
+
+  const deleteMockup = async (slug) => {
+    if (!confirm(`Delete mockup "${slug}"?`)) return;
+    try {
+      await fetch("/api/mockup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete", pin: storedPin, slug }),
+      });
+      loadPublished(storedPin);
+    } catch {}
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem("twg_mockup_pin");
-    if (saved) { setStoredPin(saved); setAuthed(true); setPin(saved); }
+    if (saved) { setStoredPin(saved); setAuthed(true); setPin(saved); loadPublished(saved); }
     const hist = localStorage.getItem("twg_mockup_history");
     if (hist) try { setHistory(JSON.parse(hist)); } catch {}
   }, []);
@@ -293,6 +346,7 @@ export default function MockupAdmin() {
       localStorage.setItem("twg_mockup_pin", pin);
       setStoredPin(pin);
       setAuthed(true);
+      loadPublished(pin);
     } catch {
       setPinError("Connection error");
     }
@@ -432,7 +486,7 @@ export default function MockupAdmin() {
 
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 32px" }}>
           {!mockupHTML ? (
-            <div style={{ display: "grid", gridTemplateColumns: history.length ? "1fr 300px" : "1fr", gap: 48, maxWidth: history.length ? 900 : 560, margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: (history.length || published.length) ? "1fr 300px" : "1fr", gap: 48, maxWidth: (history.length || published.length) ? 900 : 560, margin: "0 auto" }}>
               {/* Form */}
               <div>
                 <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: -1, marginBottom: 8, color: "#fff" }}>
@@ -471,18 +525,38 @@ export default function MockupAdmin() {
               </div>
 
               {/* History sidebar */}
-              {history.length > 0 && (
+              {(history.length > 0 || published.length > 0) && (
                 <div>
-                  <h3 style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#555", marginBottom: 16 }}>Recent</h3>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {history.map((h, i) => (
-                      <div key={i} style={{ padding: "12px 14px", background: "#111", border: "1px solid #1A1A1A", borderRadius: 8, cursor: "pointer" }}
-                        onClick={() => { setName(h.name); setAddress(""); }}>
-                        <div style={{ fontSize: 14, color: "#ccc", fontWeight: 500 }}>{h.name}</div>
-                        <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>{h.category} · {h.photoSource === "google" ? "📸 Real photos" : "🖼 Stock"} · {new Date(h.date).toLocaleDateString()}</div>
+                  {published.length > 0 && (
+                    <>
+                      <h3 style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#3EA843", marginBottom: 16 }}>Published Live</h3>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
+                        {published.map((m, i) => (
+                          <div key={i} style={{ padding: "12px 14px", background: "#0A1A0A", border: "1px solid #1A3A1A", borderRadius: 8 }}>
+                            <a href={`/mockups/${m.slug}`} target="_blank" rel="noopener" style={{ fontSize: 14, color: "#4CAF50", fontWeight: 500, textDecoration: "none" }}>{m.business_name}</a>
+                            <div style={{ fontSize: 11, color: "#555", marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span>{new Date(m.created_at).toLocaleDateString()}</span>
+                              <button onClick={() => deleteMockup(m.slug)} style={{ background: "none", border: "none", color: "#553333", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>Delete</button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </>
+                  )}
+                  {history.length > 0 && (
+                    <>
+                      <h3 style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#555", marginBottom: 16 }}>Recent</h3>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {history.map((h, i) => (
+                          <div key={i} style={{ padding: "12px 14px", background: "#111", border: "1px solid #1A1A1A", borderRadius: 8, cursor: "pointer" }}
+                            onClick={() => { setName(h.name); setAddress(""); }}>
+                            <div style={{ fontSize: 14, color: "#ccc", fontWeight: 500 }}>{h.name}</div>
+                            <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>{h.category} · {h.photoSource === "google" ? "📸 Real photos" : "🖼 Stock"} · {new Date(h.date).toLocaleDateString()}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -497,10 +571,24 @@ export default function MockupAdmin() {
                   </p>
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => { setMockupHTML(""); setBusinessData(null); }} style={S.actionBtn(false)}>← New</button>
+                  <button onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); }} style={S.actionBtn(false)}>← New</button>
                   <button onClick={copyHTML} style={S.actionBtn(false)}>Copy HTML</button>
-                  <button onClick={downloadHTML} style={S.actionBtn(true)}>Download .html</button>
+                  <button onClick={downloadHTML} style={S.actionBtn(false)}>Download</button>
+                  <button onClick={publishMockup} disabled={publishing} style={{ ...S.actionBtn(true), opacity: publishing ? 0.6 : 1 }}>
+                    {publishing ? "Publishing..." : "Publish Live →"}
+                  </button>
                 </div>
+              </div>
+
+              {publishedUrl && (
+                <div style={{ padding: "14px 18px", background: "#0A1A0A", border: "1px solid #1A3A1A", borderRadius: 10, marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div>
+                    <span style={{ fontSize: 13, color: "#4CAF50", fontWeight: 600 }}>✓ Published!</span>
+                    <a href={publishedUrl} target="_blank" rel="noopener" style={{ marginLeft: 12, fontSize: 13, color: "#3EA843", textDecoration: "underline", fontFamily: "monospace" }}>{publishedUrl}</a>
+                  </div>
+                  <button onClick={() => { navigator.clipboard.writeText(publishedUrl); }} style={{ ...S.actionBtn(false), fontSize: 11 }}>Copy Link</button>
+                </div>
+              )}
               </div>
 
               {businessData && (

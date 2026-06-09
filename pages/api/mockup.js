@@ -1,7 +1,14 @@
 // pages/api/mockup.js
-// ENV VARS: ANTHROPIC_API_KEY, GOOGLE_MAPS_API_KEY, ADMIN_PIN
+// ENV VARS: ANTHROPIC_API_KEY, GOOGLE_MAPS_API_KEY, ADMIN_PIN, NEON_DATABASE_URL
+
+import { neon } from '@neondatabase/serverless';
+
+function getDb() {
+  return neon(process.env.NEON_DATABASE_URL);
+}
 
 export default async function handler(req, res) {
+  if (req.method === 'OPTIONS') { res.setHeader('Access-Control-Allow-Origin', '*'); return res.status(200).end(); }
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
   const { action, pin } = req.body;
@@ -10,6 +17,9 @@ export default async function handler(req, res) {
   try {
     if (action === 'research') return await handleResearch(req, res);
     if (action === 'photos') return await handlePhotos(req, res);
+    if (action === 'save') return await handleSave(req, res);
+    if (action === 'list') return await handleList(req, res);
+    if (action === 'delete') return await handleDelete(req, res);
     return res.status(400).json({ error: 'Invalid action' });
   } catch (err) {
     console.error('Mockup API error:', err);
@@ -17,6 +27,51 @@ export default async function handler(req, res) {
   }
 }
 
+// ── SAVE mockup to Neon ──
+async function handleSave(req, res) {
+  const { slug, business_name, business_data, photo_urls, html } = req.body;
+  if (!slug || !html || !business_name) return res.status(400).json({ error: 'slug, business_name, and html required' });
+
+  const sql = getDb();
+
+  // Upsert — if slug exists, update it
+  await sql`
+    INSERT INTO mockups (slug, business_name, business_data, photo_urls, html)
+    VALUES (${slug}, ${business_name}, ${JSON.stringify(business_data || {})}, ${JSON.stringify(photo_urls || [])}, ${html})
+    ON CONFLICT (slug) DO UPDATE SET
+      business_name = EXCLUDED.business_name,
+      business_data = EXCLUDED.business_data,
+      photo_urls = EXCLUDED.photo_urls,
+      html = EXCLUDED.html,
+      created_at = NOW()
+  `;
+
+  return res.status(200).json({ success: true, url: `/mockups/${slug}` });
+}
+
+// ── LIST all saved mockups ──
+async function handleList(req, res) {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT slug, business_name, business_data, created_at
+    FROM mockups
+    ORDER BY created_at DESC
+    LIMIT 50
+  `;
+  return res.status(200).json({ success: true, mockups: rows });
+}
+
+// ── DELETE a mockup ──
+async function handleDelete(req, res) {
+  const { slug } = req.body;
+  if (!slug) return res.status(400).json({ error: 'slug required' });
+
+  const sql = getDb();
+  await sql`DELETE FROM mockups WHERE slug = ${slug}`;
+  return res.status(200).json({ success: true });
+}
+
+// ── RESEARCH via Claude + web search ──
 async function handleResearch(req, res) {
   const { name, address, notes } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
@@ -45,8 +100,8 @@ Return ONLY valid JSON. No markdown fences, no preamble.
   "vibe_tags": ["tag1","tag2","tag3","tag4"],
   "about_paragraph": "2-3 sentences for About section",
   "about_paragraph2": "1-2 follow-up sentences",
-  "signature_items": [{"name":"Item","description":"One sentence","tag":"Fan Favourite","emoji":"🍎"}],
-  "all_items": [{"name":"Item","description":"Short desc","tag":"Popular","emoji":"🍳"}],
+  "signature_items": [{"name":"Item","description":"One sentence","tag":"Fan Favourite","emoji":"emoji"}],
+  "all_items": [{"name":"Item","description":"Short desc","tag":"Popular","emoji":"emoji"}],
   "instagram": "handle without @ or empty string",
   "website": "URL or empty string",
   "has_delivery": true,
@@ -88,12 +143,13 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
   return res.status(200).json({ success: true, data: parsed });
 }
 
+// ── PHOTOS from Google Places ──
 async function handlePhotos(req, res) {
   const { name, address } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
 
   const GMAPS_KEY = process.env.GOOGLE_MAPS_API_KEY;
-  if (!GMAPS_KEY) return res.status(200).json({ success: true, photos: [], message: 'GOOGLE_MAPS_API_KEY not set — using stock photos' });
+  if (!GMAPS_KEY) return res.status(200).json({ success: true, photos: [], message: 'No Google Maps key — using stock photos' });
 
   const query = encodeURIComponent(`${name} ${address}`);
   const findRes = await fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${query}&inputtype=textquery&fields=place_id,name,photos&key=${GMAPS_KEY}`);
