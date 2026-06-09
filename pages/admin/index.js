@@ -596,7 +596,7 @@ export default function MockupAdmin() {
                   {businessData.phone && <span style={S.chip}>📞 {businessData.phone}</span>}
                   {businessData.instagram && <span style={S.chip}>📸 @{businessData.instagram}</span>}
                   {businessData.has_delivery && <span style={S.chip}>🚗 {businessData.delivery_platforms?.join(", ")}</span>}
-                  {businessData.website && <span style={{ ...S.chip, background: "#0A1A0A", borderColor: "#1A3A1A", color: "#4CAF50" }}>⚠️ Has existing site</span>}
+                  {businessData.website && <a href={businessData.website.startsWith("http") ? businessData.website : `https://${businessData.website}`} target="_blank" rel="noopener" style={{ ...S.chip, background: "#0A1A0A", borderColor: "#1A3A1A", color: "#4CAF50", textDecoration: "none", cursor: "pointer" }}>⚠️ {businessData.website}</a>}
                 </div>
               )}
 
