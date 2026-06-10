@@ -9,15 +9,15 @@ import Head from "next/head";
 const STOCK = {
   dental: [
     "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&q=80",
-    "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&q=80",
     "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&q=80",
-    "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=600&q=80",
-    "https://images.unsplash.com/photo-1588776813677-77aaf5595b83?w=600&q=80",
-    "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=600&q=80",
-    "https://images.unsplash.com/photo-1593022356769-11f762e25ed9?w=500&q=80",
-    "https://images.unsplash.com/photo-1571772996211-2f02c9727629?w=500&q=80",
-    "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=500&q=80",
-    "https://images.unsplash.com/photo-1581585099522-f6ac2efe9b7c?w=500&q=80",
+    "https://images.unsplash.com/photo-1616391182219-e080b4d1043a?w=600&q=80",
+    "https://images.unsplash.com/photo-1704455306251-b4634215d98f?w=600&q=80",
+    "https://images.unsplash.com/photo-1578152960762-c72eac9db779?w=600&q=80",
+    "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80",
+    "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500&q=80",
+    "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&q=80",
+    "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=500&q=80",
+    "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=500&q=80",
   ],
   medical: [
     "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&q=80",
