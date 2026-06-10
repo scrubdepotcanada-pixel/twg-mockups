@@ -393,8 +393,8 @@ export default function MockupAdmin() {
       setBusinessData(biz);
 
       // Step 3: Pick photos — Google Places if available, else stock
-      const category = biz.category || "cafe";
-      const stockPhotos = STOCK[category] || STOCK.cafe;
+      const bizCategory = biz.category || "cafe";
+      const stockPhotos = STOCK[bizCategory] || STOCK.cafe;
       let finalPhotos;
 
       if (googlePhotos.length >= 6) {
@@ -419,7 +419,7 @@ export default function MockupAdmin() {
       setMockupHTML(html);
 
       // Save to history
-      const entry = { name: biz.name, slug: biz.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), date: new Date().toISOString(), category, photoSource: googlePhotos.length > 0 ? "google" : "stock" };
+      const entry = { name: biz.name, slug: biz.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), date: new Date().toISOString(), category: bizCategory, photoSource: googlePhotos.length > 0 ? "google" : "stock" };
       const newHist = [entry, ...history].slice(0, 20);
       setHistory(newHist);
       localStorage.setItem("twg_mockup_history", JSON.stringify(newHist));
