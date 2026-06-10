@@ -188,7 +188,7 @@ nav{padding:14px 20px}.nk{display:none}.hero{grid-template-columns:1fr}.hc{paddi
 </head>
 <body>
 <nav><div class="nl">${firstName}<span>'s</span></div>
-<ul class="nk"><li><a href="#menu">Menu</a></li><li><a href="#about">About</a></li><li><a href="#hours">Hours</a></li><li><a href="#" class="nc">Order Now</a></li></ul></nav>
+<ul class="nk"><li><a href="#menu">${data.items_label || (["restaurant","cafe","bar","bakery"].includes(data.category) ? "Menu" : "Services")}</a></li><li><a href="#about">About</a></li><li><a href="#hours">Hours</a></li><li><a href="#" class="nc">${data.cta_primary || "Contact Us"}</a></li></ul></nav>
 
 <section class="hero"><div class="hc">
 <div class="he">${data.address_line1} · ${data.neighbourhood || data.city}</div>
@@ -197,13 +197,13 @@ nav{padding:14px 20px}.nk{display:none}.hero{grid-template-columns:1fr}.hc{paddi
 ${ratingHTML}
 <div class="hd">
 <div class="hdi"><span class="hdl">Hours</span><span class="hdv">${data.hours_summary}</span></div>
-<div class="hdi"><span class="hdl">Dine In</span><span class="hdv">Walk-ins welcome</span></div>
+${["restaurant","cafe","bar","bakery"].includes(data.category) ? `<div class="hdi"><span class="hdl">Dine In</span><span class="hdv">Walk-ins welcome</span></div>` : `<div class="hdi"><span class="hdl">Visit</span><span class="hdv">${data.cta_primary || "Call to book"}</span></div>`}
 ${deliveryText ? `<div class="hdi"><span class="hdl">Delivery</span><span class="hdv">${deliveryText}</span></div>` : ""}
 </div></div>
 <div class="hi"><img src="${ph[0]}" alt="${data.name}">
 <div class="hio"><p>📍 ${data.neighbourhood || data.city}</p></div></div></section>
 
-<div class="ss"><div class="sst">${sigItems.length ? `Come for the vibe. Stay for <em>${sigItems[0].name}.</em>` : `Welcome to <em>${data.name}.</em>`}</div>
+<div class="ss"><div class="sst">${sigItems.length ? (["restaurant","cafe","bar","bakery"].includes(data.category) ? `Come for the vibe. Stay for <em>${sigItems[0].name}.</em>` : `Trusted for <em>${sigItems[0].name}.</em>`) : `Welcome to <em>${data.name}.</em>`}</div>
 <div class="si">${sigItems.map(s => `<div class="sii"><div class="sin">${s.name}</div><div class="sid">${s.description.split(".")[0]}</div></div>`).join("")}</div></div>
 
 <div class="pg">${[1,2,3,4].map(i => `<div class="pgi"><img src="${ph[i] || ph[0]}" alt="Photo ${i}"></div>`).join("")}</div>
@@ -213,7 +213,7 @@ ${deliveryText ? `<div class="hdi"><span class="hdl">Delivery</span><span class=
 <div class="abc"><h2>Our Story.</h2><p>${data.about_paragraph}</p><p>${data.about_paragraph2}</p>
 <div>${(data.vibe_tags || []).map(t => `<span class="abt">${t}</span>`).join("")}</div></div></section>
 
-<section class="mp" id="menu"><div class="sh"><h2>What We're Known For</h2><p>See what keeps people coming back.</p></div>
+<section class="mp" id="menu"><div class="sh"><h2>${data.items_label || "What We're Known For"}</h2><p>See what keeps people coming back.</p></div>
 <div class="mg">${allItems.map((item, i) => `<div class="mc"><div class="mci"><img src="${ph[6+i] || ph[i%5]}" alt="${item.name}"></div>
 <div class="mcb"><h3>${item.emoji||""} ${item.name}</h3><p>${item.description}</p>${item.tag ? `<span class="mct">${item.tag}</span>` : ""}</div></div>`).join("")}</div></section>
 
@@ -225,7 +225,7 @@ ${data.review_quote ? `<div class="rs"><blockquote>"${data.review_quote}"</block
 <div><strong>${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}<br>${data.neighbourhood || ""}${data.phone ? `<br><br><strong>Phone:</strong> ${data.phone}` : ""}</div></div></div>
 <div class="lom"><img src="${ph[4] || ph[0]}" alt="Location"><div class="ml">📍 ${data.address_line1} — Walk-ins welcome</div></div></section>
 
-${igHandle ? `<section class="ig"><div class="igt"><h2>Follow Along</h2><p>Catch the daily specials and behind-the-scenes moments.</p>
+${igHandle ? `<section class="ig"><div class="igt"><h2>Follow Along</h2><p>${["restaurant","cafe","bar","bakery"].includes(data.category) ? "Catch the daily specials and behind-the-scenes moments." : "Stay up to date with our latest work and updates."}</p>
 <a href="${igUrl}" class="igb" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>${igHandle}</a></div>
 <div class="igg">${[0,1,2,3].map(i => `<div class="igi"><img src="${ph[i+1] || ph[0]}" alt="Post ${i+1}"></div>`).join("")}</div></section>` : ""}
 
@@ -262,6 +262,7 @@ export default function MockupAdmin() {
   // Form
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [category, setCategory] = useState("");
   const [notes, setNotes] = useState("");
 
   // State
@@ -383,7 +384,7 @@ export default function MockupAdmin() {
       const researchRes = await fetch("/api/mockup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "research", pin: storedPin, name, address, notes }),
+        body: JSON.stringify({ action: "research", pin: storedPin, name, address, notes, category }),
       });
       const researchData = await researchRes.json();
       if (!researchData.success) throw new Error(researchData.error || "Research failed");
@@ -506,6 +507,30 @@ export default function MockupAdmin() {
                     <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="810 College St, Toronto, ON M6G 1C8" style={S.input} />
                   </div>
                   <div>
+                    <label style={S.label}>Business Type</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ ...S.input, cursor: "pointer", appearance: "none", backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}>
+                      <option value="">Auto-detect</option>
+                      <option value="restaurant">Restaurant</option>
+                      <option value="cafe">Cafe / Coffee Shop</option>
+                      <option value="bar">Bar / Pub</option>
+                      <option value="bakery">Bakery</option>
+                      <option value="dental">Dental Office</option>
+                      <option value="medical">Medical / Clinic</option>
+                      <option value="auto">Auto Mechanic / Body Shop</option>
+                      <option value="salon">Salon / Barbershop</option>
+                      <option value="spa">Spa / Wellness</option>
+                      <option value="fitness">Fitness / Gym</option>
+                      <option value="legal">Law Firm / Legal</option>
+                      <option value="realestate">Real Estate</option>
+                      <option value="construction">Construction / Trades</option>
+                      <option value="retail">Retail Store</option>
+                      <option value="cleaning">Cleaning Service</option>
+                      <option value="pet">Pet Services / Vet</option>
+                      <option value="accounting">Accounting / Financial</option>
+                      <option value="photography">Photography / Creative</option>
+                    </select>
+                  </div>
+                  <div>
                     <label style={S.label}>Notes <span style={{ color: "#444" }}>(optional — Instagram handle, known menu items, etc.)</span></label>
                     <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. Instagram @bobbystoronto, known for The Lazy Apple" rows={3} style={S.textarea} />
                   </div>
@@ -589,6 +614,7 @@ export default function MockupAdmin() {
                   <button onClick={() => { navigator.clipboard.writeText(publishedUrl); }} style={{ ...S.actionBtn(false), fontSize: 11 }}>Copy Link</button>
                 </div>
               )}
+              </div>
 
               {businessData && (
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>

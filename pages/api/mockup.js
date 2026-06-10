@@ -1,14 +1,7 @@
 // pages/api/mockup.js
-// ENV VARS: ANTHROPIC_API_KEY, GOOGLE_MAPS_API_KEY, ADMIN_PIN, NEON_DATABASE_URL
-
-import { neon } from '@neondatabase/serverless';
-
-function getDb() {
-  return neon(process.env.NEON_DATABASE_URL);
-}
+// ENV VARS: ANTHROPIC_API_KEY, GOOGLE_MAPS_API_KEY, ADMIN_PIN
 
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') { res.setHeader('Access-Control-Allow-Origin', '*'); return res.status(200).end(); }
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
   const { action, pin } = req.body;
@@ -17,9 +10,6 @@ export default async function handler(req, res) {
   try {
     if (action === 'research') return await handleResearch(req, res);
     if (action === 'photos') return await handlePhotos(req, res);
-    if (action === 'save') return await handleSave(req, res);
-    if (action === 'list') return await handleList(req, res);
-    if (action === 'delete') return await handleDelete(req, res);
     return res.status(400).json({ error: 'Invalid action' });
   } catch (err) {
     console.error('Mockup API error:', err);
@@ -27,59 +17,14 @@ export default async function handler(req, res) {
   }
 }
 
-// ── SAVE mockup to Neon ──
-async function handleSave(req, res) {
-  const { slug, business_name, business_data, photo_urls, html } = req.body;
-  if (!slug || !html || !business_name) return res.status(400).json({ error: 'slug, business_name, and html required' });
-
-  const sql = getDb();
-
-  // Upsert — if slug exists, update it
-  await sql`
-    INSERT INTO mockups (slug, business_name, business_data, photo_urls, html)
-    VALUES (${slug}, ${business_name}, ${JSON.stringify(business_data || {})}, ${JSON.stringify(photo_urls || [])}, ${html})
-    ON CONFLICT (slug) DO UPDATE SET
-      business_name = EXCLUDED.business_name,
-      business_data = EXCLUDED.business_data,
-      photo_urls = EXCLUDED.photo_urls,
-      html = EXCLUDED.html,
-      created_at = NOW()
-  `;
-
-  return res.status(200).json({ success: true, url: `/mockups/${slug}` });
-}
-
-// ── LIST all saved mockups ──
-async function handleList(req, res) {
-  const sql = getDb();
-  const rows = await sql`
-    SELECT slug, business_name, business_data, created_at
-    FROM mockups
-    ORDER BY created_at DESC
-    LIMIT 50
-  `;
-  return res.status(200).json({ success: true, mockups: rows });
-}
-
-// ── DELETE a mockup ──
-async function handleDelete(req, res) {
-  const { slug } = req.body;
-  if (!slug) return res.status(400).json({ error: 'slug required' });
-
-  const sql = getDb();
-  await sql`DELETE FROM mockups WHERE slug = ${slug}`;
-  return res.status(200).json({ success: true });
-}
-
-// ── RESEARCH via Claude + web search ──
 async function handleResearch(req, res) {
-  const { name, address, notes } = req.body;
+  const { name, address, notes, category } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
 
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
   if (!ANTHROPIC_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
 
-  const systemPrompt = `You are a business researcher for a web design agency. Given a business name and address, search the web to find everything about this business — Google Maps, Yelp, Instagram, review sites, delivery apps, their website (if any).
+  const systemPrompt = `You are a business researcher for a web design agency. Given a business name, address, and optionally a business type, search the web to find everything about this business — Google Maps, Yelp, Instagram, review sites, their website (if any), industry directories.
 
 Return ONLY valid JSON. No markdown fences, no preamble.
 
@@ -93,24 +38,36 @@ Return ONLY valid JSON. No markdown fences, no preamble.
   "postal_zip": "Postal/zip",
   "neighbourhood": "Neighbourhood name or empty string",
   "phone": "Phone or empty string",
-  "hours_summary": "e.g. 9am-3pm daily",
+  "hours_summary": "e.g. 9am-5pm weekdays",
   "hours_detail": [{"days":"Monday - Friday","time":"9:00 AM - 5:00 PM"}],
-  "category": "cafe|restaurant|retail|salon|fitness|services|auto|bar",
+  "category": "restaurant|cafe|bar|bakery|dental|medical|auto|salon|spa|fitness|legal|realestate|construction|retail|cleaning|pet|accounting|photography|services",
   "palette": "warm|cool|earthy|modern|elegant|fresh",
   "vibe_tags": ["tag1","tag2","tag3","tag4"],
   "about_paragraph": "2-3 sentences for About section",
   "about_paragraph2": "1-2 follow-up sentences",
-  "signature_items": [{"name":"Item","description":"One sentence","tag":"Fan Favourite","emoji":"emoji"}],
-  "all_items": [{"name":"Item","description":"Short desc","tag":"Popular","emoji":"emoji"}],
+  "cta_primary": "Main call to action text (e.g. Order Now, Book Appointment, Get a Quote, Schedule Visit, Call Now)",
+  "items_label": "Section heading for services/menu (e.g. Our Menu, Our Services, What We Offer, Treatments, Specialties)",
+  "signature_items": [{"name":"Item or Service","description":"One sentence","tag":"Most Popular","emoji":"relevant emoji"}],
+  "all_items": [{"name":"Item or Service","description":"Short desc","tag":"Popular","emoji":"relevant emoji"}],
   "instagram": "handle without @ or empty string",
   "website": "URL or empty string",
-  "has_delivery": true,
-  "delivery_platforms": ["Uber Eats"],
+  "has_delivery": false,
+  "delivery_platforms": [],
   "review_quote": "Short positive review snippet",
   "review_source": "Google Reviews",
   "rating": "4.7",
   "review_count": "182"
 }
+
+Adapt the content to the business type:
+- Restaurants/cafes/bars/bakeries: signature_items = menu items, cta = "Order Now", items_label = "Our Menu"
+- Dental/medical: signature_items = treatments/services, cta = "Book Appointment", items_label = "Our Services"  
+- Auto mechanic: signature_items = services offered, cta = "Get a Quote", items_label = "Our Services"
+- Salon/spa: signature_items = treatments, cta = "Book Now", items_label = "Our Services"
+- Legal/accounting: signature_items = practice areas, cta = "Free Consultation", items_label = "Practice Areas"
+- Construction/trades: signature_items = services, cta = "Get a Free Estimate", items_label = "What We Do"
+- Retail: signature_items = product categories, cta = "Shop Now", items_label = "Our Products"
+- Other: adapt appropriately
 
 Be accurate. Use real info. If you can't find something, infer reasonably. Return 3 signature_items and 6 all_items.`;
 
@@ -125,7 +82,7 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4096,
       system: systemPrompt,
-      messages: [{ role: 'user', content: `Research this business:\n\nBusiness: ${name}\nAddress: ${address}${notes ? `\nContext: ${notes}` : ''}` }],
+      messages: [{ role: 'user', content: `Research this business:\n\nBusiness: ${name}\nAddress: ${address}${category ? `\nBusiness Type: ${category}` : ''}${notes ? `\nContext: ${notes}` : ''}` }],
       tools: [{ type: 'web_search_20250305', name: 'web_search' }],
     }),
   });
@@ -143,13 +100,12 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
   return res.status(200).json({ success: true, data: parsed });
 }
 
-// ── PHOTOS from Google Places ──
 async function handlePhotos(req, res) {
   const { name, address } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
 
   const GMAPS_KEY = process.env.GOOGLE_MAPS_API_KEY;
-  if (!GMAPS_KEY) return res.status(200).json({ success: true, photos: [], message: 'No Google Maps key — using stock photos' });
+  if (!GMAPS_KEY) return res.status(200).json({ success: true, photos: [], message: 'GOOGLE_MAPS_API_KEY not set — using stock photos' });
 
   const query = encodeURIComponent(`${name} ${address}`);
   const findRes = await fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${query}&inputtype=textquery&fields=place_id,name,photos&key=${GMAPS_KEY}`);
