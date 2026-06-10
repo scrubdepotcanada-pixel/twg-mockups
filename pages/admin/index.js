@@ -595,7 +595,7 @@ export default function MockupAdmin() {
       setMockupHTML(html);
 
       // Save to history
-      const entry = { name: biz.name, slug: biz.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), date: new Date().toISOString(), category: bizCategory, photoSource: googlePhotos.length > 0 ? "google" : "stock" };
+      const entry = { name: biz.name, address, notes, template, slug: biz.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), date: new Date().toISOString(), category: bizCategory, photoSource: googlePhotos.length > 0 ? "google" : "stock" };
       const newHist = [entry, ...history].slice(0, 20);
       setHistory(newHist);
       localStorage.setItem("twg_mockup_history", JSON.stringify(newHist));
@@ -766,7 +766,7 @@ export default function MockupAdmin() {
                       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                         {history.map((h, i) => (
                           <div key={i} style={{ padding: "12px 14px", background: "#111", border: "1px solid #1A1A1A", borderRadius: 8, cursor: "pointer" }}
-                            onClick={() => { setName(h.name); setAddress(""); }}>
+                            onClick={() => { setName(h.name); setAddress(h.address || ""); setNotes(h.notes || ""); setCategory(h.category || ""); setTemplate(h.template || "classic"); }}>
                             <div style={{ fontSize: 14, color: "#ccc", fontWeight: 500 }}>{h.name}</div>
                             <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>{h.category} · {h.photoSource === "google" ? "📸 Real photos" : "🖼 Stock"} · {new Date(h.date).toLocaleDateString()}</div>
                           </div>
@@ -789,6 +789,7 @@ export default function MockupAdmin() {
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); }} style={S.actionBtn(false)}>← New</button>
+                  <button onClick={generate} disabled={loading} style={S.actionBtn(false)}>🔄 Regenerate</button>
                   <button onClick={copyHTML} style={S.actionBtn(false)}>Copy HTML</button>
                   <button onClick={downloadHTML} style={S.actionBtn(false)}>Download</button>
                   <button onClick={publishMockup} disabled={publishing} style={{ ...S.actionBtn(true), opacity: publishing ? 0.6 : 1 }}>
