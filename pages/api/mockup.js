@@ -1,7 +1,20 @@
 // pages/api/mockup.js
-// ENV VARS: ANTHROPIC_API_KEY, GOOGLE_MAPS_API_KEY, ADMIN_PIN
+// ENV VARS: ANTHROPIC_API_KEY, GOOGLE_MAPS_API_KEY, ADMIN_PIN, NEON_DATABASE_URL
+
+import { neon } from '@neondatabase/serverless';
+
+function getDb() {
+  return neon(process.env.NEON_DATABASE_URL);
+}
+
+function errStr(e) {
+  if (typeof e === 'string') return e;
+  if (e && typeof e.message === 'string') return e.message;
+  try { return JSON.stringify(e); } catch { return 'Unknown error'; }
+}
 
 export default async function handler(req, res) {
+  if (req.method === 'OPTIONS') { res.setHeader('Access-Control-Allow-Origin', '*'); return res.status(200).end(); }
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
   const { action, pin } = req.body;
@@ -10,13 +23,61 @@ export default async function handler(req, res) {
   try {
     if (action === 'research') return await handleResearch(req, res);
     if (action === 'photos') return await handlePhotos(req, res);
+    if (action === 'save') return await handleSave(req, res);
+    if (action === 'list') return await handleList(req, res);
+    if (action === 'delete') return await handleDelete(req, res);
     return res.status(400).json({ error: 'Invalid action' });
   } catch (err) {
     console.error('Mockup API error:', err);
-    return res.status(500).json({ error: err.message || 'Internal error' });
+    return res.status(500).json({ error: errStr(err) || 'Internal error' });
   }
 }
 
+// ── SAVE mockup to Neon ──
+async function handleSave(req, res) {
+  const { slug, business_name, business_data, photo_urls, html } = req.body;
+  if (!slug || !html || !business_name) return res.status(400).json({ error: 'slug, business_name, and html required' });
+
+  const sql = getDb();
+
+  // Upsert — if slug exists, update it
+  await sql`
+    INSERT INTO mockups (slug, business_name, business_data, photo_urls, html)
+    VALUES (${slug}, ${business_name}, ${JSON.stringify(business_data || {})}, ${JSON.stringify(photo_urls || [])}, ${html})
+    ON CONFLICT (slug) DO UPDATE SET
+      business_name = EXCLUDED.business_name,
+      business_data = EXCLUDED.business_data,
+      photo_urls = EXCLUDED.photo_urls,
+      html = EXCLUDED.html,
+      created_at = NOW()
+  `;
+
+  return res.status(200).json({ success: true, url: `/mockups/${slug}` });
+}
+
+// ── LIST all saved mockups ──
+async function handleList(req, res) {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT slug, business_name, business_data, created_at
+    FROM mockups
+    ORDER BY created_at DESC
+    LIMIT 50
+  `;
+  return res.status(200).json({ success: true, mockups: rows });
+}
+
+// ── DELETE a mockup ──
+async function handleDelete(req, res) {
+  const { slug } = req.body;
+  if (!slug) return res.status(400).json({ error: 'slug required' });
+
+  const sql = getDb();
+  await sql`DELETE FROM mockups WHERE slug = ${slug}`;
+  return res.status(200).json({ success: true });
+}
+
+// ── RESEARCH via Claude + web search ──
 async function handleResearch(req, res) {
   const { name, address, notes, category } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
@@ -61,13 +122,15 @@ Return ONLY valid JSON. No markdown fences, no preamble.
 
 Adapt the content to the business type:
 - Restaurants/cafes/bars/bakeries: signature_items = menu items, cta = "Order Now", items_label = "Our Menu"
-- Dental/medical: signature_items = treatments/services, cta = "Book Appointment", items_label = "Our Services"  
+- Dental/medical: signature_items = treatments/services, cta = "Book Appointment", items_label = "Our Services"
 - Auto mechanic: signature_items = services offered, cta = "Get a Quote", items_label = "Our Services"
 - Salon/spa: signature_items = treatments, cta = "Book Now", items_label = "Our Services"
 - Legal/accounting: signature_items = practice areas, cta = "Free Consultation", items_label = "Practice Areas"
 - Construction/trades: signature_items = services, cta = "Get a Free Estimate", items_label = "What We Do"
 - Retail: signature_items = product categories, cta = "Shop Now", items_label = "Our Products"
 - Other: adapt appropriately
+
+The "category" field MUST be one of the enum values above — pick the closest match. If a business type was provided by the user, use it.
 
 Be accurate. Use real info. If you can't find something, infer reasonably. Return 3 signature_items and 6 all_items.`;
 
@@ -88,7 +151,7 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
   });
 
   const data = await response.json();
-  if (data.error) throw new Error(data.error.message);
+  if (data.error) throw new Error(errStr(data.error));
 
   const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
   const cleaned = textBlocks.replace(/```json\s*|```\s*/g, '').trim();
@@ -100,12 +163,13 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
   return res.status(200).json({ success: true, data: parsed });
 }
 
+// ── PHOTOS from Google Places ──
 async function handlePhotos(req, res) {
   const { name, address } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
 
   const GMAPS_KEY = process.env.GOOGLE_MAPS_API_KEY;
-  if (!GMAPS_KEY) return res.status(200).json({ success: true, photos: [], message: 'GOOGLE_MAPS_API_KEY not set — using stock photos' });
+  if (!GMAPS_KEY) return res.status(200).json({ success: true, photos: [], message: 'No Google Maps key — using stock photos' });
 
   const query = encodeURIComponent(`${name} ${address}`);
   const findRes = await fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${query}&inputtype=textquery&fields=place_id,name,photos&key=${GMAPS_KEY}`);

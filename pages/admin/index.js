@@ -467,6 +467,8 @@ export default function MockupAdmin() {
       if (data.success) {
         setPublishedUrl(`${window.location.origin}/mockups/${slug}`);
         loadPublished(storedPin);
+      } else {
+        setError(typeof data.error === "string" ? data.error : JSON.stringify(data.error) || "Publish failed");
       }
     } catch (err) {
       setError(err.message);
@@ -543,7 +545,7 @@ export default function MockupAdmin() {
         body: JSON.stringify({ action: "research", pin: storedPin, name, address, notes, category }),
       });
       const researchData = await researchRes.json();
-      if (!researchData.success) throw new Error(researchData.error || "Research failed");
+      if (!researchData.success) throw new Error(typeof researchData.error === "string" ? researchData.error : JSON.stringify(researchData.error) || "Research failed");
 
       const biz = researchData.data;
       setBusinessData(biz);
