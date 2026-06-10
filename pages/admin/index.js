@@ -251,6 +251,8 @@ const PALETTES = {
 function buildMockupHTML(data, photoUrls) {
   const p = PALETTES[data.palette] || PALETTES.warm;
   const ph = photoUrls; // array of URLs — index 0 = hero, 1-4 = grid, 5 = about, 6-11 = menu items
+  const fb = "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80"; // fallback: neutral office
+  const img = (src, alt) => `<img src="${src}" alt="${alt}" onerror="this.onerror=null;this.src='${fb}'">`;
   const sigItems = (data.signature_items || []).slice(0, 3);
   const allItems = (data.all_items || []).slice(0, 6);
   const hours = data.hours_detail || [];
@@ -356,21 +358,21 @@ ${ratingHTML}
 ${["restaurant","cafe","bar","bakery"].includes(data.category) ? `<div class="hdi"><span class="hdl">Dine In</span><span class="hdv">Walk-ins welcome</span></div>` : `<div class="hdi"><span class="hdl">Visit</span><span class="hdv">${data.cta_primary || "Call to book"}</span></div>`}
 ${deliveryText ? `<div class="hdi"><span class="hdl">Delivery</span><span class="hdv">${deliveryText}</span></div>` : ""}
 </div></div>
-<div class="hi"><img src="${ph[0]}" alt="${data.name}">
+<div class="hi">${img(ph[0], data.name)}
 <div class="hio"><p>📍 ${data.neighbourhood || data.city}</p></div></div></section>
 
 <div class="ss"><div class="sst">${sigItems.length ? (["restaurant","cafe","bar","bakery"].includes(data.category) ? `Come for the vibe. Stay for <em>${sigItems[0].name}.</em>` : `Trusted for <em>${sigItems[0].name}.</em>`) : `Welcome to <em>${data.name}.</em>`}</div>
 <div class="si">${sigItems.map(s => `<div class="sii"><div class="sin">${s.name}</div><div class="sid">${s.description.split(".")[0]}</div></div>`).join("")}</div></div>
 
-<div class="pg">${[1,2,3,4].map(i => `<div class="pgi"><img src="${ph[i] || ph[0]}" alt="Photo ${i}"></div>`).join("")}</div>
+<div class="pg">${[1,2,3,4].map(i => `<div class="pgi">${img(ph[i] || ph[0], "Photo " + i)}</div>`).join("")}</div>
 
-<section class="ab" id="about"><div class="abi"><img src="${ph[5] || ph[0]}" alt="${data.name}">
+<section class="ab" id="about"><div class="abi">${img(ph[5] || ph[0], data.name)}
 <div class="abb">${data.vibe_tags?.[0] || "Local Favourite"}</div></div>
 <div class="abc"><h2>Our Story.</h2><p>${data.about_paragraph}</p><p>${data.about_paragraph2}</p>
 <div>${(data.vibe_tags || []).map(t => `<span class="abt">${t}</span>`).join("")}</div></div></section>
 
 <section class="mp" id="menu"><div class="sh"><h2>${data.items_label || "What We're Known For"}</h2><p>See what keeps people coming back.</p></div>
-<div class="mg">${allItems.map((item, i) => `<div class="mc"><div class="mci"><img src="${ph[6+i] || ph[i%5]}" alt="${item.name}"></div>
+<div class="mg">${allItems.map((item, i) => `<div class="mc"><div class="mci">${img(ph[6+i] || ph[i%5], item.name)}</div>
 <div class="mcb"><h3>${item.emoji||""} ${item.name}</h3><p>${item.description}</p>${item.tag ? `<span class="mct">${item.tag}</span>` : ""}</div></div>`).join("")}</div></section>
 
 ${data.review_quote ? `<div class="rs"><blockquote>"${data.review_quote}"</blockquote><cite>— ${data.review_source || "Customer Review"}</cite></div>` : ""}
@@ -379,11 +381,11 @@ ${data.review_quote ? `<div class="rs"><blockquote>"${data.review_quote}"</block
 <div class="hg">${hours.map(h => `<div class="hr"><span class="hrd">${h.days}</span><span class="hrt">${h.time}</span></div>`).join("")}</div>
 <div class="la"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
 <div><strong>${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}<br>${data.neighbourhood || ""}${data.phone ? `<br><br><strong>Phone:</strong> ${data.phone}` : ""}</div></div></div>
-<div class="lom"><img src="${ph[4] || ph[0]}" alt="Location"><div class="ml">📍 ${data.address_line1} — Walk-ins welcome</div></div></section>
+<div class="lom">${img(ph[4] || ph[0], "Location")}<div class="ml">📍 ${data.address_line1} — Walk-ins welcome</div></div></section>
 
 ${igHandle ? `<section class="ig"><div class="igt"><h2>Follow Along</h2><p>${["restaurant","cafe","bar","bakery"].includes(data.category) ? "Catch the daily specials and behind-the-scenes moments." : "Stay up to date with our latest work and updates."}</p>
 <a href="${igUrl}" class="igb" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>${igHandle}</a></div>
-<div class="igg">${[0,1,2,3].map(i => `<div class="igi"><img src="${ph[i+1] || ph[0]}" alt="Post ${i+1}"></div>`).join("")}</div></section>` : ""}
+<div class="igg">${[0,1,2,3].map(i => `<div class="igi">${img(ph[i+1] || ph[0], "Post " + (i+1))}</div>`).join("")}</div></section>` : ""}
 
 <div class="cb"><h3>Like what you see?</h3><p>This mockup was built for you by The Web Guys. Let's make it real.</p>
 <a href="https://thewebguys.ca" target="_blank">Get In Touch →</a></div>
