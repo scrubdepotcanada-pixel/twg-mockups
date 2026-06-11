@@ -517,7 +517,7 @@ export default function MockupAdmin() {
           action: "save", pin: storedPin, slug,
           business_name: businessData.name || name,
           business_data: businessData,
-          photo_urls: [],
+          photo_urls: cachedPhotos,
           html: mockupHTML,
         }),
       });
@@ -543,6 +543,36 @@ export default function MockupAdmin() {
       });
       loadPublished(storedPin);
     } catch {}
+  };
+
+  const loadMockup = async (slug) => {
+    try {
+      setStep("Loading mockup...");
+      setLoading(true); setError("");
+      const res = await fetch("/api/mockup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get", pin: storedPin, slug }),
+      });
+      const data = await res.json();
+      if (!data.success || !data.mockup) { setError("Could not load mockup"); setLoading(false); return; }
+      const m = data.mockup;
+      const biz = typeof m.business_data === "string" ? JSON.parse(m.business_data) : (m.business_data || {});
+      const photos = typeof m.photo_urls === "string" ? JSON.parse(m.photo_urls) : (m.photo_urls || []);
+      setBusinessData(biz);
+      setCachedPhotos(photos);
+      setName(biz.name || m.business_name);
+      setAddress(biz.address_line1 ? `${biz.address_line1}, ${biz.city}, ${biz.province_state}` : "");
+      if (biz.category) setCategory(biz.category);
+      setPhotoSource(photos.some(u => u.includes("googleapis")) ? "google" : "stock");
+      setPublishedUrl(`${window.location.origin}/mockups/${slug}`);
+      const html = buildMockupHTML(biz, photos, template);
+      setMockupHTML(html);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message || "Failed to load mockup");
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -810,7 +840,10 @@ export default function MockupAdmin() {
                             <a href={`/mockups/${m.slug}`} target="_blank" rel="noopener" style={{ fontSize: 14, color: "#4CAF50", fontWeight: 500, textDecoration: "none" }}>{m.business_name}</a>
                             <div style={{ fontSize: 11, color: "#555", marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                               <span>{new Date(m.created_at).toLocaleDateString()}</span>
-                              <button onClick={() => deleteMockup(m.slug)} style={{ background: "none", border: "none", color: "#553333", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>Delete</button>
+                              <div style={{ display: "flex", gap: 8 }}>
+                                <button onClick={() => loadMockup(m.slug)} style={{ background: "none", border: "none", color: "#3EA843", fontSize: 11, cursor: "pointer", fontFamily: "inherit", fontWeight: 600 }}>Edit</button>
+                                <button onClick={() => deleteMockup(m.slug)} style={{ background: "none", border: "none", color: "#553333", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>Delete</button>
+                              </div>
                             </div>
                           </div>
                         ))}

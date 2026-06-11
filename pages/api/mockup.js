@@ -25,6 +25,7 @@ export default async function handler(req, res) {
     if (action === 'photos') return await handlePhotos(req, res);
     if (action === 'save') return await handleSave(req, res);
     if (action === 'list') return await handleList(req, res);
+    if (action === 'get') return await handleGet(req, res);
     if (action === 'delete') return await handleDelete(req, res);
     return res.status(400).json({ error: 'Invalid action' });
   } catch (err) {
@@ -65,6 +66,21 @@ async function handleList(req, res) {
     LIMIT 50
   `;
   return res.status(200).json({ success: true, mockups: rows });
+}
+
+// ── GET a single mockup by slug (full data + photos) ──
+async function handleGet(req, res) {
+  const { slug } = req.body;
+  if (!slug) return res.status(400).json({ error: 'slug required' });
+
+  const sql = getDb();
+  const rows = await sql`
+    SELECT slug, business_name, business_data, photo_urls, html, created_at
+    FROM mockups WHERE slug = ${slug} LIMIT 1
+  `;
+  if (!rows.length) return res.status(404).json({ error: 'Mockup not found' });
+
+  return res.status(200).json({ success: true, mockup: rows[0] });
 }
 
 // ── DELETE a mockup ──
