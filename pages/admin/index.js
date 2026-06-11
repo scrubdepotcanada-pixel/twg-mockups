@@ -286,7 +286,7 @@ const nav=document.querySelector('nav');if(nav){let last=0;window.addEventListen
 // TEMPLATE: CLASSIC — Split hero, card grid
 // ═════════════════════════════════════════
 function templateClassic(data, d) {
-  const { p, ph, img, sigItems, allItems, deliveryText, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML } = d;
+  const { p, ph, img, sigItems, allItems, deliveryText, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML, interactiveJS } = d;
   const ratingHTML = rating > 0 ? `<div style="display:flex;align-items:center;gap:8px;margin-top:20px"><span style="font-family:'DM Serif Display',serif;font-size:28px;color:${p.accent}">${rating}</span><span style="font-size:18px;color:${p.accent}">${"★".repeat(Math.round(rating))}${"☆".repeat(5-Math.round(rating))}</span>${reviewCount ? `<span style="font-size:13px;color:${p.sage}">(${reviewCount} reviews)</span>` : ""}</div>` : "";
   return `${head}<style>
 :root{--p:${p.primary};--a:${p.accent};--bg:${p.bg};--sage:${p.sage};--latte:${p.latte};--t:${p.text};--w:${p.white}}
@@ -339,7 +339,7 @@ ${data.review_quote ? `<div style="padding:60px;text-align:center"><blockquote s
 // TEMPLATE: BOLD — Full-bleed hero, zigzag services
 // ═════════════════════════════════════════════════
 function templateBold(data, d) {
-  const { p, ph, img, sigItems, allItems, hours, firstName, isFood, navLabel, cta, rating, reviewCount, head } = d;
+  const { p, ph, img, sigItems, allItems, hours, firstName, isFood, navLabel, cta, rating, reviewCount, head, interactiveJS } = d;
   // Zigzag: alternate image left/right for each service
   const zigzagItems = allItems.slice(0, 4);
   return `${head}<style>
@@ -394,7 +394,7 @@ ${data.review_quote ? `<section class="bqt">${img(ph[5] || ph[0], 'Ambiance')}<b
 // TEMPLATE: EDITORIAL — Typography-driven, single column
 // ═══════════════════════════════════════════════════════
 function templateEditorial(data, d) {
-  const { p, ph, img, allItems, hours, firstName, navLabel, cta, rating, reviewCount, head } = d;
+  const { p, ph, img, allItems, hours, firstName, navLabel, cta, rating, reviewCount, head, interactiveJS } = d;
   const stars = rating > 0 ? `${rating} ★ · ${reviewCount} reviews` : '';
   return `${head}<style>
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:#FAFAF8;color:#1a1a1a;-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
