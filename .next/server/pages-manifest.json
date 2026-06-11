@@ -1,1 +1,1 @@
-{"/admin":"pages/admin.html","/_app":"pages/_app.js","/api/mockup":"pages/api/mockup.js","/":"pages/index.html","/_error":"pages/_error.js","/mockups/[slug]":"pages/mockups/[slug].js","/_document":"pages/_document.js","/404":"pages/404.html"}
+{"/admin":"pages/admin.html","/_app":"pages/_app.js","/_error":"pages/_error.js","/":"pages/index.html","/api/mockup":"pages/api/mockup.js","/mockups/[slug]":"pages/mockups/[slug].js","/_document":"pages/_document.js","/404":"pages/404.html"}

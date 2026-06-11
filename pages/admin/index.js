@@ -325,89 +325,119 @@ ${data.review_quote ? `<div style="padding:60px;text-align:center"><blockquote s
 <footer style="padding:40px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(0,0,0,.08);flex-wrap:wrap;gap:20px"><div style="font-family:'DM Serif Display',serif;font-size:20px">${firstName}<span style="color:${p.accent}">'s</span></div><span style="font-size:13px;color:${p.text};opacity:.5">© 2026 ${data.name} · ${data.address_line1}, ${data.city}</span><span style="font-size:12px;color:${p.text};opacity:.4;padding:6px 14px;border:1px solid rgba(0,0,0,.1);border-radius:16px">Built by The Web Guys · thewebguys.ca</span></footer></body></html>`;
 }
 
-// ═════════════════════════════════════════
-// TEMPLATE: BOLD — Full-bleed hero, dark
-// ═════════════════════════════════════════
+
+// ═════════════════════════════════════════════════
+// TEMPLATE: BOLD — Full-bleed hero, zigzag services
+// ═════════════════════════════════════════════════
 function templateBold(data, d) {
   const { p, ph, img, sigItems, allItems, hours, firstName, isFood, navLabel, cta, rating, reviewCount, head } = d;
-  const stars = rating > 0 ? `<span style="color:${p.accent};font-size:18px;margin-right:8px">${"★".repeat(Math.round(rating))}</span><span style="font-size:15px;opacity:.8">${rating} · ${reviewCount} reviews</span>` : "";
+  // Zigzag: alternate image left/right for each service
+  const zigzagItems = allItems.slice(0, 4);
   return `${head}<style>
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Space Grotesk','Inter',sans-serif;background:#0a0a0a;color:#fff;-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
-.bn{position:fixed;top:0;width:100%;z-index:100;padding:20px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px)}
-.bnl{font-size:22px;font-weight:700;letter-spacing:-.5px}
-.bnk{display:flex;gap:28px;list-style:none;align-items:center}.bnk a{text-decoration:none;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;transition:color .2s}.bnk a:hover{color:#fff}
-.bnc{background:${p.accent}!important;color:${p.primary}!important;padding:10px 24px!important;border-radius:8px;font-weight:600!important}
-.bh{min-height:100vh;position:relative;display:flex;align-items:flex-end;overflow:hidden}.bh img{position:absolute;inset:0;min-height:100vh;filter:brightness(.35)}
-.bhc{position:relative;z-index:1;padding:80px 60px;max-width:800px}
-.bhc h1{font-size:clamp(48px,6vw,84px);font-weight:700;line-height:1;letter-spacing:-3px;margin-bottom:20px}.bhc h1 span{color:${p.accent}}
-.bhp{font-size:18px;line-height:1.6;opacity:.7;max-width:520px;margin-bottom:28px}
-.bbtn{display:inline-block;background:${p.accent};color:${p.primary};padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;transition:transform .2s}.bbtn:hover{transform:translateY(-2px)}
-.bs{display:flex;border-bottom:1px solid rgba(255,255,255,.08)}.bsi{flex:1;padding:40px;text-align:center;border-right:1px solid rgba(255,255,255,.08)}.bsi:last-child{border-right:none}
-.bsi h4{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:${p.accent};margin-bottom:8px}.bsi p{font-size:14px;opacity:.6}
-.bab{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:100px 60px;max-width:1200px;margin:0 auto}
-.bai{aspect-ratio:1;border-radius:12px;overflow:hidden}
-.bat h2{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:20px}.bat p{font-size:16px;line-height:1.8;opacity:.6;margin-bottom:12px}
-.bg{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1200px;margin:0 auto;padding:0 60px}
-.bc{background:#141414;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.06);transition:transform .3s}.bc:hover{transform:translateY(-4px)}
-.bci{aspect-ratio:16/10;overflow:hidden}.bci img{transition:transform .5s}.bc:hover .bci img{transform:scale(1.05)}
-.bcb{padding:24px}.bcb h3{font-size:18px;font-weight:600;margin-bottom:8px}.bcb p{font-size:13px;line-height:1.6;opacity:.5}
-.bt{display:inline-block;margin-top:12px;padding:4px 12px;background:rgba(255,255,255,.06);border-radius:6px;font-size:11px;font-weight:600;color:${p.accent};text-transform:uppercase}
-@media(max-width:900px){.bnk{display:none}.bhc h1{font-size:40px}.bg{grid-template-columns:1fr;padding:0 24px}.bab{grid-template-columns:1fr;padding:60px 24px}.bs{flex-direction:column}.bsi{border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}}
+.bn{position:fixed;top:0;width:100%;z-index:100;padding:20px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.05)}
+.bnl{font-size:20px;font-weight:700;letter-spacing:-.5px}
+.bnk{display:flex;gap:28px;list-style:none;align-items:center}.bnk a{text-decoration:none;color:rgba(255,255,255,.5);font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s}.bnk a:hover{color:#fff}
+.bnc{background:${p.accent}!important;color:${p.primary}!important;padding:10px 24px!important;border-radius:6px;font-weight:600!important}
+.bh{min-height:100vh;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.bh>img{position:absolute;inset:0;min-height:100vh;filter:brightness(.25)}
+.bhc{position:relative;z-index:1;max-width:800px;padding:40px}
+.bhc h1{font-size:clamp(52px,8vw,100px);font-weight:700;line-height:.95;letter-spacing:-4px;margin-bottom:24px;text-transform:uppercase}
+.bhc h1 span{display:block;color:${p.accent};font-style:italic;font-family:'Playfair Display',serif;text-transform:none;letter-spacing:-2px}
+.bhp{font-size:18px;line-height:1.6;opacity:.6;max-width:500px;margin:0 auto 36px}
+.bbtn{display:inline-block;background:#fff;color:#0a0a0a;padding:18px 48px;text-decoration:none;font-weight:700;font-size:15px;letter-spacing:1px;text-transform:uppercase;transition:background .2s}.bbtn:hover{background:${p.accent}}
+.bstat{display:flex;justify-content:center;gap:0;background:#111;border-bottom:1px solid rgba(255,255,255,.06)}
+.bsti{flex:1;max-width:300px;padding:36px 40px;text-align:center;border-right:1px solid rgba(255,255,255,.06)}.bsti:last-child{border-right:none}
+.bsti h4{font-size:32px;font-weight:700;color:${p.accent};margin-bottom:4px}.bsti p{font-size:12px;text-transform:uppercase;letter-spacing:2px;opacity:.4}
+.bzz{display:grid;grid-template-columns:1fr 1fr;min-height:500px}
+.bzz.rev{direction:rtl}.bzz.rev>*{direction:ltr}
+.bzi{overflow:hidden;min-height:500px}
+.bzt{display:flex;flex-direction:column;justify-content:center;padding:80px 60px;background:#111}
+.bzz.rev .bzt{background:#0d0d0d}
+.bzt h3{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:16px;line-height:1.1}
+.bzt p{font-size:16px;line-height:1.8;opacity:.5;margin-bottom:20px;max-width:440px}
+.bztg{display:inline-block;padding:6px 16px;background:rgba(255,255,255,.06);border-radius:4px;font-size:11px;font-weight:600;color:${p.accent};letter-spacing:1px;text-transform:uppercase}
+.bqt{position:relative;overflow:hidden;padding:120px 60px;text-align:center}
+.bqt>img{position:absolute;inset:0;min-height:100%;filter:brightness(.2)}
+.bqt>*:not(img){position:relative;z-index:1}
+.bqt blockquote{font-family:'Playfair Display',serif;font-size:30px;font-style:italic;max-width:700px;margin:0 auto 20px;line-height:1.5}
+.bhr{display:grid;grid-template-columns:1fr 1fr;background:#111}
+.bhrl{padding:80px 60px}.bhrr{overflow:hidden;min-height:400px}
+.bhrd{display:flex;justify-content:space-between;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:15px}.bhrd span:last-child{opacity:.4}
+@media(max-width:900px){.bnk{display:none}.bhc h1{font-size:48px}.bzz,.bzz.rev{grid-template-columns:1fr;direction:ltr}.bzz.rev>*{direction:ltr}.bzi{min-height:300px}.bzt{padding:48px 24px}.bstat{flex-direction:column}.bsti{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.bhr{grid-template-columns:1fr}.bhrl{padding:48px 24px}.bqt{padding:60px 24px}}
 </style></head><body>
-<nav class="bn"><div class="bnl">${data.name}</div><ul class="bnk"><li><a href="#menu">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#hours">Hours</a></li><li><a href="#" class="bnc">${cta}</a></li></ul></nav>
-<section class="bh">${img(ph[0], data.name)}<div class="bhc">${stars ? `<div style="margin-bottom:20px">${stars}</div>` : ""}<h1>${data.tagline.replace(/(\w+)[.!]?$/, '<span>$1</span>')}</h1><p class="bhp">${data.subtitle}</p><a href="#menu" class="bbtn">${cta} →</a></div></section>
-<div class="bs">${sigItems.map(s => `<div class="bsi"><h4>${s.name}</h4><p>${s.description.split(".")[0]}</p></div>`).join("")}</div>
-<section class="bab" id="about"><div class="bai">${img(ph[5] || ph[0], data.name)}</div><div class="bat"><h2>About ${firstName}'s</h2><p>${data.about_paragraph}</p><p>${data.about_paragraph2}</p><div style="margin-top:16px">${(data.vibe_tags || []).map(t => `<span class="bt" style="margin-right:6px;margin-bottom:6px">${t}</span>`).join("")}</div></div></section>
-<section style="padding:100px 0" id="menu"><div style="max-width:1200px;margin:0 auto;padding:0 60px;margin-bottom:60px"><h2 style="font-size:42px;font-weight:700;letter-spacing:-1.5px;margin-bottom:8px">${data.items_label || "What We're Known For"}</h2><p style="font-size:15px;opacity:.5">See what keeps people coming back.</p></div>
-<div class="bg">${allItems.map((item, i) => `<div class="bc"><div class="bci">${img(ph[6+i] || ph[i%5], item.name)}</div><div class="bcb"><h3>${item.emoji||""} ${item.name}</h3><p>${item.description}</p>${item.tag ? `<span class="bt">${item.tag}</span>` : ""}</div></div>`).join("")}</div></section>
-${data.review_quote ? `<div style="padding:80px 60px;text-align:center;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)"><blockquote style="font-family:'Playfair Display',serif;font-size:26px;font-style:italic;max-width:700px;margin:0 auto 16px;line-height:1.5">"${data.review_quote}"</blockquote><cite style="font-size:13px;opacity:.4;font-style:normal">— ${data.review_source || "Customer Review"}</cite></div>` : ""}
-<section style="display:grid;grid-template-columns:1fr 1fr;gap:60px;padding:100px 60px;max-width:1200px;margin:0 auto" id="hours"><div><h2 style="font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:32px">Hours & Location</h2>${hours.map(h => `<div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="font-weight:500">${h.days}</span><span style="opacity:.5">${h.time}</span></div>`).join("")}<div style="margin-top:32px;font-size:15px;line-height:1.8;opacity:.6"><strong style="opacity:1">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br><br><strong style="opacity:1">Phone:</strong> ${data.phone}` : ""}</div></div><div style="border-radius:12px;overflow:hidden">${img(ph[4] || ph[0], "Location")}</div></section>
-<div style="background:${p.accent};padding:48px 60px;text-align:center"><h3 style="font-size:24px;font-weight:700;color:${p.primary};margin-bottom:12px">Like what you see?</h3><p style="font-size:15px;color:${p.primary};opacity:.8;margin-bottom:24px">This mockup was built for you by The Web Guys. Let's make it real.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.primary};color:#fff;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">Get In Touch →</a></div>
-<footer style="padding:40px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:20px;background:#0a0a0a"><div style="font-size:20px;font-weight:700">${data.name}</div><span style="font-size:13px;opacity:.3">© 2026 ${data.name}</span><span style="font-size:12px;opacity:.2;padding:6px 14px;border:1px solid rgba(255,255,255,.1);border-radius:8px">Built by The Web Guys · thewebguys.ca</span></footer></body></html>`;
+<nav class="bn"><div class="bnl">${data.name}</div><ul class="bnk"><li><a href="#srv">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#hrs">Hours</a></li><li><a href="#" class="bnc">${cta}</a></li></ul></nav>
+<section class="bh">${img(ph[0], data.name)}<div class="bhc">
+<h1>${firstName}'s<span>${data.tagline.split(/\s+/).slice(-2).join(' ')}</span></h1>
+<p class="bhp">${data.subtitle}</p>
+<a href="#srv" class="bbtn">${cta}</a>
+</div></section>
+<div class="bstat">${rating > 0 ? `<div class="bsti"><h4>${rating}</h4><p>Rating</p></div>` : ''}<div class="bsti"><h4>${reviewCount || '—'}</h4><p>Reviews</p></div><div class="bsti"><h4>${data.neighbourhood || data.city}</h4><p>Location</p></div></div>
+<div id="srv">${zigzagItems.map((item, i) => `<div class="bzz${i % 2 ? ' rev' : ''}"><div class="bzi">${img(ph[6+i] || ph[i%5], item.name)}</div><div class="bzt"><h3>${item.emoji||''} ${item.name}</h3><p>${item.description}</p>${item.tag ? `<span class="bztg">${item.tag}</span>` : ''}</div></div>`).join('')}</div>
+<div id="about" style="max-width:700px;margin:0 auto;padding:100px 40px;text-align:center"><h2 style="font-size:40px;font-weight:700;letter-spacing:-1.5px;margin-bottom:24px">About ${firstName}'s</h2><p style="font-size:17px;line-height:1.9;opacity:.5;margin-bottom:12px">${data.about_paragraph}</p><p style="font-size:17px;line-height:1.9;opacity:.5">${data.about_paragraph2}</p><div style="margin-top:24px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${(data.vibe_tags || []).map(t => `<span style="padding:6px 14px;border:1px solid rgba(255,255,255,.1);border-radius:4px;font-size:11px;letter-spacing:1px;text-transform:uppercase;opacity:.5">${t}</span>`).join('')}</div></div>
+${data.review_quote ? `<section class="bqt">${img(ph[5] || ph[0], 'Ambiance')}<blockquote>"${data.review_quote}"</blockquote><cite style="font-size:13px;opacity:.4;font-style:normal">— ${data.review_source || 'Customer Review'}</cite></section>` : ''}
+<div class="bhr" id="hrs"><div class="bhrl"><h2 style="font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:36px">Hours & Location</h2>${hours.map(h => `<div class="bhrd"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}<div style="margin-top:32px;font-size:15px;line-height:1.8;opacity:.5"><strong style="opacity:1">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>${data.phone}` : ''}</div></div><div class="bhrr">${img(ph[4] || ph[0], 'Location')}</div></div>
+<div style="background:${p.accent};padding:48px 60px;text-align:center"><h3 style="font-size:22px;font-weight:700;color:${p.primary};margin-bottom:10px">Like what you see?</h3><p style="font-size:14px;color:${p.primary};opacity:.7;margin-bottom:20px">This mockup was built for you by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.primary};color:#fff;padding:14px 36px;border-radius:4px;text-decoration:none;font-weight:700;font-size:13px">Get In Touch →</a></div>
+<footer style="padding:32px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;background:#0a0a0a;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:18px;font-weight:700">${data.name}</span><span style="font-size:12px;opacity:.2">© 2026 ${data.name}</span><span style="font-size:11px;opacity:.15;padding:6px 12px;border:1px solid rgba(255,255,255,.08);border-radius:4px">Built by The Web Guys</span></footer></body></html>`;
 }
 
-// ═════════════════════════════════════════════
-// TEMPLATE: EDITORIAL — Centered, minimal, clean
-// ═════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// TEMPLATE: EDITORIAL — Typography-driven, single column
+// ═══════════════════════════════════════════════════════
 function templateEditorial(data, d) {
   const { p, ph, img, allItems, hours, firstName, navLabel, cta, rating, reviewCount, head } = d;
-  const stars = rating > 0 ? `${rating} ★ · ${reviewCount} reviews` : "";
+  const stars = rating > 0 ? `${rating} ★ · ${reviewCount} reviews` : '';
   return `${head}<style>
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:#FAFAF8;color:#1a1a1a;-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
-.en{position:fixed;top:0;width:100%;z-index:100;padding:16px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(250,250,248,0.95);backdrop-filter:blur(12px)}
-.enl{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase}
-.enk{display:flex;gap:28px;list-style:none;align-items:center}.enk a{text-decoration:none;color:#999;font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s}.enk a:hover{color:#1a1a1a}
-.enc{background:#1a1a1a!important;color:#fff!important;padding:8px 20px!important;border-radius:4px;font-size:11px!important;letter-spacing:1px!important}
-.eh{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:160px 40px 60px}
-.eh h1{font-family:'Playfair Display',serif;font-size:clamp(48px,7vw,96px);font-weight:700;line-height:1;letter-spacing:-3px;margin-bottom:24px}
-.eh h1 em{font-style:italic;font-weight:400;color:${p.accent}}
-.ehp{font-size:17px;line-height:1.7;color:#666;max-width:480px;margin:0 auto 32px}
-.ehi{width:100%;max-width:1000px;aspect-ratio:21/9;border-radius:4px;overflow:hidden;margin:48px auto 0}
-.ed{height:1px;background:#e8e8e4;margin:0 60px}
-.ea{max-width:800px;margin:0 auto;padding:100px 40px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.eai{aspect-ratio:3/4;border-radius:4px;overflow:hidden}
-.eat{font-size:15px;line-height:1.9;color:#555}.eat h2{font-family:'Playfair Display',serif;font-size:32px;color:#1a1a1a;margin-bottom:20px;font-weight:700}
-.eg{max-width:900px;margin:0 auto;padding:80px 40px}.eg h2{font-family:'Playfair Display',serif;font-size:36px;text-align:center;margin-bottom:48px}
-.ei{display:grid;grid-template-columns:80px 1fr auto;gap:24px;align-items:center;padding:28px 0;border-bottom:1px solid #e8e8e4}
-.eix{font-family:'Playfair Display',serif;font-size:32px;color:#ddd;font-weight:700}
-.eif h3{font-size:16px;font-weight:600;margin-bottom:4px}.eif p{font-size:13px;color:#888;line-height:1.5}
-.etg{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:${p.accent};padding:4px 12px;border:1px solid ${p.accent};border-radius:3px}
-.ep{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.ep div{aspect-ratio:1;overflow:hidden}.ep img{transition:transform .5s}.ep div:hover img{transform:scale(1.06)}
-.ehs{max-width:600px;margin:0 auto;padding:80px 40px;text-align:center}.ehs h2{font-family:'Playfair Display',serif;font-size:32px;margin-bottom:36px}
-.ehr{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #e8e8e4}.ehr span:first-child{font-weight:500;font-size:14px}.ehr span:last-child{font-size:14px;color:#888}
-@media(max-width:900px){.enk{display:none}.eh h1{font-size:40px}.ea{grid-template-columns:1fr;padding:60px 24px}.eg{padding:60px 24px}.ep{grid-template-columns:repeat(2,1fr)}.ei{grid-template-columns:40px 1fr;gap:16px}.etg{display:none}.ehs{padding:60px 24px}}
+.en{position:fixed;top:0;width:100%;z-index:100;padding:14px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(250,250,248,0.95);backdrop-filter:blur(12px);border-bottom:1px solid #eee}
+.enl{font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase}
+.enk{display:flex;gap:24px;list-style:none;align-items:center}.enk a{text-decoration:none;color:#aaa;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;transition:color .2s}.enk a:hover{color:#1a1a1a}
+.enc{background:#1a1a1a!important;color:#fff!important;padding:7px 18px!important;border-radius:3px;font-size:10px!important;letter-spacing:1.5px!important}
+.eh{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:180px 40px 80px;border-bottom:1px solid #e8e8e4}
+.ehl{width:60px;height:1px;background:#1a1a1a;margin:0 auto 40px}
+.eh h1{font-family:'Playfair Display',serif;font-size:clamp(56px,9vw,120px);font-weight:700;line-height:.9;letter-spacing:-5px;margin-bottom:28px}
+.eh h1 em{font-style:italic;font-weight:400;display:block;color:${p.accent}}
+.ehsub{font-size:16px;line-height:1.7;color:#888;max-width:420px;margin:0 auto 40px}
+.ehbtn{display:inline-block;border:1.5px solid #1a1a1a;color:#1a1a1a;padding:14px 44px;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:all .2s}.ehbtn:hover{background:#1a1a1a;color:#fff}
+.efull{width:100%;aspect-ratio:2.5/1;overflow:hidden}
+.eab{max-width:560px;margin:0 auto;padding:100px 40px;text-align:center}
+.eab h2{font-family:'Playfair Display',serif;font-size:14px;font-weight:400;letter-spacing:4px;text-transform:uppercase;color:#aaa;margin-bottom:32px}
+.eab p{font-size:17px;line-height:2;color:#555}
+.eab .tags{margin-top:28px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eab .tags span{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;padding:4px 12px;border:1px solid #ddd;border-radius:2px}
+.edv{height:1px;background:#e8e8e4;max-width:100px;margin:0 auto}
+.esg{max-width:800px;margin:0 auto;padding:80px 40px}
+.esg h2{font-family:'Playfair Display',serif;font-size:48px;text-align:center;margin-bottom:12px;letter-spacing:-2px}
+.esg>p{text-align:center;color:#aaa;font-size:13px;margin-bottom:56px}
+.esr{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.esi{padding:32px 28px;border-bottom:1px solid #e8e8e4}
+.esi:nth-child(odd){border-right:1px solid #e8e8e4}
+.esn{font-size:11px;color:${p.accent};font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.esi h3{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;font-weight:700}
+.esi p{font-size:13px;line-height:1.6;color:#888}
+.egal{display:grid;grid-template-columns:2fr 1fr;gap:4px;margin-top:4px}
+.egal>div{overflow:hidden}.egal>div:first-child{grid-row:span 2}
+.egal>div img{transition:transform .6s}.egal>div:hover img{transform:scale(1.04)}
+.eqt{text-align:center;padding:80px 40px;max-width:600px;margin:0 auto}
+.eqt blockquote{font-family:'Playfair Display',serif;font-size:24px;font-style:italic;line-height:1.6;margin-bottom:16px;letter-spacing:-.5px}
+.eqt cite{font-size:11px;color:#aaa;font-style:normal;letter-spacing:2px;text-transform:uppercase}
+.ehs{max-width:480px;margin:0 auto;padding:80px 40px}
+.ehs h2{font-family:'Playfair Display',serif;font-size:14px;font-weight:400;letter-spacing:4px;text-transform:uppercase;color:#aaa;text-align:center;margin-bottom:32px}
+.ehr{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #eee;font-size:14px}.ehr span:last-child{color:#aaa}
+.eadr{text-align:center;margin-top:32px;font-size:14px;line-height:1.9;color:#888}
+@media(max-width:900px){.enk{display:none}.eh h1{font-size:52px;letter-spacing:-3px}.efull{aspect-ratio:16/9}.esr{grid-template-columns:1fr}.esi{border-right:none!important}.egal{grid-template-columns:1fr;gap:4px}.egal>div:first-child{grid-row:auto}.esg{padding:60px 24px}.eab{padding:60px 24px}.ehs{padding:60px 24px}}
 </style></head><body>
-<nav class="en"><div class="enl">${data.name}</div><ul class="enk"><li><a href="#menu">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#hours">Hours</a></li><li><a href="#" class="enc">${cta}</a></li></ul></nav>
-<section class="eh"><div style="width:40px;height:2px;background:${p.accent};margin:0 auto 24px"></div>${stars ? `<p style="font-size:13px;color:#999;letter-spacing:1px;margin-bottom:16px">${stars}</p>` : ""}<h1>${data.tagline.replace(/(\w+)[.!]?$/, '<em>$1</em>')}</h1><p class="ehp">${data.subtitle}</p><a href="#menu" style="display:inline-block;background:#1a1a1a;color:#fff;padding:14px 40px;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border-radius:4px">${cta}</a><div class="ehi">${img(ph[0], data.name)}</div></section>
-<div class="ed"></div>
-<section class="ea" id="about"><div class="eai">${img(ph[5] || ph[0], data.name)}</div><div class="eat"><h2>Our Story</h2><p>${data.about_paragraph}</p><p style="margin-top:12px">${data.about_paragraph2}</p><div style="margin-top:20px">${(data.vibe_tags || []).map(t => `<span style="display:inline-block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#999;padding:4px 10px;border:1px solid #ddd;border-radius:3px;margin:0 6px 6px 0">${t}</span>`).join("")}</div></div></section>
-<div class="ep">${[1,2,3,4].map(i => `<div>${img(ph[i] || ph[0], "Photo " + i)}</div>`).join("")}</div>
-<section class="eg" id="menu"><h2>${data.items_label || "What We're Known For"}</h2><div>${allItems.map((item, i) => `<div class="ei"><div class="eix">${String(i+1).padStart(2,"0")}</div><div class="eif"><h3>${item.emoji||""} ${item.name}</h3><p>${item.description}</p></div>${item.tag ? `<span class="etg">${item.tag}</span>` : ""}</div>`).join("")}</div></section>
-${data.review_quote ? `<div class="ed"></div><div style="text-align:center;padding:80px 40px;max-width:700px;margin:0 auto"><blockquote style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;line-height:1.6;margin-bottom:16px">"${data.review_quote}"</blockquote><cite style="font-size:12px;color:#999;font-style:normal;letter-spacing:1px;text-transform:uppercase">— ${data.review_source || "Customer Review"}</cite></div>` : ""}
-<div class="ed"></div>
-<section class="ehs" id="hours"><h2>Visit Us</h2>${hours.map(h => `<div class="ehr"><span>${h.days}</span><span>${h.time}</span></div>`).join("")}<div style="margin-top:32px;font-size:14px;line-height:1.8;color:#666"><strong>${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br><br>${data.phone}` : ""}</div></section>
-<div style="background:#1a1a1a;padding:48px 60px;text-align:center"><h3 style="font-family:'Playfair Display',serif;font-size:24px;color:#fff;margin-bottom:12px">Like what you see?</h3><p style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:24px">This mockup was built for you by The Web Guys. Let's make it real.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.accent};color:${p.primary};padding:14px 36px;border-radius:4px;text-decoration:none;font-weight:600;font-size:14px">Get In Touch →</a></div>
-<footer style="padding:32px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px"><span style="font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:600">${data.name}</span><span style="font-size:12px;color:#bbb">© 2026 · ${data.city}</span><span style="font-size:11px;color:#ccc;padding:4px 12px;border:1px solid #e8e8e4;border-radius:3px">Built by The Web Guys</span></footer></body></html>`;
+<nav class="en"><div class="enl">${data.name}</div><ul class="enk"><li><a href="#srv">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#hrs">Hours</a></li><li><a href="#" class="enc">${cta}</a></li></ul></nav>
+<section class="eh"><div class="ehl"></div>${stars ? `<p style="font-size:12px;color:#aaa;letter-spacing:2px;margin-bottom:20px">${stars}</p>` : ''}<h1>${firstName}'s<em>${data.tagline.split(/\s+/).slice(-2).join(' ')}</em></h1><p class="ehsub">${data.subtitle}</p><a href="#srv" class="ehbtn">${cta}</a></section>
+<div class="efull">${img(ph[0], data.name)}</div>
+<div id="about"><section class="eab"><h2>Our Story</h2><p>${data.about_paragraph}</p><p style="margin-top:16px">${data.about_paragraph2}</p><div class="tags">${(data.vibe_tags || []).map(t => `<span>${t}</span>`).join('')}</div></section></div>
+<div class="edv"></div>
+<section class="esg" id="srv"><h2>${data.items_label || "What We Offer"}</h2><p>What keeps people coming back.</p><div class="esr">${allItems.map((item, i) => `<div class="esi"><div class="esn">${item.tag || ('0' + (i+1)).slice(-2)}</div><h3>${item.emoji||''} ${item.name}</h3><p>${item.description}</p></div>`).join('')}</div></section>
+<div class="egal"><div style="min-height:400px">${img(ph[1] || ph[0], 'Gallery 1')}</div><div style="min-height:198px">${img(ph[2] || ph[0], 'Gallery 2')}</div><div style="min-height:198px">${img(ph[3] || ph[0], 'Gallery 3')}</div></div>
+${data.review_quote ? `<div class="edv" style="margin-top:0"></div><section class="eqt"><blockquote>"${data.review_quote}"</blockquote><cite>— ${data.review_source || 'Customer Review'}</cite></section><div class="edv"></div>` : '<div class="edv"></div>'}
+<section class="ehs" id="hrs"><h2>Visit Us</h2>${hours.map(h => `<div class="ehr"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}<div class="eadr"><strong style="color:#1a1a1a">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>${data.phone}` : ''}</div></section>
+<div style="background:#1a1a1a;padding:44px 60px;text-align:center"><h3 style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:8px">Like what you see?</h3><p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:18px">This mockup was built for you by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;border:1px solid rgba(255,255,255,.3);color:#fff;padding:12px 32px;border-radius:3px;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s">Get In Touch</a></div>
+<footer style="padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-top:1px solid #eee"><span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">${data.name}</span><span style="font-size:11px;color:#ccc">© 2026</span><span style="font-size:10px;color:#ddd">Built by The Web Guys</span></footer></body></html>`;
 }
 
 // ── Styles ──
