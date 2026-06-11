@@ -473,6 +473,7 @@ export default function MockupAdmin() {
   const [step, setStep] = useState("");
   const [mockupHTML, setMockupHTML] = useState("");
   const [businessData, setBusinessData] = useState(null);
+  const [cachedPhotos, setCachedPhotos] = useState([]);
   const [photoSource, setPhotoSource] = useState(""); // "google" or "stock"
   const [error, setError] = useState("");
 
@@ -621,6 +622,7 @@ export default function MockupAdmin() {
       }
 
       // Step 4: Generate HTML
+      setCachedPhotos(finalPhotos);
       const html = buildMockupHTML(biz, finalPhotos, template);
       setMockupHTML(html);
 
@@ -810,22 +812,54 @@ export default function MockupAdmin() {
           ) : (
             /* Preview */
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 16 }}>
                 <div>
                   <h2 style={{ fontSize: 22, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{businessData?.name || name}</h2>
                   <p style={{ fontSize: 14, color: "#666" }}>
                     {businessData?.category} · {businessData?.palette} palette · {photoSource === "google" ? "📸 Google Places photos" : photoSource === "mixed" ? "📸 Mixed photos" : "🖼 Stock photos"}
                   </p>
                 </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); }} style={S.actionBtn(false)}>← New</button>
-                  <button onClick={generate} disabled={loading} style={S.actionBtn(false)}>🔄 Regenerate</button>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <button onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setCachedPhotos([]); }} style={S.actionBtn(false)}>← New</button>
+                  <button onClick={generate} disabled={loading} style={S.actionBtn(false)}>🔄 Re-research</button>
                   <button onClick={copyHTML} style={S.actionBtn(false)}>Copy HTML</button>
                   <button onClick={downloadHTML} style={S.actionBtn(false)}>Download</button>
                   <button onClick={publishMockup} disabled={publishing} style={{ ...S.actionBtn(true), opacity: publishing ? 0.6 : 1 }}>
                     {publishing ? "Publishing..." : "Publish Live →"}
                   </button>
                 </div>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 20, flexWrap: "wrap" }}>
+                {[
+                  { id: "classic", label: "Classic" },
+                  { id: "bold", label: "Bold" },
+                  { id: "editorial", label: "Editorial" },
+                ].map(t => (
+                  <button key={t.id} onClick={() => {
+                    setTemplate(t.id);
+                    if (businessData && cachedPhotos.length) {
+                      setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t.id));
+                    }
+                  }} style={{ padding: "8px 18px", background: template === t.id ? "#1A2A1A" : "#141414", border: template === t.id ? "2px solid #3EA843" : "1px solid #2A2A2A", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: template === t.id ? 600 : 400, color: template === t.id ? "#3EA843" : "#888", fontFamily: "inherit" }}>
+                    {t.label}
+                  </button>
+                ))}
+                <select value={businessData?.palette || "warm"} onChange={(e) => {
+                  const newPalette = e.target.value;
+                  const updated = { ...businessData, palette: newPalette };
+                  setBusinessData(updated);
+                  if (cachedPhotos.length) {
+                    setMockupHTML(buildMockupHTML(updated, cachedPhotos, template));
+                  }
+                }} style={{ padding: "8px 14px", background: "#141414", border: "1px solid #2A2A2A", borderRadius: 8, color: "#999", fontSize: 13, fontFamily: "inherit", cursor: "pointer", appearance: "none", paddingRight: 28, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23666' d='M5 7L1 3h8z'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
+                  <option value="warm">🎨 Warm</option>
+                  <option value="cool">🎨 Cool</option>
+                  <option value="earthy">🎨 Earthy</option>
+                  <option value="modern">🎨 Modern</option>
+                  <option value="elegant">🎨 Elegant</option>
+                  <option value="fresh">🎨 Fresh</option>
+                </select>
               </div>
 
               {publishedUrl && (
