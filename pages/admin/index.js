@@ -564,10 +564,14 @@ export default function MockupAdmin() {
       setName(biz.name || m.business_name);
       setAddress(biz.address_line1 ? `${biz.address_line1}, ${biz.city}, ${biz.province_state}` : "");
       if (biz.category) setCategory(biz.category);
-      setPhotoSource(photos.some(u => u.includes("googleapis")) ? "google" : "stock");
+      setPhotoSource(photos.some(u => u && u.includes("googleapis")) ? "google" : "stock");
       setPublishedUrl(`${window.location.origin}/mockups/${slug}`);
-      const html = buildMockupHTML(biz, photos, template);
-      setMockupHTML(html);
+      // If photos were saved, rebuild with current template; otherwise show stored HTML as-is
+      if (photos.length > 0) {
+        setMockupHTML(buildMockupHTML(biz, photos, template));
+      } else {
+        setMockupHTML(m.html || "");
+      }
       setLoading(false);
     } catch (err) {
       setError(err.message || "Failed to load mockup");
@@ -879,7 +883,8 @@ export default function MockupAdmin() {
                 </div>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   <button onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setCachedPhotos([]); }} style={S.actionBtn(false)}>← New</button>
-                  <button onClick={generate} disabled={loading} style={S.actionBtn(false)}>🔄 Re-research</button>
+                  <button onClick={() => { setModel("standard"); setTimeout(generate, 0); }} disabled={loading} style={S.actionBtn(false)}>🔄 Re-research</button>
+                  <button onClick={() => { setModel("premium"); setTimeout(generate, 0); }} disabled={loading} style={{ ...S.actionBtn(false), borderColor: "#2A2A4A", color: "#6B8AFF" }}>⚡ Premium</button>
                   <button onClick={copyHTML} style={S.actionBtn(false)}>Copy HTML</button>
                   <button onClick={downloadHTML} style={S.actionBtn(false)}>Download</button>
                   <button onClick={publishMockup} disabled={publishing} style={{ ...S.actionBtn(true), opacity: publishing ? 0.6 : 1 }}>

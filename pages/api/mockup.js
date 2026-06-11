@@ -168,6 +168,13 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
     }),
   });
 
+  if (response.status === 529) throw new Error('Claude API is overloaded — try again in a minute, or switch to Standard model');
+  if (response.status === 429) throw new Error('Rate limited — wait a moment and try again');
+  if (!response.ok && response.status !== 200) {
+    const errBody = await response.text().catch(() => '');
+    throw new Error(`API error ${response.status}: ${errBody.slice(0, 200) || 'Unknown error'}`);
+  }
+
   const data = await response.json();
   if (data.error) throw new Error(errStr(data.error));
 
