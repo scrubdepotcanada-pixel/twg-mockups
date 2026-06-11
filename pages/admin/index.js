@@ -267,7 +267,16 @@ function buildMockupHTML(data, photoUrls, template) {
   const reviewCount = data.review_count || "";
   const hoursHTML = hours.map(h => `<div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.06)"><span style="font-weight:500;font-size:15px">${h.days}</span><span style="font-size:15px;opacity:.7">${h.time}</span></div>`).join("");
   const head = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${data.name} — ${data.address_line1}, ${data.city}</title><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">`;
-  const d = { p, ph, fb, img, sigItems, allItems, hours, deliveryText, igHandle, igUrl, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML };
+  const interactiveJS = `<script>
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+// Fade-in on scroll
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('section,div[class]>div').forEach(el=>{if(el.closest('nav')||el.closest('footer'))return;el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity .7s ease,transform .7s ease';obs.observe(el)});
+// Navbar shrink on scroll
+const nav=document.querySelector('nav');if(nav){let last=0;window.addEventListener('scroll',()=>{const y=window.scrollY;nav.style.padding=y>80?'12px 48px':'';nav.style.transition='padding .3s ease';last=y},{ passive:true })}
+</script>`;
+  const d = { p, ph, fb, img, sigItems, allItems, hours, deliveryText, igHandle, igUrl, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML, interactiveJS };
   if (template === "bold") return templateBold(data, d);
   if (template === "editorial") return templateEditorial(data, d);
   return templateClassic(data, d);
@@ -322,7 +331,7 @@ nav{position:fixed;top:0;width:100%;z-index:100;padding:18px 48px;display:flex;j
 ${data.review_quote ? `<div style="padding:60px;text-align:center"><blockquote style="font-family:'Playfair Display',serif;font-size:24px;font-style:italic;max-width:700px;margin:0 auto 16px;line-height:1.5">"${data.review_quote}"</blockquote><cite style="font-size:13px;color:${p.sage};font-style:normal">— ${data.review_source || "Customer Review"}</cite></div>` : ""}
 <section style="padding:100px 60px;display:grid;grid-template-columns:1fr 1fr;gap:80px;max-width:1200px;margin:0 auto" id="hours"><div><h2 style="font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;margin-bottom:32px">Find Us</h2><div style="display:grid;gap:12px;margin-bottom:40px">${hoursHTML}</div><div style="font-size:15px;line-height:1.6;color:${p.text}"><strong>${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br><br><strong>Phone:</strong> ${data.phone}` : ""}</div></div><div style="border-radius:16px;overflow:hidden;min-height:400px">${img(ph[4] || ph[0], "Location")}</div></section>
 <div style="background:${p.accent};padding:48px 60px;text-align:center"><h3 style="font-family:'DM Serif Display',serif;font-size:28px;color:${p.primary};margin-bottom:12px">Like what you see?</h3><p style="font-size:15px;color:${p.primary};opacity:.8;margin-bottom:24px">This mockup was built for you by The Web Guys. Let's make it real.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.primary};color:${p.bg};padding:14px 36px;border-radius:28px;text-decoration:none;font-weight:600;font-size:14px">Get In Touch →</a></div>
-<footer style="padding:40px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(0,0,0,.08);flex-wrap:wrap;gap:20px"><div style="font-family:'DM Serif Display',serif;font-size:20px">${firstName}<span style="color:${p.accent}">'s</span></div><span style="font-size:13px;color:${p.text};opacity:.5">© 2026 ${data.name} · ${data.address_line1}, ${data.city}</span><span style="font-size:12px;color:${p.text};opacity:.4;padding:6px 14px;border:1px solid rgba(0,0,0,.1);border-radius:16px">Built by The Web Guys · thewebguys.ca</span></footer></body></html>`;
+<footer style="padding:40px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(0,0,0,.08);flex-wrap:wrap;gap:20px"><div style="font-family:'DM Serif Display',serif;font-size:20px">${firstName}<span style="color:${p.accent}">'s</span></div><span style="font-size:13px;color:${p.text};opacity:.5">© 2026 ${data.name} · ${data.address_line1}, ${data.city}</span><span style="font-size:12px;color:${p.text};opacity:.4;padding:6px 14px;border:1px solid rgba(0,0,0,.1);border-radius:16px">Built by The Web Guys · thewebguys.ca</span></footer>${interactiveJS}</body></html>`;
 }
 
 
@@ -378,7 +387,7 @@ function templateBold(data, d) {
 ${data.review_quote ? `<section class="bqt">${img(ph[5] || ph[0], 'Ambiance')}<blockquote>"${data.review_quote}"</blockquote><cite style="font-size:13px;opacity:.4;font-style:normal">— ${data.review_source || 'Customer Review'}</cite></section>` : ''}
 <div class="bhr" id="hrs"><div class="bhrl"><h2 style="font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:36px">Hours & Location</h2>${hours.map(h => `<div class="bhrd"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}<div style="margin-top:32px;font-size:15px;line-height:1.8;opacity:.5"><strong style="opacity:1">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>${data.phone}` : ''}</div></div><div class="bhrr">${img(ph[4] || ph[0], 'Location')}</div></div>
 <div style="background:${p.accent};padding:48px 60px;text-align:center"><h3 style="font-size:22px;font-weight:700;color:${p.primary};margin-bottom:10px">Like what you see?</h3><p style="font-size:14px;color:${p.primary};opacity:.7;margin-bottom:20px">This mockup was built for you by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.primary};color:#fff;padding:14px 36px;border-radius:4px;text-decoration:none;font-weight:700;font-size:13px">Get In Touch →</a></div>
-<footer style="padding:32px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;background:#0a0a0a;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:18px;font-weight:700">${data.name}</span><span style="font-size:12px;opacity:.2">© 2026 ${data.name}</span><span style="font-size:11px;opacity:.15;padding:6px 12px;border:1px solid rgba(255,255,255,.08);border-radius:4px">Built by The Web Guys</span></footer></body></html>`;
+<footer style="padding:32px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;background:#0a0a0a;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:18px;font-weight:700">${data.name}</span><span style="font-size:12px;opacity:.2">© 2026 ${data.name}</span><span style="font-size:11px;opacity:.15;padding:6px 12px;border:1px solid rgba(255,255,255,.08);border-radius:4px">Built by The Web Guys</span></footer>${interactiveJS}</body></html>`;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -437,7 +446,7 @@ function templateEditorial(data, d) {
 ${data.review_quote ? `<div class="edv" style="margin-top:0"></div><section class="eqt"><blockquote>"${data.review_quote}"</blockquote><cite>— ${data.review_source || 'Customer Review'}</cite></section><div class="edv"></div>` : '<div class="edv"></div>'}
 <section class="ehs" id="hrs"><h2>Visit Us</h2>${hours.map(h => `<div class="ehr"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}<div class="eadr"><strong style="color:#1a1a1a">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>${data.phone}` : ''}</div></section>
 <div style="background:#1a1a1a;padding:44px 60px;text-align:center"><h3 style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:8px">Like what you see?</h3><p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:18px">This mockup was built for you by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;border:1px solid rgba(255,255,255,.3);color:#fff;padding:12px 32px;border-radius:3px;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s">Get In Touch</a></div>
-<footer style="padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-top:1px solid #eee"><span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">${data.name}</span><span style="font-size:11px;color:#ccc">© 2026</span><span style="font-size:10px;color:#ddd">Built by The Web Guys</span></footer></body></html>`;
+<footer style="padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-top:1px solid #eee"><span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">${data.name}</span><span style="font-size:11px;color:#ccc">© 2026</span><span style="font-size:10px;color:#ddd">Built by The Web Guys</span></footer>${interactiveJS}</body></html>`;
 }
 
 // ── Styles ──
@@ -466,6 +475,7 @@ export default function MockupAdmin() {
   const [address, setAddress] = useState("");
   const [category, setCategory] = useState("");
   const [template, setTemplate] = useState("classic");
+  const [model, setModel] = useState("standard");
   const [notes, setNotes] = useState("");
 
   // State
@@ -590,7 +600,7 @@ export default function MockupAdmin() {
       const researchRes = await fetch("/api/mockup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "research", pin: storedPin, name, address, notes, category }),
+        body: JSON.stringify({ action: "research", pin: storedPin, name, address, notes, category, model }),
       });
       const researchData = await researchRes.json();
       if (!researchData.success) throw new Error(typeof researchData.error === "string" ? researchData.error : JSON.stringify(researchData.error) || "Research failed");
@@ -750,6 +760,21 @@ export default function MockupAdmin() {
                           style={{ flex: 1, padding: "12px 8px", background: template === t.id ? "#1A2A1A" : "#141414", border: template === t.id ? "2px solid #3EA843" : "1px solid #2A2A2A", borderRadius: 10, cursor: "pointer", textAlign: "center" }}>
                           <div style={{ fontSize: 13, fontWeight: 600, color: template === t.id ? "#3EA843" : "#ccc" }}>{t.label}</div>
                           <div style={{ fontSize: 11, color: "#555", marginTop: 2 }}>{t.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label style={S.label}>AI Model</label>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      {[
+                        { id: "standard", label: "Standard", desc: "Sonnet 4 · Fast", price: "" },
+                        { id: "premium", label: "Premium", desc: "Fable 5 · Best quality", price: "⚡" },
+                      ].map(m => (
+                        <button key={m.id} onClick={() => setModel(m.id)}
+                          style={{ flex: 1, padding: "12px 8px", background: model === m.id ? "#1A1A2A" : "#141414", border: model === m.id ? "2px solid #6B8AFF" : "1px solid #2A2A2A", borderRadius: 10, cursor: "pointer", textAlign: "center" }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: model === m.id ? "#6B8AFF" : "#ccc" }}>{m.price} {m.label}</div>
+                          <div style={{ fontSize: 11, color: "#555", marginTop: 2 }}>{m.desc}</div>
                         </button>
                       ))}
                     </div>
