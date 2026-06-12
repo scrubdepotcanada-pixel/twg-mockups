@@ -1018,24 +1018,23 @@ export default function MockupAdmin() {
                   </div>
 
                   <div>
-                    <label style={S.label}>Template & Model</label>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                      <div style={{ display: "flex", gap: 6 }}>
-                        {(model === "premium" ? ["showcase", "cinematic", "magazine"] : ["classic", "bold", "editorial"]).map(t => (
-                          <button key={t} onClick={() => setTemplate(t)}
+                    <label style={S.label}>Template</label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, color: "#444", width: 60, flexShrink: 0 }}>FREE</span>
+                        {["classic", "bold", "editorial"].map(t => (
+                          <button key={t} onClick={() => { setTemplate(t); setModel("standard"); }}
                             style={{ flex: 1, padding: "10px 4px", background: template === t ? "#1A2A1A" : "#141414", border: template === t ? "2px solid #3EA843" : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: template === t ? 600 : 400, color: template === t ? "#3EA843" : "#777", fontFamily: "inherit", textTransform: "capitalize" }}>
                             {t}
                           </button>
                         ))}
                       </div>
-                      <div style={{ display: "flex", gap: 6 }}>
-                        {[
-                          { id: "standard", label: "Standard", color: "#888" },
-                          { id: "premium", label: "⚡ Premium", color: "#6B8AFF" },
-                        ].map(m => (
-                          <button key={m.id} onClick={() => { setModel(m.id); setTemplate(m.id === "premium" ? "showcase" : "classic"); }}
-                            style={{ flex: 1, padding: "10px 4px", background: model === m.id ? (m.id === "premium" ? "#1A1A2A" : "#1A1A1A") : "#141414", border: model === m.id ? `2px solid ${m.color}` : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: model === m.id ? 600 : 400, color: model === m.id ? m.color : "#777", fontFamily: "inherit" }}>
-                            {m.label}
+                      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, color: "#6B8AFF", width: 60, flexShrink: 0 }}>⚡ PRO</span>
+                        {["showcase", "cinematic", "magazine"].map(t => (
+                          <button key={t} onClick={() => { setTemplate(t); setModel("premium"); }}
+                            style={{ flex: 1, padding: "10px 4px", background: template === t ? "#1A1A2A" : "#141414", border: template === t ? "2px solid #6B8AFF" : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: template === t ? 600 : 400, color: template === t ? "#6B8AFF" : "#777", fontFamily: "inherit", textTransform: "capitalize" }}>
+                            {t}
                           </button>
                         ))}
                       </div>
@@ -1082,32 +1081,43 @@ export default function MockupAdmin() {
                   </div>
                 </div>
 
-                {/* Controls row */}
-                <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}>
-                  {(model === "premium" ? ["showcase", "cinematic", "magazine"] : ["classic", "bold", "editorial"]).map(t => (
-                    <button key={t} onClick={() => {
-                      setTemplate(t);
-                      if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t));
-                    }} style={{ padding: "6px 16px", background: template === t ? "#1A2A1A" : "transparent", border: template === t ? "1.5px solid #3EA843" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: template === t ? 600 : 400, color: template === t ? "#3EA843" : "#666", fontFamily: "inherit", textTransform: "capitalize" }}>
-                      {t}
+                {/* Template & style controls */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#444", marginRight: 4 }}>Standard</span>
+                    {["classic", "bold", "editorial"].map(t => (
+                      <button key={t} onClick={() => {
+                        setTemplate(t); setModel("standard");
+                        if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t));
+                      }} style={{ padding: "5px 14px", background: template === t ? "#1A2A1A" : "transparent", border: template === t ? "1.5px solid #3EA843" : "1px solid #222", borderRadius: 5, cursor: "pointer", fontSize: 11, fontWeight: template === t ? 600 : 400, color: template === t ? "#3EA843" : "#555", fontFamily: "inherit", textTransform: "capitalize" }}>
+                        {t}
+                      </button>
+                    ))}
+                    <div style={{ borderLeft: "1px solid #1A1A1A", height: 20, margin: "0 6px" }} />
+                    <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#6B8AFF", marginRight: 4 }}>⚡ Premium</span>
+                    {["showcase", "cinematic", "magazine"].map(t => (
+                      <button key={t} onClick={() => {
+                        setTemplate(t); setModel("premium");
+                        if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t));
+                      }} style={{ padding: "5px 14px", background: template === t ? "#1A1A2A" : "transparent", border: template === t ? "1.5px solid #6B8AFF" : "1px solid #222", borderRadius: 5, cursor: "pointer", fontSize: 11, fontWeight: template === t ? 600 : 400, color: template === t ? "#6B8AFF" : "#555", fontFamily: "inherit", textTransform: "capitalize" }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                    <select value={businessData?.palette || "warm"} onChange={(e) => {
+                      const updated = { ...businessData, palette: e.target.value };
+                      setBusinessData(updated);
+                      if (cachedPhotos.length) setMockupHTML(buildMockupHTML(updated, cachedPhotos, template));
+                    }} style={{ padding: "5px 10px", background: "#141414", border: "1px solid #222", borderRadius: 5, color: "#888", fontSize: 11, fontFamily: "inherit", cursor: "pointer" }}>
+                      {["warm","cool","earthy","modern","elegant","fresh"].map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                    <div style={{ borderLeft: "1px solid #1A1A1A", height: 20, margin: "0 4px" }} />
+                    <button onClick={() => { setTimeout(generate, 0); }} disabled={loading}
+                      style={{ padding: "5px 12px", background: "transparent", border: "1px solid #222", borderRadius: 5, cursor: "pointer", fontSize: 11, color: "#888", fontFamily: "inherit" }}>
+                      🔄 Re-research {model === "premium" ? "(Fable 5)" : "(Sonnet)"}
                     </button>
-                  ))}
-                  <select value={businessData?.palette || "warm"} onChange={(e) => {
-                    const updated = { ...businessData, palette: e.target.value };
-                    setBusinessData(updated);
-                    if (cachedPhotos.length) setMockupHTML(buildMockupHTML(updated, cachedPhotos, template));
-                  }} style={{ padding: "6px 12px", background: "#141414", border: "1px solid #222", borderRadius: 6, color: "#888", fontSize: 12, fontFamily: "inherit", cursor: "pointer" }}>
-                    {["warm","cool","earthy","modern","elegant","fresh"].map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                  <div style={{ borderLeft: "1px solid #222", height: 24, margin: "0 4px" }} />
-                  <button onClick={() => { setModel("standard"); setTemplate("classic"); setTimeout(generate, 0); }} disabled={loading}
-                    style={{ padding: "6px 14px", background: "transparent", border: "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, color: "#888", fontFamily: "inherit" }}>
-                    🔄 Re-research
-                  </button>
-                  <button onClick={() => { setModel("premium"); setTemplate("showcase"); setTimeout(generate, 0); }} disabled={loading}
-                    style={{ padding: "6px 14px", background: "#1A1A2A", border: "1.5px solid #6B8AFF", borderRadius: 6, cursor: "pointer", fontSize: 12, color: "#6B8AFF", fontWeight: 600, fontFamily: "inherit" }}>
-                    ⚡ Premium
-                  </button>
+                  </div>
                 </div>
 
                 {error && <p style={{ color: "#FF5252", fontSize: 13, marginBottom: 12 }}>{error}</p>}
