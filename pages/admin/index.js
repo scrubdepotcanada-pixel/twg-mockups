@@ -737,19 +737,67 @@ export default function MockupAdmin() {
           </div>
         </div>
 
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 32px" }}>
-          {!mockupHTML ? (
-            <div style={{ display: "grid", gridTemplateColumns: (history.length || published.length) ? "1fr 300px" : "1fr", gap: 48, maxWidth: (history.length || published.length) ? 900 : 560, margin: "0 auto" }}>
-              {/* Form */}
-              <div>
-                <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: -1, marginBottom: 8, color: "#fff" }}>
+
+        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 0, maxWidth: 1500, margin: "0 auto", minHeight: "calc(100vh - 60px)" }}>
+
+          {/* ═══ LEFT SIDEBAR — Always visible ═══ */}
+          <div style={{ borderRight: "1px solid #1A1A1A", padding: "28px 20px", overflowY: "auto", maxHeight: "calc(100vh - 60px)", position: "sticky", top: 60 }}>
+            <button onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setCachedPhotos([]); }}
+              style={{ width: "100%", padding: "12px 16px", background: "#3EA843", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginBottom: 28 }}>
+              + New Mockup
+            </button>
+
+            {published.length > 0 && (
+              <>
+                <h3 style={{ fontSize: 11, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", color: "#3EA843", marginBottom: 12 }}>Published</h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 28 }}>
+                  {published.map((m, i) => (
+                    <div key={i} style={{ padding: "10px 12px", background: "#0A1A0A", border: "1px solid #1A3A1A", borderRadius: 6, cursor: "pointer" }}
+                      onClick={() => loadMockup(m.slug)}>
+                      <div style={{ fontSize: 13, color: "#4CAF50", fontWeight: 500 }}>{m.business_name}</div>
+                      <div style={{ fontSize: 10, color: "#444", marginTop: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span>{new Date(m.created_at).toLocaleDateString()}</span>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <a href={`/mockups/${m.slug}`} target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()} style={{ color: "#3EA843", textDecoration: "none", fontSize: 10 }}>View ↗</a>
+                          <button onClick={(e) => { e.stopPropagation(); deleteMockup(m.slug); }} style={{ background: "none", border: "none", color: "#553333", fontSize: 10, cursor: "pointer", fontFamily: "inherit" }}>Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {history.length > 0 && (
+              <>
+                <h3 style={{ fontSize: 11, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", color: "#444", marginBottom: 12 }}>Recent</h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {history.map((h, i) => (
+                    <div key={i} style={{ padding: "10px 12px", background: "#111", border: "1px solid #1A1A1A", borderRadius: 6, cursor: "pointer" }}
+                      onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setName(h.name); setAddress(h.address || ""); setNotes(h.notes || ""); setCategory(h.category || ""); setTemplate(h.template || "classic"); }}>
+                      <div style={{ fontSize: 13, color: "#aaa", fontWeight: 500 }}>{h.name}</div>
+                      <div style={{ fontSize: 10, color: "#444", marginTop: 3 }}>{h.category} · {h.photoSource === "google" ? "📸" : "🖼"} · {new Date(h.date).toLocaleDateString()}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* ═══ RIGHT CONTENT — Form or Preview ═══ */}
+          <div style={{ padding: "28px 32px", overflowY: "auto" }}>
+
+            {!mockupHTML ? (
+              /* ─── FORM VIEW ─── */
+              <div style={{ maxWidth: 600, margin: "0 auto" }}>
+                <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: -1, marginBottom: 6, color: "#fff" }}>
                   Auto Mockup Generator
                 </h1>
-                <p style={{ fontSize: 15, color: "#666", marginBottom: 36, lineHeight: 1.6 }}>
+                <p style={{ fontSize: 14, color: "#555", marginBottom: 32, lineHeight: 1.6 }}>
                   Enter a business name + address. We'll pull their Google photos, research them with AI, and generate a branded homepage mockup.
                 </p>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
                   <div>
                     <label style={S.label}>Business Name</label>
                     <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Bobby's Breakfast Cafe & Bar" style={S.input} />
@@ -782,182 +830,139 @@ export default function MockupAdmin() {
                       <option value="photography">Photography / Creative</option>
                     </select>
                   </div>
+
                   <div>
-                    <label style={S.label}>Template Style</label>
-                    <div style={{ display: "flex", gap: 10 }}>
-                      {[
-                        { id: "classic", label: "Classic", desc: "Split hero, cards" },
-                        { id: "bold", label: "Bold", desc: "Full-bleed hero, dark" },
-                        { id: "editorial", label: "Editorial", desc: "Centered, minimal" },
-                      ].map(t => (
-                        <button key={t.id} onClick={() => setTemplate(t.id)}
-                          style={{ flex: 1, padding: "12px 8px", background: template === t.id ? "#1A2A1A" : "#141414", border: template === t.id ? "2px solid #3EA843" : "1px solid #2A2A2A", borderRadius: 10, cursor: "pointer", textAlign: "center" }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: template === t.id ? "#3EA843" : "#ccc" }}>{t.label}</div>
-                          <div style={{ fontSize: 11, color: "#555", marginTop: 2 }}>{t.desc}</div>
-                        </button>
-                      ))}
+                    <label style={S.label}>Template & Model</label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div style={{ display: "flex", gap: 6 }}>
+                        {["classic", "bold", "editorial"].map(t => (
+                          <button key={t} onClick={() => setTemplate(t)}
+                            style={{ flex: 1, padding: "10px 4px", background: template === t ? "#1A2A1A" : "#141414", border: template === t ? "2px solid #3EA843" : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: template === t ? 600 : 400, color: template === t ? "#3EA843" : "#777", fontFamily: "inherit", textTransform: "capitalize" }}>
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+                      <div style={{ display: "flex", gap: 6 }}>
+                        {[
+                          { id: "standard", label: "Standard", color: "#888" },
+                          { id: "premium", label: "⚡ Premium", color: "#6B8AFF" },
+                        ].map(m => (
+                          <button key={m.id} onClick={() => setModel(m.id)}
+                            style={{ flex: 1, padding: "10px 4px", background: model === m.id ? (m.id === "premium" ? "#1A1A2A" : "#1A1A1A") : "#141414", border: model === m.id ? `2px solid ${m.color}` : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: model === m.id ? 600 : 400, color: model === m.id ? m.color : "#777", fontFamily: "inherit" }}>
+                            {m.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
+
                   <div>
-                    <label style={S.label}>AI Model</label>
-                    <div style={{ display: "flex", gap: 10 }}>
-                      {[
-                        { id: "standard", label: "Standard", desc: "Sonnet 4 · Fast", price: "" },
-                        { id: "premium", label: "Premium", desc: "Fable 5 · Best quality", price: "⚡" },
-                      ].map(m => (
-                        <button key={m.id} onClick={() => setModel(m.id)}
-                          style={{ flex: 1, padding: "12px 8px", background: model === m.id ? "#1A1A2A" : "#141414", border: model === m.id ? "2px solid #6B8AFF" : "1px solid #2A2A2A", borderRadius: 10, cursor: "pointer", textAlign: "center" }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: model === m.id ? "#6B8AFF" : "#ccc" }}>{m.price} {m.label}</div>
-                          <div style={{ fontSize: 11, color: "#555", marginTop: 2 }}>{m.desc}</div>
-                        </button>
-                      ))}
-                    </div>
+                    <label style={S.label}>Notes <span style={{ color: "#444" }}>(optional)</span></label>
+                    <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Instagram handle, known services, etc." rows={2} style={S.textarea} />
                   </div>
-                  <div>
-                    <label style={S.label}>Notes <span style={{ color: "#444" }}>(optional — Instagram handle, known menu items, etc.)</span></label>
-                    <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. Instagram @bobbystoronto, known for The Lazy Apple" rows={3} style={S.textarea} />
-                  </div>
-                  <button onClick={generate} disabled={loading || !name.trim() || !address.trim()} style={S.btn(!loading && name.trim() && address.trim())}>
-                    {loading ? "Generating..." : "Generate Mockup →"}
+
+                  <button onClick={generate} disabled={loading}
+                    style={{ ...S.actionBtn(true), padding: "16px 32px", fontSize: 15, width: "100%", opacity: loading ? 0.6 : 1 }}>
+                    {loading ? step || "Generating..." : "Generate Mockup →"}
                   </button>
-                  {error && <div style={{ padding: "14px 18px", background: "#1A0A0A", border: "1px solid #3A1515", borderRadius: 10, color: "#FF6B6B", fontSize: 14 }}>{error}</div>}
+                  {error && <p style={{ color: "#FF5252", fontSize: 13 }}>{error}</p>}
+                  {loading && (
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ width: 28, height: 28, border: "3px solid #2A2A2A", borderTopColor: "#3EA843", borderRadius: "50%", animation: "spin 0.6s linear infinite", margin: "0 auto" }} />
+                      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+            ) : (
+              /* ─── PREVIEW VIEW ─── */
+              <div>
+                {/* Header row */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+                  <div>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{businessData?.name || name}</h2>
+                    <p style={{ fontSize: 12, color: "#555" }}>
+                      {businessData?.category} · {businessData?.palette} · {photoSource === "google" ? "📸 Google photos" : "🖼 Stock"}
+                      {model === "premium" ? " · ⚡ Premium" : ""}
+                    </p>
+                  </div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <button onClick={copyHTML} style={S.actionBtn(false)}>Copy HTML</button>
+                    <button onClick={downloadHTML} style={S.actionBtn(false)}>Download</button>
+                    <button onClick={publishMockup} disabled={publishing} style={{ ...S.actionBtn(true), opacity: publishing ? 0.6 : 1 }}>
+                      {publishing ? "Publishing..." : "Publish Live →"}
+                    </button>
+                  </div>
                 </div>
 
-                {loading && (
-                  <div style={{ marginTop: 48, textAlign: "center" }}>
-                    <div style={{ display: "inline-block", width: 44, height: 44, border: "3px solid #222", borderTopColor: "#3EA843", borderRadius: "50%", animation: "spin .8s linear infinite" }} />
-                    <p style={{ marginTop: 16, fontSize: 15, color: "#3EA843", fontWeight: 500 }}>{step}</p>
-                    <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+                {/* Controls row */}
+                <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}>
+                  {["classic", "bold", "editorial"].map(t => (
+                    <button key={t} onClick={() => {
+                      setTemplate(t);
+                      if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t));
+                    }} style={{ padding: "6px 16px", background: template === t ? "#1A2A1A" : "transparent", border: template === t ? "1.5px solid #3EA843" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: template === t ? 600 : 400, color: template === t ? "#3EA843" : "#666", fontFamily: "inherit", textTransform: "capitalize" }}>
+                      {t}
+                    </button>
+                  ))}
+                  <select value={businessData?.palette || "warm"} onChange={(e) => {
+                    const updated = { ...businessData, palette: e.target.value };
+                    setBusinessData(updated);
+                    if (cachedPhotos.length) setMockupHTML(buildMockupHTML(updated, cachedPhotos, template));
+                  }} style={{ padding: "6px 12px", background: "#141414", border: "1px solid #222", borderRadius: 6, color: "#888", fontSize: 12, fontFamily: "inherit", cursor: "pointer" }}>
+                    {["warm","cool","earthy","modern","elegant","fresh"].map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                  <div style={{ borderLeft: "1px solid #222", height: 24, margin: "0 4px" }} />
+                  <button onClick={() => { setModel("standard"); setTimeout(generate, 0); }} disabled={loading}
+                    style={{ padding: "6px 14px", background: "transparent", border: "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, color: "#888", fontFamily: "inherit" }}>
+                    🔄 Re-research
+                  </button>
+                  <button onClick={() => { setModel("premium"); setTimeout(generate, 0); }} disabled={loading}
+                    style={{ padding: "6px 14px", background: "#1A1A2A", border: "1.5px solid #6B8AFF", borderRadius: 6, cursor: "pointer", fontSize: 12, color: "#6B8AFF", fontWeight: 600, fontFamily: "inherit" }}>
+                    ⚡ Premium
+                  </button>
+                </div>
+
+                {error && <p style={{ color: "#FF5252", fontSize: 13, marginBottom: 12 }}>{error}</p>}
+
+                {/* Published banner */}
+                {publishedUrl && (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", background: "#0A1A0A", borderRadius: 8, border: "1px solid #1A3A1A", marginBottom: 12 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 12, color: "#4CAF50", fontWeight: 600 }}>✓ Live</span>
+                      <a href={publishedUrl} target="_blank" rel="noopener" style={{ fontSize: 12, color: "#3EA843", textDecoration: "underline", fontFamily: "monospace" }}>{publishedUrl.replace("https://", "")}</a>
+                    </div>
+                    <button onClick={() => { navigator.clipboard.writeText(publishedUrl); }} style={{ background: "none", border: "1px solid #1A3A1A", borderRadius: 4, color: "#3EA843", fontSize: 10, cursor: "pointer", padding: "4px 10px", fontFamily: "inherit" }}>Copy</button>
                   </div>
                 )}
-              </div>
 
-              {/* History sidebar */}
-              {(history.length > 0 || published.length > 0) && (
-                <div>
-                  {published.length > 0 && (
-                    <>
-                      <h3 style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#3EA843", marginBottom: 16 }}>Published Live</h3>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
-                        {published.map((m, i) => (
-                          <div key={i} style={{ padding: "12px 14px", background: "#0A1A0A", border: "1px solid #1A3A1A", borderRadius: 8 }}>
-                            <a href={`/mockups/${m.slug}`} target="_blank" rel="noopener" style={{ fontSize: 14, color: "#4CAF50", fontWeight: 500, textDecoration: "none" }}>{m.business_name}</a>
-                            <div style={{ fontSize: 11, color: "#555", marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <span>{new Date(m.created_at).toLocaleDateString()}</span>
-                              <div style={{ display: "flex", gap: 8 }}>
-                                <button onClick={() => loadMockup(m.slug)} style={{ background: "none", border: "none", color: "#3EA843", fontSize: 11, cursor: "pointer", fontFamily: "inherit", fontWeight: 600 }}>Edit</button>
-                                <button onClick={() => deleteMockup(m.slug)} style={{ background: "none", border: "none", color: "#553333", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>Delete</button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                  {history.length > 0 && (
-                    <>
-                      <h3 style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#555", marginBottom: 16 }}>Recent</h3>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        {history.map((h, i) => (
-                          <div key={i} style={{ padding: "12px 14px", background: "#111", border: "1px solid #1A1A1A", borderRadius: 8, cursor: "pointer" }}
-                            onClick={() => { setName(h.name); setAddress(h.address || ""); setNotes(h.notes || ""); setCategory(h.category || ""); setTemplate(h.template || "classic"); }}>
-                            <div style={{ fontSize: 14, color: "#ccc", fontWeight: 500 }}>{h.name}</div>
-                            <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>{h.category} · {h.photoSource === "google" ? "📸 Real photos" : "🖼 Stock"} · {new Date(h.date).toLocaleDateString()}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Preview */
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 16 }}>
-                <div>
-                  <h2 style={{ fontSize: 22, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{businessData?.name || name}</h2>
-                  <p style={{ fontSize: 14, color: "#666" }}>
-                    {businessData?.category} · {businessData?.palette} palette · {photoSource === "google" ? "📸 Google Places photos" : photoSource === "mixed" ? "📸 Mixed photos" : "🖼 Stock photos"}
-                  </p>
-                </div>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  <button onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setCachedPhotos([]); }} style={S.actionBtn(false)}>← New</button>
-                  <button onClick={() => { setModel("standard"); setTimeout(generate, 0); }} disabled={loading} style={S.actionBtn(false)}>🔄 Re-research</button>
-                  <button onClick={() => { setModel("premium"); setTimeout(generate, 0); }} disabled={loading} style={{ ...S.actionBtn(false), borderColor: "#2A2A4A", color: "#6B8AFF" }}>⚡ Premium</button>
-                  <button onClick={copyHTML} style={S.actionBtn(false)}>Copy HTML</button>
-                  <button onClick={downloadHTML} style={S.actionBtn(false)}>Download</button>
-                  <button onClick={publishMockup} disabled={publishing} style={{ ...S.actionBtn(true), opacity: publishing ? 0.6 : 1 }}>
-                    {publishing ? "Publishing..." : "Publish Live →"}
-                  </button>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 20, flexWrap: "wrap" }}>
-                {[
-                  { id: "classic", label: "Classic" },
-                  { id: "bold", label: "Bold" },
-                  { id: "editorial", label: "Editorial" },
-                ].map(t => (
-                  <button key={t.id} onClick={() => {
-                    setTemplate(t.id);
-                    if (businessData && cachedPhotos.length) {
-                      setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t.id));
-                    }
-                  }} style={{ padding: "8px 18px", background: template === t.id ? "#1A2A1A" : "#141414", border: template === t.id ? "2px solid #3EA843" : "1px solid #2A2A2A", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: template === t.id ? 600 : 400, color: template === t.id ? "#3EA843" : "#888", fontFamily: "inherit" }}>
-                    {t.label}
-                  </button>
-                ))}
-                <select value={businessData?.palette || "warm"} onChange={(e) => {
-                  const newPalette = e.target.value;
-                  const updated = { ...businessData, palette: newPalette };
-                  setBusinessData(updated);
-                  if (cachedPhotos.length) {
-                    setMockupHTML(buildMockupHTML(updated, cachedPhotos, template));
-                  }
-                }} style={{ padding: "8px 14px", background: "#141414", border: "1px solid #2A2A2A", borderRadius: 8, color: "#999", fontSize: 13, fontFamily: "inherit", cursor: "pointer", appearance: "none", paddingRight: 28, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23666' d='M5 7L1 3h8z'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}>
-                  <option value="warm">🎨 Warm</option>
-                  <option value="cool">🎨 Cool</option>
-                  <option value="earthy">🎨 Earthy</option>
-                  <option value="modern">🎨 Modern</option>
-                  <option value="elegant">🎨 Elegant</option>
-                  <option value="fresh">🎨 Fresh</option>
-                </select>
-              </div>
-
-              {publishedUrl && (
-                <div style={{ padding: "14px 18px", background: "#0A1A0A", border: "1px solid #1A3A1A", borderRadius: 10, marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div>
-                    <span style={{ fontSize: 13, color: "#4CAF50", fontWeight: 600 }}>✓ Published!</span>
-                    <a href={publishedUrl} target="_blank" rel="noopener" style={{ marginLeft: 12, fontSize: 13, color: "#3EA843", textDecoration: "underline", fontFamily: "monospace" }}>{publishedUrl}</a>
+                {/* Info chips */}
+                {businessData && (
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+                    {businessData.rating && <span style={{ ...S.chip, fontSize: 11 }}>⭐ {businessData.rating} ({businessData.review_count})</span>}
+                    {businessData.phone && <span style={{ ...S.chip, fontSize: 11 }}>📞 {businessData.phone}</span>}
+                    {businessData.instagram && <span style={{ ...S.chip, fontSize: 11 }}>📸 @{businessData.instagram}</span>}
+                    {businessData.has_delivery && <span style={{ ...S.chip, fontSize: 11 }}>🚗 {businessData.delivery_platforms?.join(", ")}</span>}
+                    {businessData.website && <a href={businessData.website.startsWith("http") ? businessData.website : `https://${businessData.website}`} target="_blank" rel="noopener" style={{ ...S.chip, fontSize: 11, background: "#0A1A0A", borderColor: "#1A3A1A", color: "#4CAF50", textDecoration: "none" }}>⚠️ {businessData.website}</a>}
                   </div>
-                  <button onClick={() => { navigator.clipboard.writeText(publishedUrl); }} style={{ ...S.actionBtn(false), fontSize: 11 }}>Copy Link</button>
-                </div>
-              )}
+                )}
 
-              {businessData && (
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-                  {businessData.rating && <span style={S.chip}>⭐ {businessData.rating} ({businessData.review_count} reviews)</span>}
-                  {businessData.phone && <span style={S.chip}>📞 {businessData.phone}</span>}
-                  {businessData.instagram && <span style={S.chip}>📸 @{businessData.instagram}</span>}
-                  {businessData.has_delivery && <span style={S.chip}>🚗 {businessData.delivery_platforms?.join(", ")}</span>}
-                  {businessData.website && <a href={businessData.website.startsWith("http") ? businessData.website : `https://${businessData.website}`} target="_blank" rel="noopener" style={{ ...S.chip, background: "#0A1A0A", borderColor: "#1A3A1A", color: "#4CAF50", textDecoration: "none", cursor: "pointer" }}>⚠️ {businessData.website}</a>}
+                {/* Preview frame */}
+                <div style={{ border: "1px solid #222", borderRadius: 10, overflow: "hidden", background: "#fff" }}>
+                  <div style={{ padding: "8px 14px", background: "#161616", display: "flex", alignItems: "center", gap: 6, borderBottom: "1px solid #222" }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF5F57" }} />
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#FFBD2E" }} />
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#28C840" }} />
+                    <span style={{ marginLeft: 10, fontSize: 11, color: "#444", fontFamily: "monospace" }}>
+                      thewebguys.ca/mockups/{(businessData?.name || name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "")}
+                    </span>
+                  </div>
+                  <iframe srcDoc={mockupHTML} style={{ width: "100%", height: "80vh", border: "none" }} title="Preview" />
                 </div>
-              )}
-
-              <div style={{ border: "1px solid #2A2A2A", borderRadius: 12, overflow: "hidden", background: "#fff" }}>
-                <div style={{ padding: "10px 16px", background: "#1A1A1A", display: "flex", alignItems: "center", gap: 8, borderBottom: "1px solid #2A2A2A" }}>
-                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#FF5F57" }} />
-                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#FFBD2E" }} />
-                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#28C840" }} />
-                  <span style={{ marginLeft: 12, fontSize: 12, color: "#555", fontFamily: "monospace" }}>
-                    thewebguys.ca/mockups/{(businessData?.name || name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "")}
-                  </span>
-                </div>
-                <iframe srcDoc={mockupHTML} style={{ width: "100%", height: "80vh", border: "none" }} title="Preview" />
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </>

@@ -101,7 +101,8 @@ async function handleResearch(req, res) {
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
   if (!ANTHROPIC_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
 
-  const modelId = model === 'premium' ? 'claude-fable-5' : 'claude-sonnet-4-20250514';
+  const isPremium = model === 'premium';
+  const modelId = isPremium ? 'claude-fable-5' : 'claude-sonnet-4-20250514';
 
   const systemPrompt = `You are a business researcher for a web design agency. Given a business name, address, and optionally a business type, search the web to find everything about this business — Google Maps, Yelp, Instagram, review sites, their website (if any), industry directories.
 
@@ -150,7 +151,7 @@ Adapt the content to the business type:
 
 The "category" field MUST be one of the enum values above — pick the closest match. If a business type was provided by the user, use it.
 
-Be accurate. Use real info. If you can't find something, infer reasonably. Return 3 signature_items and 6 all_items. Do NOT include any HTML tags, citations, or source references in the JSON values — plain text only.`;
+Be accurate. Use real info. If you can't find something, infer reasonably. Return ${isPremium ? '4' : '3'} signature_items and ${isPremium ? '9' : '6'} all_items.${isPremium ? ' Write richer, more compelling descriptions. Make the tagline creative and memorable. Write a longer, more engaging about_paragraph.' : ''} Do NOT include any HTML tags, citations, or source references in the JSON values — plain text only.`;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
