@@ -276,9 +276,27 @@ document.querySelectorAll('section,div[class]>div').forEach(el=>{if(el.closest('
 // Navbar shrink on scroll
 const nav=document.querySelector('nav');if(nav){let last=0;window.addEventListener('scroll',()=>{const y=window.scrollY;nav.style.padding=y>80?'12px 48px':'';nav.style.transition='padding .3s ease';last=y},{ passive:true })}
 </script>`;
-  const d = { p, ph, fb, img, sigItems, allItems, hours, deliveryText, igHandle, igUrl, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML, interactiveJS };
+  const mapQ = encodeURIComponent(`${data.address_line1}, ${data.city}, ${data.province_state} ${data.postal_zip}`);
+  const mapEmbed = `<iframe src="https://maps.google.com/maps?q=${mapQ}&t=&z=15&ie=UTF8&iwloc=&output=embed" style="width:100%;height:100%;border:none;filter:grayscale(0.3)" loading="lazy" allowfullscreen></iframe>`;
+  const premiumJS = `<script>
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+// Scroll reveal with stagger
+const obs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>{e.target.style.opacity='1';e.target.style.transform='translateY(0)'},i*80)}})},{threshold:0.08});
+document.querySelectorAll('[data-reveal]').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(40px)';el.style.transition='opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)';obs.observe(el)});
+// Parallax hero
+const hero=document.querySelector('.ph-hero img');if(hero){window.addEventListener('scroll',()=>{hero.style.transform='translateY('+window.scrollY*0.3+'px)'},{ passive:true })}
+// Animated counters
+document.querySelectorAll('[data-count]').forEach(el=>{const target=parseFloat(el.dataset.count);let current=0;const step=target/40;const timer=setInterval(()=>{current+=step;if(current>=target){current=target;clearInterval(timer)}el.textContent=Number.isInteger(target)?Math.round(current):current.toFixed(1)},30)});
+// Navbar
+const nav=document.querySelector('nav');if(nav){window.addEventListener('scroll',()=>{nav.style.padding=scrollY>80?'10px 48px':'';nav.style.transition='padding .3s'},{ passive:true })}
+</script>`;
+  const d = { p, ph, fb, img, sigItems, allItems, hours, deliveryText, igHandle, igUrl, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML, interactiveJS, mapEmbed, premiumJS };
   if (template === "bold") return templateBold(data, d);
   if (template === "editorial") return templateEditorial(data, d);
+  if (template === "showcase") return templateShowcase(data, d);
+  if (template === "cinematic") return templateCinematic(data, d);
+  if (template === "magazine") return templateMagazine(data, d);
   return templateClassic(data, d);
 }
 
@@ -447,6 +465,174 @@ ${data.review_quote ? `<div class="edv" style="margin-top:0"></div><section clas
 <section class="ehs" id="hrs"><h2>Visit Us</h2>${hours.map(h => `<div class="ehr"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}<div class="eadr"><strong style="color:#1a1a1a">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>${data.phone}` : ''}</div></section>
 <div style="background:#1a1a1a;padding:44px 60px;text-align:center"><h3 style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:8px">Like what you see?</h3><p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:18px">This mockup was built for you by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;border:1px solid rgba(255,255,255,.3);color:#fff;padding:12px 32px;border-radius:3px;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s">Get In Touch</a></div>
 <footer style="padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-top:1px solid #eee"><span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">${data.name}</span><span style="font-size:11px;color:#ccc">© 2026</span><span style="font-size:10px;color:#ddd">Built by The Web Guys</span></footer>${interactiveJS}</body></html>`;
+}
+
+
+// ═══════════════════════════════════════════════════════
+// PREMIUM: SHOWCASE — Parallax hero, glass nav, 3D cards, map
+// ═══════════════════════════════════════════════════════
+function templateShowcase(data, d) {
+  const { p, ph, img, sigItems, allItems, hours, firstName, isFood, navLabel, cta, rating, reviewCount, head, mapEmbed, premiumJS } = d;
+  return `${head}<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:${p.bg};color:${p.primary};-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
+nav{position:fixed;top:0;width:100%;z-index:100;padding:18px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.15);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1)}
+.nl{font-family:'DM Serif Display',serif;font-size:22px}.nl span{color:${p.accent}}
+.nk{display:flex;gap:28px;list-style:none;align-items:center}.nk a{text-decoration:none;color:rgba(0,0,0,.5);font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s}.nk a:hover{color:${p.accent}}
+.nc{background:${p.primary}!important;color:${p.bg}!important;padding:10px 24px!important;border-radius:28px;transition:transform .2s!important}.nc:hover{transform:scale(1.05)!important}
+.ph-hero{min-height:100vh;position:relative;overflow:hidden;display:flex;align-items:center}
+.ph-hero>img{position:absolute;inset:-20%;width:140%;height:140%;object-fit:cover;will-change:transform}
+.ph-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,${p.bg}ee 0%,${p.bg}88 40%,transparent 70%)}
+.phc{position:relative;z-index:1;padding:160px 60px 100px;max-width:650px}
+.phc h1{font-family:'DM Serif Display',serif;font-size:clamp(48px,6vw,80px);line-height:1;letter-spacing:-3px;margin-bottom:20px}
+.phc h1 em{font-family:'Playfair Display',serif;font-style:italic;color:${p.accent};display:block}
+.php{font-size:18px;line-height:1.7;opacity:.6;margin-bottom:36px;max-width:440px}
+.phr{display:flex;gap:24px;align-items:center;margin-bottom:36px}
+.phnum{font-family:'DM Serif Display',serif;font-size:48px;color:${p.accent}}.phlab{font-size:11px;text-transform:uppercase;letter-spacing:2px;opacity:.4;margin-top:2px}
+.pbtn{display:inline-block;background:${p.primary};color:${p.bg};padding:16px 40px;border-radius:32px;text-decoration:none;font-weight:600;font-size:15px;transition:all .3s;box-shadow:0 4px 20px rgba(0,0,0,.15)}.pbtn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.psig{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06)}
+.psigi{padding:40px 32px;text-align:center;border-right:1px solid rgba(0,0,0,.06)}.psigi:last-child{border-right:none}
+.psigi h4{font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:6px}.psigi p{font-size:13px;opacity:.5}
+.pcards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:80px 60px;max-width:1200px;margin:0 auto}
+.pc{background:${p.white};border-radius:16px;overflow:hidden;transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s;border:1px solid rgba(0,0,0,.04);cursor:default}
+.pc:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 24px 48px rgba(0,0,0,.12)}
+.pci{aspect-ratio:4/3;overflow:hidden}.pci img{transition:transform .6s cubic-bezier(.22,1,.36,1)}.pc:hover .pci img{transform:scale(1.08)}
+.pcb{padding:24px}.pcb h3{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:8px}.pcb p{font-size:13px;line-height:1.7;opacity:.6}
+.pctag{display:inline-block;margin-top:12px;padding:4px 12px;background:${p.accent}22;border-radius:16px;font-size:10px;font-weight:600;color:${p.accent};letter-spacing:.5px;text-transform:uppercase}
+.pabout{display:grid;grid-template-columns:1fr 1.2fr;gap:60px;padding:100px 60px;max-width:1200px;margin:0 auto;align-items:center}
+.paimg{border-radius:20px;overflow:hidden;aspect-ratio:4/5;position:relative}
+.paimg::after{content:'';position:absolute;inset:0;border-radius:20px;border:1px solid rgba(0,0,0,.06)}
+.pmap{height:400px;border-radius:16px;overflow:hidden;border:1px solid rgba(0,0,0,.06)}
+@media(max-width:900px){.nk{display:none}.phc{padding:120px 24px 60px}.pcards{grid-template-columns:1fr;padding:40px 24px}.pabout{grid-template-columns:1fr;padding:60px 24px}.psig{grid-template-columns:1fr}.psigi{border-right:none;border-bottom:1px solid rgba(0,0,0,.06)}.psigi:last-child{border-bottom:none}}
+</style></head><body>
+<nav><div class="nl">${firstName}<span>'s</span></div><ul class="nk"><li><a href="#srv">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#map">Location</a></li><li><a href="#" class="nc">${cta}</a></li></ul></nav>
+<section class="ph-hero">${img(ph[0], data.name)}<div class="phc">
+<h1>${firstName}'s<em>${data.tagline.split(/\s+/).slice(-2).join(' ')}</em></h1>
+<p class="php">${data.subtitle}</p>
+${rating > 0 ? `<div class="phr"><div><div class="phnum" data-count="${rating}">0</div><div class="phlab">Rating</div></div><div><div class="phnum" data-count="${reviewCount}">0</div><div class="phlab">Reviews</div></div></div>` : ''}
+<a href="#srv" class="pbtn">${cta} →</a>
+</div></section>
+<div class="psig">${sigItems.map(s => `<div class="psigi" data-reveal><h4>${s.emoji||''} ${s.name}</h4><p>${s.description.split('.')[0]}</p></div>`).join('')}</div>
+<section class="pabout" id="about"><div class="paimg" data-reveal>${img(ph[5] || ph[0], data.name)}</div>
+<div data-reveal><h2 style="font-family:'DM Serif Display',serif;font-size:36px;letter-spacing:-1px;margin-bottom:20px">Our Story</h2><p style="font-size:16px;line-height:1.9;opacity:.7;margin-bottom:12px">${data.about_paragraph}</p><p style="font-size:16px;line-height:1.9;opacity:.7">${data.about_paragraph2}</p>
+<div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">${(data.vibe_tags || []).map(t => `<span style="padding:6px 14px;background:${p.accent}15;border-radius:20px;font-size:12px;color:${p.accent};font-weight:500">${t}</span>`).join('')}</div></div></section>
+<section id="srv" style="padding:20px 0"><div style="text-align:center;margin-bottom:48px;padding:0 24px" data-reveal><h2 style="font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;margin-bottom:8px">${data.items_label || "What We Offer"}</h2><p style="font-size:15px;opacity:.5">What keeps people coming back.</p></div>
+<div class="pcards">${allItems.map((item, i) => `<div class="pc" data-reveal><div class="pci">${img(ph[6+i] || ph[i%5], item.name)}</div><div class="pcb"><h3>${item.emoji||''} ${item.name}</h3><p>${item.description}</p>${item.tag ? `<span class="pctag">${item.tag}</span>` : ''}</div></div>`).join('')}</div></section>
+${data.review_quote ? `<div style="padding:80px 60px;text-align:center" data-reveal><blockquote style="font-family:'Playfair Display',serif;font-size:28px;font-style:italic;max-width:700px;margin:0 auto 16px;line-height:1.5;color:${p.primary}">"${data.review_quote}"</blockquote><cite style="font-size:13px;color:${p.sage};font-style:normal">— ${data.review_source || 'Customer Review'}</cite></div>` : ''}
+<section style="display:grid;grid-template-columns:1fr 1fr;gap:0;max-width:1200px;margin:0 auto 60px;border-radius:16px;overflow:hidden;border:1px solid rgba(0,0,0,.06)" id="map" data-reveal>
+<div style="padding:60px 48px"><h2 style="font-family:'DM Serif Display',serif;font-size:32px;letter-spacing:-1px;margin-bottom:28px">Visit Us</h2>
+${hours.map(h => `<div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(0,0,0,.04);font-size:14px"><span style="font-weight:500">${h.days}</span><span style="opacity:.5">${h.time}</span></div>`).join('')}
+<div style="margin-top:28px;font-size:15px;line-height:1.7"><strong>${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br><br>📞 ${data.phone}` : ''}</div></div>
+<div class="pmap">${mapEmbed}</div></section>
+<div style="background:${p.accent};padding:48px 60px;text-align:center"><h3 style="font-family:'DM Serif Display',serif;font-size:26px;color:${p.primary};margin-bottom:10px">Like what you see?</h3><p style="font-size:14px;color:${p.primary};opacity:.7;margin-bottom:20px">This mockup was built by The Web Guys. Let's make it real.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.primary};color:${p.bg};padding:14px 36px;border-radius:28px;text-decoration:none;font-weight:600;font-size:14px">Get In Touch →</a></div>
+<footer style="padding:32px 60px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;border-top:1px solid rgba(0,0,0,.06)"><div style="font-family:'DM Serif Display',serif;font-size:18px">${firstName}<span style="color:${p.accent}">'s</span></div><span style="font-size:12px;opacity:.3">© 2026 ${data.name}</span><span style="font-size:11px;opacity:.25;padding:4px 12px;border:1px solid rgba(0,0,0,.08);border-radius:16px">Built by The Web Guys</span>${premiumJS}</footer></body></html>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// PREMIUM: CINEMATIC — Dark, Ken Burns hero, animated stats, map
+// ═══════════════════════════════════════════════════════
+function templateCinematic(data, d) {
+  const { p, ph, img, sigItems, allItems, hours, firstName, isFood, navLabel, cta, rating, reviewCount, head, mapEmbed, premiumJS } = d;
+  return `${head}<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Space Grotesk','Inter',sans-serif;background:#060606;color:#fff;-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
+nav{position:fixed;top:0;width:100%;z-index:100;padding:20px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(6,6,6,0.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.04)}
+.cnl{font-size:18px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.cnk{display:flex;gap:28px;list-style:none;align-items:center}.cnk a{text-decoration:none;color:rgba(255,255,255,.35);font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;transition:color .3s}.cnk a:hover{color:#fff}
+.cnc{background:${p.accent}!important;color:${p.primary}!important;padding:10px 24px!important;border-radius:6px;font-weight:700!important}
+@keyframes kenburns{0%{transform:scale(1)}100%{transform:scale(1.15)}}
+.ch{min-height:100vh;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center}
+.ch>img{position:absolute;inset:-10%;width:120%;height:120%;animation:kenburns 20s ease-in-out alternate infinite;filter:brightness(.2)}
+.ch::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 0%,#060606 75%)}
+.chc{position:relative;z-index:1;max-width:800px;padding:40px}
+.chc h1{font-size:clamp(56px,8vw,110px);font-weight:700;line-height:.88;letter-spacing:-5px;margin-bottom:24px;text-transform:uppercase}
+.chc h1 em{display:block;font-family:'Playfair Display',serif;text-transform:none;font-style:italic;font-weight:400;color:${p.accent};letter-spacing:-2px;font-size:.65em}
+.chp{font-size:17px;opacity:.4;max-width:480px;margin:0 auto 36px;line-height:1.7}
+.cbtn{display:inline-block;border:2px solid #fff;color:#fff;padding:16px 48px;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;transition:all .3s}.cbtn:hover{background:#fff;color:#060606}
+.cstats{display:flex;justify-content:center;gap:0;border-bottom:1px solid rgba(255,255,255,.04)}
+.cst{padding:48px 56px;text-align:center;border-right:1px solid rgba(255,255,255,.04)}.cst:last-child{border-right:none}
+.cst h3{font-size:48px;font-weight:700;color:${p.accent};margin-bottom:4px}.cst p{font-size:11px;letter-spacing:3px;text-transform:uppercase;opacity:.3}
+.cfeat{display:grid;grid-template-columns:1fr 1fr;min-height:80vh}
+.cfeat.flip{direction:rtl}.cfeat.flip>*{direction:ltr}
+.cfi{overflow:hidden;position:relative}.cfi img{min-height:80vh;transition:transform 8s ease}.cfi:hover img{transform:scale(1.05)}
+.cft{display:flex;flex-direction:column;justify-content:center;padding:80px 60px;background:#0a0a0a}
+.cfeat.flip .cft{background:#0e0e0e}
+.cft h3{font-size:40px;font-weight:700;letter-spacing:-1.5px;margin-bottom:16px;line-height:1.05}
+.cft p{font-size:16px;line-height:1.9;opacity:.35;max-width:440px;margin-bottom:20px}
+.ctag{display:inline-block;padding:6px 16px;border:1px solid rgba(255,255,255,.08);border-radius:4px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:${p.accent}}
+.cmap{height:450px;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
+.cmap iframe{filter:invert(0.9) hue-rotate(180deg) grayscale(0.3)}
+@media(max-width:900px){.cnk{display:none}.chc h1{font-size:48px;letter-spacing:-3px}.cfeat,.cfeat.flip{grid-template-columns:1fr;direction:ltr}.cfeat.flip>*{direction:ltr}.cfi{min-height:50vh}.cfi img{min-height:50vh}.cft{padding:48px 24px}.cstats{flex-direction:column}.cst{border-right:none;border-bottom:1px solid rgba(255,255,255,.04)}}
+</style></head><body>
+<nav><div class="cnl">${data.name}</div><ul class="cnk"><li><a href="#srv">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#map">Map</a></li><li><a href="#" class="cnc">${cta}</a></li></ul></nav>
+<section class="ch">${img(ph[0], data.name)}<div class="chc">
+<h1>${firstName}'s<em>${data.tagline}</em></h1>
+<p class="chp">${data.subtitle}</p>
+<a href="#srv" class="cbtn">${cta}</a>
+</div></section>
+<div class="cstats">${rating > 0 ? `<div class="cst" data-reveal><h3 data-count="${rating}">0</h3><p>Rating</p></div>` : ''}<div class="cst" data-reveal><h3 data-count="${reviewCount || 0}">0</h3><p>Reviews</p></div><div class="cst" data-reveal><h3>${data.neighbourhood || data.city}</h3><p>Location</p></div></div>
+<div id="srv">${allItems.slice(0,4).map((item, i) => `<section class="cfeat${i%2 ? ' flip' : ''}" data-reveal><div class="cfi">${img(ph[6+i] || ph[i%5], item.name)}</div><div class="cft"><h3>${item.emoji||''} ${item.name}</h3><p>${item.description}</p>${item.tag ? `<span class="ctag">${item.tag}</span>` : ''}</div></section>`).join('')}</div>
+<section id="about" style="max-width:700px;margin:0 auto;padding:100px 40px;text-align:center" data-reveal><h2 style="font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:24px">About ${firstName}'s</h2><p style="font-size:17px;line-height:2;opacity:.35;margin-bottom:12px">${data.about_paragraph}</p><p style="font-size:17px;line-height:2;opacity:.35">${data.about_paragraph2}</p></section>
+${data.review_quote ? `<div style="padding:80px 60px;text-align:center;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)" data-reveal><blockquote style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;max-width:700px;margin:0 auto 16px;line-height:1.5;opacity:.9">"${data.review_quote}"</blockquote><cite style="font-size:12px;opacity:.25;font-style:normal;letter-spacing:2px;text-transform:uppercase">— ${data.review_source}</cite></div>` : ''}
+<section style="display:grid;grid-template-columns:1fr 1fr;gap:0" id="map">
+<div style="padding:80px 60px"><h2 style="font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:32px" data-reveal>Find Us</h2>
+${hours.map(h => `<div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:15px" data-reveal><span>${h.days}</span><span style="opacity:.3">${h.time}</span></div>`).join('')}
+<div style="margin-top:32px;font-size:15px;line-height:1.8;opacity:.4" data-reveal><strong style="opacity:1">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>📞 ${data.phone}` : ''}</div></div>
+<div class="cmap">${mapEmbed}</div></section>
+<div style="background:${p.accent};padding:48px 60px;text-align:center"><h3 style="font-size:22px;font-weight:700;color:${p.primary};margin-bottom:10px">Like what you see?</h3><p style="font-size:14px;color:${p.primary};opacity:.6;margin-bottom:20px">Built by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.primary};color:#fff;padding:14px 36px;border-radius:4px;text-decoration:none;font-weight:700;font-size:13px">Get In Touch →</a></div>
+<footer style="padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:#060606;border-top:1px solid rgba(255,255,255,.03)"><span style="font-size:16px;font-weight:700;letter-spacing:1px">${data.name}</span><span style="font-size:11px;opacity:.15">© 2026</span><span style="font-size:10px;opacity:.1;padding:4px 10px;border:1px solid rgba(255,255,255,.05);border-radius:4px">The Web Guys</span>${premiumJS}</footer></body></html>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// PREMIUM: MAGAZINE — Luxury editorial, animated, map
+// ═══════════════════════════════════════════════════════
+function templateMagazine(data, d) {
+  const { p, ph, img, allItems, hours, firstName, navLabel, cta, rating, reviewCount, head, mapEmbed, premiumJS } = d;
+  return `${head}<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:#FAF9F7;color:#1a1a1a;-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
+nav{position:fixed;top:0;width:100%;z-index:100;padding:14px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(250,249,247,0.92);backdrop-filter:blur(12px);border-bottom:1px solid #eee}
+.mnl{font-size:11px;font-weight:700;letter-spacing:5px;text-transform:uppercase}
+.mnk{display:flex;gap:24px;list-style:none;align-items:center}.mnk a{text-decoration:none;color:#bbb;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;transition:color .3s}.mnk a:hover{color:#1a1a1a}
+.mnc{background:#1a1a1a!important;color:#fff!important;padding:8px 20px!important;border-radius:3px;font-size:10px!important}
+.mh{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.mhtext{display:flex;flex-direction:column;justify-content:center;padding:160px 60px 80px}
+.mhtext h1{font-family:'Playfair Display',serif;font-size:clamp(48px,5vw,72px);line-height:.95;letter-spacing:-3px;margin-bottom:24px}
+.mhtext h1 em{display:block;font-style:italic;font-weight:400;color:${p.accent};margin-top:4px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.mhtext p{font-size:16px;line-height:1.8;color:#888;max-width:400px;margin-bottom:32px;animation:fadeUp .8s .3s both}
+.mhtext h1{animation:fadeUp .8s .1s both}
+.mhimg{overflow:hidden;position:relative}.mhimg img{min-height:100vh;animation:fadeUp 1s .5s both}
+${rating > 0 ? `.mhrating{display:flex;align-items:center;gap:12px;margin-bottom:24px;animation:fadeUp .8s .2s both}.mhrating span:first-child{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:${p.accent}}.mhrating span:last-child{font-size:12px;color:#aaa;letter-spacing:1px}` : ''}
+.mdv{height:1px;background:#e8e8e4;margin:0}
+.mgal{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px}
+.mgal>div{aspect-ratio:1;overflow:hidden;position:relative}.mgal>div img{transition:transform .8s cubic-bezier(.22,1,.36,1)}.mgal>div:hover img{transform:scale(1.08)}
+.mgal>div:first-child{grid-column:span 2;grid-row:span 2;aspect-ratio:auto}
+.mab{max-width:640px;margin:0 auto;padding:100px 40px;text-align:center}
+.mab h2{font-family:'Playfair Display',serif;font-size:14px;font-weight:400;letter-spacing:5px;text-transform:uppercase;color:#bbb;margin-bottom:32px}
+.mab p{font-size:17px;line-height:2.1;color:#666}
+.msrv{max-width:800px;margin:0 auto;padding:80px 40px}
+.msrv h2{font-family:'Playfair Display',serif;font-size:44px;text-align:center;margin-bottom:56px;letter-spacing:-2px}
+.msi{display:grid;grid-template-columns:60px 1fr auto;gap:24px;align-items:start;padding:28px 0;border-bottom:1px solid #e8e8e4;transition:padding .3s}
+.msi:hover{padding-left:8px}
+.msn{font-family:'Playfair Display',serif;font-size:36px;color:#ddd;font-weight:700;line-height:1}
+.msinfo h3{font-size:18px;font-weight:600;margin-bottom:4px}.msinfo p{font-size:13px;color:#999;line-height:1.6}
+.mstag{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${p.accent};padding:4px 12px;border:1.5px solid ${p.accent};border-radius:2px;white-space:nowrap}
+.mmap{display:grid;grid-template-columns:1fr 1fr;max-width:1200px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid #e8e8e4}
+.mmap>div:first-child{padding:60px 48px}
+.mmap iframe{min-height:400px}
+@media(max-width:900px){.mnk{display:none}.mh{grid-template-columns:1fr}.mhtext{padding:120px 24px 60px}.mhimg{max-height:60vh}.mgal{grid-template-columns:1fr 1fr}.mgal>div:first-child{grid-column:span 2;grid-row:auto}.msrv{padding:60px 24px}.msi{grid-template-columns:40px 1fr}.mstag{display:none}.mab{padding:60px 24px}.mmap{grid-template-columns:1fr}}
+</style></head><body>
+<nav><div class="mnl">${data.name}</div><ul class="mnk"><li><a href="#srv">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#map">Map</a></li><li><a href="#" class="mnc">${cta}</a></li></ul></nav>
+<section class="mh"><div class="mhtext">${rating > 0 ? `<div class="mhrating"><span data-count="${rating}">0</span><span>${reviewCount} reviews</span></div>` : ''}<h1>${firstName}'s<em>${data.tagline.split(/\s+/).slice(-3).join(' ')}</em></h1><p>${data.subtitle}</p><a href="#srv" style="display:inline-block;border:1.5px solid #1a1a1a;padding:14px 40px;text-decoration:none;color:#1a1a1a;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:all .3s;animation:fadeUp .8s .4s both">${cta}</a></div><div class="mhimg">${img(ph[0], data.name)}</div></section>
+<div class="mgal">${[1,2,3,4,5].map(i => `<div data-reveal>${img(ph[i] || ph[0], 'Gallery ' + i)}</div>`).join('')}</div>
+<section class="mab" id="about" data-reveal><h2>Our Story</h2><p>${data.about_paragraph}</p><p style="margin-top:16px">${data.about_paragraph2}</p><div style="margin-top:24px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${(data.vibe_tags || []).map(t => `<span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;padding:4px 12px;border:1px solid #ddd;border-radius:2px">${t}</span>`).join('')}</div></section>
+<div class="mdv"></div>
+<section class="msrv" id="srv"><h2 data-reveal>${data.items_label || "What We Offer"}</h2>${allItems.map((item, i) => `<div class="msi" data-reveal><div class="msn">${String(i+1).padStart(2,'0')}</div><div class="msinfo"><h3>${item.emoji||''} ${item.name}</h3><p>${item.description}</p></div>${item.tag ? `<span class="mstag">${item.tag}</span>` : ''}</div>`).join('')}</section>
+${data.review_quote ? `<div class="mdv"></div><div style="text-align:center;padding:80px 40px;max-width:640px;margin:0 auto" data-reveal><blockquote style="font-family:'Playfair Display',serif;font-size:26px;font-style:italic;line-height:1.6;letter-spacing:-.5px;margin-bottom:16px">"${data.review_quote}"</blockquote><cite style="font-size:11px;color:#bbb;font-style:normal;letter-spacing:2px;text-transform:uppercase">— ${data.review_source}</cite></div>` : ''}
+<div class="mdv"></div>
+<section style="padding:80px 40px" id="map"><div class="mmap" data-reveal><div><h2 style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:28px">Visit Us</h2>
+${hours.map(h => `<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-weight:500">${h.days}</span><span style="color:#aaa">${h.time}</span></div>`).join('')}
+<div style="margin-top:24px;font-size:14px;line-height:1.8;color:#888"><strong style="color:#1a1a1a">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>📞 ${data.phone}` : ''}</div></div><div>${mapEmbed}</div></div></section>
+<div style="background:#1a1a1a;padding:44px 60px;text-align:center"><h3 style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:8px">Like what you see?</h3><p style="font-size:13px;color:rgba(255,255,255,.35);margin-bottom:18px">Built by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;border:1px solid rgba(255,255,255,.25);color:#fff;padding:12px 32px;border-radius:3px;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:all .3s">Get In Touch</a></div>
+<footer style="padding:24px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-top:1px solid #eee"><span style="font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:700">${data.name}</span><span style="font-size:10px;color:#ccc">© 2026</span><span style="font-size:9px;color:#ddd">The Web Guys</span>${premiumJS}</footer></body></html>`;
 }
 
 // ── Styles ──
@@ -835,7 +1021,7 @@ export default function MockupAdmin() {
                     <label style={S.label}>Template & Model</label>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       <div style={{ display: "flex", gap: 6 }}>
-                        {["classic", "bold", "editorial"].map(t => (
+                        {(model === "premium" ? ["showcase", "cinematic", "magazine"] : ["classic", "bold", "editorial"]).map(t => (
                           <button key={t} onClick={() => setTemplate(t)}
                             style={{ flex: 1, padding: "10px 4px", background: template === t ? "#1A2A1A" : "#141414", border: template === t ? "2px solid #3EA843" : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: template === t ? 600 : 400, color: template === t ? "#3EA843" : "#777", fontFamily: "inherit", textTransform: "capitalize" }}>
                             {t}
@@ -847,7 +1033,7 @@ export default function MockupAdmin() {
                           { id: "standard", label: "Standard", color: "#888" },
                           { id: "premium", label: "⚡ Premium", color: "#6B8AFF" },
                         ].map(m => (
-                          <button key={m.id} onClick={() => setModel(m.id)}
+                          <button key={m.id} onClick={() => { setModel(m.id); setTemplate(m.id === "premium" ? "showcase" : "classic"); }}
                             style={{ flex: 1, padding: "10px 4px", background: model === m.id ? (m.id === "premium" ? "#1A1A2A" : "#1A1A1A") : "#141414", border: model === m.id ? `2px solid ${m.color}` : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: model === m.id ? 600 : 400, color: model === m.id ? m.color : "#777", fontFamily: "inherit" }}>
                             {m.label}
                           </button>
@@ -898,7 +1084,7 @@ export default function MockupAdmin() {
 
                 {/* Controls row */}
                 <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}>
-                  {["classic", "bold", "editorial"].map(t => (
+                  {(model === "premium" ? ["showcase", "cinematic", "magazine"] : ["classic", "bold", "editorial"]).map(t => (
                     <button key={t} onClick={() => {
                       setTemplate(t);
                       if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t));
@@ -914,11 +1100,11 @@ export default function MockupAdmin() {
                     {["warm","cool","earthy","modern","elegant","fresh"].map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                   <div style={{ borderLeft: "1px solid #222", height: 24, margin: "0 4px" }} />
-                  <button onClick={() => { setModel("standard"); setTimeout(generate, 0); }} disabled={loading}
+                  <button onClick={() => { setModel("standard"); setTemplate("classic"); setTimeout(generate, 0); }} disabled={loading}
                     style={{ padding: "6px 14px", background: "transparent", border: "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, color: "#888", fontFamily: "inherit" }}>
                     🔄 Re-research
                   </button>
-                  <button onClick={() => { setModel("premium"); setTimeout(generate, 0); }} disabled={loading}
+                  <button onClick={() => { setModel("premium"); setTemplate("showcase"); setTimeout(generate, 0); }} disabled={loading}
                     style={{ padding: "6px 14px", background: "#1A1A2A", border: "1.5px solid #6B8AFF", borderRadius: 6, cursor: "pointer", fontSize: 12, color: "#6B8AFF", fontWeight: 600, fontFamily: "inherit" }}>
                     ⚡ Premium
                   </button>
