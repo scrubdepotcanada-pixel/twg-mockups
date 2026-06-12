@@ -292,401 +292,542 @@ document.querySelectorAll('[data-count]').forEach(el=>{const target=parseFloat(e
 const nav=document.querySelector('nav');if(nav){window.addEventListener('scroll',()=>{nav.style.padding=scrollY>80?'10px 48px':'';nav.style.transition='padding .3s'},{ passive:true })}
 </script>`;
   const d = { p, ph, fb, img, sigItems, allItems, hours, deliveryText, igHandle, igUrl, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML, interactiveJS, mapEmbed, premiumJS };
-  if (template === "bold") return templateBold(data, d);
-  if (template === "editorial") return templateEditorial(data, d);
-  if (template === "showcase") return templateShowcase(data, d);
-  if (template === "cinematic") return templateCinematic(data, d);
-  if (template === "magazine") return templateMagazine(data, d);
-  return templateClassic(data, d);
+  if (template === "premium") return templatePremium(data, d);
+  return templateStandard(data, d);
 }
 
-// ═════════════════════════════════════════
-// TEMPLATE: CLASSIC — Split hero, card grid
-// ═════════════════════════════════════════
-function templateClassic(data, d) {
-  const { p, ph, img, sigItems, allItems, deliveryText, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML, interactiveJS } = d;
-  const ratingHTML = rating > 0 ? `<div style="display:flex;align-items:center;gap:8px;margin-top:20px"><span style="font-family:'DM Serif Display',serif;font-size:28px;color:${p.accent}">${rating}</span><span style="font-size:18px;color:${p.accent}">${"★".repeat(Math.round(rating))}${"☆".repeat(5-Math.round(rating))}</span>${reviewCount ? `<span style="font-size:13px;color:${p.sage}">(${reviewCount} reviews)</span>` : ""}</div>` : "";
-  return `${head}<style>
-:root{--p:${p.primary};--a:${p.accent};--bg:${p.bg};--sage:${p.sage};--latte:${p.latte};--t:${p.text};--w:${p.white}}
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--w);color:var(--p);-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
-nav{position:fixed;top:0;width:100%;z-index:100;padding:18px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.06)}
-.nl{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-0.5px}.nl span{color:var(--a)}
-.nk{display:flex;gap:32px;list-style:none;align-items:center}.nk a{text-decoration:none;color:var(--t);font-size:13px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;transition:color .2s}.nk a:hover{color:var(--a)}
-.nc{background:var(--p)!important;color:var(--bg)!important;padding:10px 24px!important;border-radius:24px;transition:background .2s!important}.nc:hover{background:var(--a)!important;color:var(--p)!important}
-.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
-.hc{display:flex;flex-direction:column;justify-content:center;padding:140px 60px 80px;background:var(--bg)}
-.he{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--sage);margin-bottom:24px}
-.hc h1{font-family:'DM Serif Display',serif;font-size:clamp(44px,5vw,76px);line-height:1.02;letter-spacing:-2px}
-.hc h1 em{font-family:'Playfair Display',serif;font-style:italic;color:var(--a);font-weight:400}
-.hs{margin-top:24px;font-size:17px;line-height:1.7;color:var(--t);max-width:440px;opacity:.8}
-.hd{margin-top:44px;display:flex;gap:36px;flex-wrap:wrap}.hdi{display:flex;flex-direction:column;gap:4px}
-.hdl{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--sage)}.hdv{font-family:'DM Serif Display',serif;font-size:18px}
-.hi{position:relative;overflow:hidden}.hi img{min-height:100vh}
-.hio{position:absolute;bottom:0;left:0;right:0;padding:32px;background:linear-gradient(to top,rgba(0,0,0,.5),transparent)}.hio p{font-size:14px;color:#fff;font-weight:500}
-.pg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.pgi{aspect-ratio:1;overflow:hidden}.pgi img{transition:transform .5s}.pgi:hover img{transform:scale(1.08)}
-.ab{padding:100px 60px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto}
-.abi{aspect-ratio:4/5;border-radius:12px;overflow:hidden;position:relative}
-.abb{position:absolute;bottom:20px;left:20px;background:var(--a);color:var(--p);padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
-.abc h2{font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;line-height:1.15;margin-bottom:24px}
-.abc p{font-size:16px;line-height:1.8;color:var(--t);opacity:.8;margin-bottom:16px}
-.abt{display:inline-block;padding:8px 16px;background:rgba(122,139,111,.1);border-radius:20px;font-size:13px;font-weight:500;color:var(--sage);margin-right:8px;margin-bottom:8px}
-.mp{background:var(--bg);padding:100px 60px}
-.sh{text-align:center;margin-bottom:64px}.sh h2{font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;margin-bottom:12px}.sh p{font-size:16px;color:var(--t);opacity:.6}
-.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;max-width:1100px;margin:0 auto}
-.mc{background:var(--w);border-radius:16px;overflow:hidden;transition:transform .3s,box-shadow .3s;border:1px solid rgba(0,0,0,.04)}.mc:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.08)}
-.mci{aspect-ratio:4/3;overflow:hidden}.mci img{transition:transform .5s}.mc:hover .mci img{transform:scale(1.06)}
-.mcb{padding:28px 24px}.mcb h3{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:10px;letter-spacing:-.5px}.mcb p{font-size:14px;line-height:1.7;color:var(--t);opacity:.7}
-.mct{display:inline-block;margin-top:14px;padding:6px 14px;background:rgba(232,168,56,.12);border-radius:16px;font-size:11px;font-weight:600;color:var(--a);letter-spacing:.5px;text-transform:uppercase}
-@media(max-width:900px){nav{padding:14px 20px}.nk{display:none}.hero{grid-template-columns:1fr}.hc{padding:120px 24px 60px}.hi{max-height:50vh}.hi img{min-height:50vh}.pg{grid-template-columns:repeat(2,1fr)}.ab{padding:60px 24px;grid-template-columns:1fr;gap:40px}.mp{padding:60px 24px}.mg{grid-template-columns:1fr}.sh h2,.abc h2{font-size:32px}}
-</style></head><body>
-<nav><div class="nl">${firstName}<span>'s</span></div><ul class="nk"><li><a href="#menu">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#hours">Hours</a></li><li><a href="#" class="nc">${cta}</a></li></ul></nav>
-<section class="hero"><div class="hc"><div class="he">${data.address_line1} · ${data.neighbourhood || data.city}</div><h1>${data.tagline.replace(/(\w+)[.!]?$/, '<em>$1</em>')}</h1><p class="hs">${data.subtitle}</p>${ratingHTML}
-<div class="hd"><div class="hdi"><span class="hdl">Hours</span><span class="hdv">${data.hours_summary}</span></div>${isFood ? `<div class="hdi"><span class="hdl">Dine In</span><span class="hdv">Walk-ins welcome</span></div>` : `<div class="hdi"><span class="hdl">Visit</span><span class="hdv">${cta}</span></div>`}${deliveryText ? `<div class="hdi"><span class="hdl">Delivery</span><span class="hdv">${deliveryText}</span></div>` : ""}</div></div>
-<div class="hi">${img(ph[0], data.name)}<div class="hio"><p>📍 ${data.neighbourhood || data.city}</p></div></div></section>
-<div class="pg">${[1,2,3,4].map(i => `<div class="pgi">${img(ph[i] || ph[0], "Photo " + i)}</div>`).join("")}</div>
-<section class="ab" id="about"><div class="abi">${img(ph[5] || ph[0], data.name)}<div class="abb">${data.vibe_tags?.[0] || "Local Favourite"}</div></div><div class="abc"><h2>Our Story.</h2><p>${data.about_paragraph}</p><p>${data.about_paragraph2}</p><div>${(data.vibe_tags || []).map(t => `<span class="abt">${t}</span>`).join("")}</div></div></section>
-<section class="mp" id="menu"><div class="sh"><h2>${data.items_label || "What We're Known For"}</h2><p>See what keeps people coming back.</p></div><div class="mg">${allItems.map((item, i) => `<div class="mc"><div class="mci">${img(ph[6+i] || ph[i%5], item.name)}</div><div class="mcb"><h3>${item.emoji||""} ${item.name}</h3><p>${item.description}</p>${item.tag ? `<span class="mct">${item.tag}</span>` : ""}</div></div>`).join("")}</div></section>
-${data.review_quote ? `<div style="padding:60px;text-align:center"><blockquote style="font-family:'Playfair Display',serif;font-size:24px;font-style:italic;max-width:700px;margin:0 auto 16px;line-height:1.5">"${data.review_quote}"</blockquote><cite style="font-size:13px;color:${p.sage};font-style:normal">— ${data.review_source || "Customer Review"}</cite></div>` : ""}
-<section style="padding:100px 60px;display:grid;grid-template-columns:1fr 1fr;gap:80px;max-width:1200px;margin:0 auto" id="hours"><div><h2 style="font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;margin-bottom:32px">Find Us</h2><div style="display:grid;gap:12px;margin-bottom:40px">${hoursHTML}</div><div style="font-size:15px;line-height:1.6;color:${p.text}"><strong>${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br><br><strong>Phone:</strong> ${data.phone}` : ""}</div></div><div style="border-radius:16px;overflow:hidden;min-height:400px">${img(ph[4] || ph[0], "Location")}</div></section>
-<div style="background:${p.accent};padding:48px 60px;text-align:center"><h3 style="font-family:'DM Serif Display',serif;font-size:28px;color:${p.primary};margin-bottom:12px">Like what you see?</h3><p style="font-size:15px;color:${p.primary};opacity:.8;margin-bottom:24px">This mockup was built for you by The Web Guys. Let's make it real.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.primary};color:${p.bg};padding:14px 36px;border-radius:28px;text-decoration:none;font-weight:600;font-size:14px">Get In Touch →</a></div>
-<footer style="padding:40px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(0,0,0,.08);flex-wrap:wrap;gap:20px"><div style="font-family:'DM Serif Display',serif;font-size:20px">${firstName}<span style="color:${p.accent}">'s</span></div><span style="font-size:13px;color:${p.text};opacity:.5">© 2026 ${data.name} · ${data.address_line1}, ${data.city}</span><span style="font-size:12px;color:${p.text};opacity:.4;padding:6px 14px;border:1px solid rgba(0,0,0,.1);border-radius:16px">Built by The Web Guys · thewebguys.ca</span></footer>${interactiveJS}</body></html>`;
-}
-
-
-// ═════════════════════════════════════════════════
-// TEMPLATE: BOLD — Full-bleed hero, zigzag services
-// ═════════════════════════════════════════════════
-function templateBold(data, d) {
+// ═══════════════════════════════════════════════════════════════════════════
+// STANDARD — "Squarespace starter / Wix template" look
+// Goal: looks like a $500 small-business website. Clean, functional, generic.
+// ═══════════════════════════════════════════════════════════════════════════
+function templateStandard(data, d) {
   const { p, ph, img, sigItems, allItems, hours, firstName, isFood, navLabel, cta, rating, reviewCount, head, interactiveJS } = d;
-  // Zigzag: alternate image left/right for each service
-  const zigzagItems = allItems.slice(0, 4);
+  const ratingHTML = rating > 0 ? `<div style="display:flex;align-items:center;gap:6px;color:#f5a623;font-size:14px;margin-bottom:16px">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))} <span style="color:#666;font-size:13px;margin-left:4px">${rating} (${reviewCount} reviews)</span></div>` : '';
+
   return `${head}<style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Space Grotesk','Inter',sans-serif;background:#0a0a0a;color:#fff;-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
-.bn{position:fixed;top:0;width:100%;z-index:100;padding:20px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.05)}
-.bnl{font-size:20px;font-weight:700;letter-spacing:-.5px}
-.bnk{display:flex;gap:28px;list-style:none;align-items:center}.bnk a{text-decoration:none;color:rgba(255,255,255,.5);font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s}.bnk a:hover{color:#fff}
-.bnc{background:${p.accent}!important;color:${p.primary}!important;padding:10px 24px!important;border-radius:6px;font-weight:600!important}
-.bh{min-height:100vh;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
-.bh>img{position:absolute;inset:0;min-height:100vh;filter:brightness(.25)}
-.bhc{position:relative;z-index:1;max-width:800px;padding:40px}
-.bhc h1{font-size:clamp(52px,8vw,100px);font-weight:700;line-height:.95;letter-spacing:-4px;margin-bottom:24px;text-transform:uppercase}
-.bhc h1 span{display:block;color:${p.accent};font-style:italic;font-family:'Playfair Display',serif;text-transform:none;letter-spacing:-2px}
-.bhp{font-size:18px;line-height:1.6;opacity:.6;max-width:500px;margin:0 auto 36px}
-.bbtn{display:inline-block;background:#fff;color:#0a0a0a;padding:18px 48px;text-decoration:none;font-weight:700;font-size:15px;letter-spacing:1px;text-transform:uppercase;transition:background .2s}.bbtn:hover{background:${p.accent}}
-.bstat{display:flex;justify-content:center;gap:0;background:#111;border-bottom:1px solid rgba(255,255,255,.06)}
-.bsti{flex:1;max-width:300px;padding:36px 40px;text-align:center;border-right:1px solid rgba(255,255,255,.06)}.bsti:last-child{border-right:none}
-.bsti h4{font-size:32px;font-weight:700;color:${p.accent};margin-bottom:4px}.bsti p{font-size:12px;text-transform:uppercase;letter-spacing:2px;opacity:.4}
-.bzz{display:grid;grid-template-columns:1fr 1fr;min-height:500px}
-.bzz.rev{direction:rtl}.bzz.rev>*{direction:ltr}
-.bzi{overflow:hidden;min-height:500px}
-.bzt{display:flex;flex-direction:column;justify-content:center;padding:80px 60px;background:#111}
-.bzz.rev .bzt{background:#0d0d0d}
-.bzt h3{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:16px;line-height:1.1}
-.bzt p{font-size:16px;line-height:1.8;opacity:.5;margin-bottom:20px;max-width:440px}
-.bztg{display:inline-block;padding:6px 16px;background:rgba(255,255,255,.06);border-radius:4px;font-size:11px;font-weight:600;color:${p.accent};letter-spacing:1px;text-transform:uppercase}
-.bqt{position:relative;overflow:hidden;padding:120px 60px;text-align:center}
-.bqt>img{position:absolute;inset:0;min-height:100%;filter:brightness(.2)}
-.bqt>*:not(img){position:relative;z-index:1}
-.bqt blockquote{font-family:'Playfair Display',serif;font-size:30px;font-style:italic;max-width:700px;margin:0 auto 20px;line-height:1.5}
-.bhr{display:grid;grid-template-columns:1fr 1fr;background:#111}
-.bhrl{padding:80px 60px}.bhrr{overflow:hidden;min-height:400px}
-.bhrd{display:flex;justify-content:space-between;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:15px}.bhrd span:last-child{opacity:.4}
-@media(max-width:900px){.bnk{display:none}.bhc h1{font-size:48px}.bzz,.bzz.rev{grid-template-columns:1fr;direction:ltr}.bzz.rev>*{direction:ltr}.bzi{min-height:300px}.bzt{padding:48px 24px}.bstat{flex-direction:column}.bsti{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.bhr{grid-template-columns:1fr}.bhrl{padding:48px 24px}.bqt{padding:60px 24px}}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,Arial,sans-serif;background:#fff;color:#333;line-height:1.6;-webkit-font-smoothing:antialiased}img{display:block;max-width:100%;height:auto}
+.container{max-width:1140px;margin:0 auto;padding:0 24px}
+header{padding:18px 0;border-bottom:1px solid #eee;background:#fff;position:sticky;top:0;z-index:50}
+.hdr{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:22px;font-weight:700;color:${p.primary}}
+.nav{display:flex;gap:28px;align-items:center;list-style:none}
+.nav a{text-decoration:none;color:#444;font-size:14px;font-weight:500}
+.nav a:hover{color:${p.accent}}
+.nav .btn{background:${p.accent};color:#fff;padding:9px 22px;border-radius:4px}
+.nav .btn:hover{opacity:.9;color:#fff}
+.hero{padding:80px 0;background:#f8f8f8;text-align:center}
+.hero h1{font-size:42px;font-weight:700;color:${p.primary};margin-bottom:16px;line-height:1.2}
+.hero p{font-size:18px;color:#666;max-width:600px;margin:0 auto 24px}
+.btn-primary{display:inline-block;background:${p.accent};color:#fff;padding:14px 32px;border-radius:4px;text-decoration:none;font-weight:600;font-size:15px}
+.btn-primary:hover{opacity:.9}
+.hero-img{margin-top:48px;max-width:900px;margin-left:auto;margin-right:auto;border-radius:8px;overflow:hidden}
+.hero-img img{width:100%;height:auto;display:block}
+section{padding:64px 0}
+.section-title{text-align:center;margin-bottom:40px}
+.section-title h2{font-size:32px;font-weight:700;color:${p.primary};margin-bottom:8px}
+.section-title p{color:#777;font-size:16px}
+.about{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.about-img{border-radius:8px;overflow:hidden;aspect-ratio:4/3}
+.about-img img{width:100%;height:100%;object-fit:cover}
+.about-text h2{font-size:30px;color:${p.primary};margin-bottom:16px;font-weight:700}
+.about-text p{margin-bottom:14px;color:#555}
+.services{background:#fafafa}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.svc-card{background:#fff;border:1px solid #eee;border-radius:8px;overflow:hidden}
+.svc-card-img{aspect-ratio:4/3;overflow:hidden}
+.svc-card-img img{width:100%;height:100%;object-fit:cover}
+.svc-card-body{padding:20px}
+.svc-card-body h3{font-size:18px;color:${p.primary};margin-bottom:8px;font-weight:600}
+.svc-card-body p{font-size:14px;color:#666}
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.gallery div{aspect-ratio:1;overflow:hidden;border-radius:6px}
+.gallery img{width:100%;height:100%;object-fit:cover}
+.contact{background:${p.primary};color:#fff}
+.contact .section-title h2{color:#fff}
+.contact .section-title p{color:rgba(255,255,255,.7)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;color:#fff}
+.contact-info p{margin-bottom:10px;color:rgba(255,255,255,.85)}
+.contact-info strong{color:#fff}
+.hours-list{list-style:none}
+.hours-list li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:14px;color:rgba(255,255,255,.85)}
+.cta-bottom{background:${p.accent};text-align:center;padding:48px 24px}
+.cta-bottom h2{color:#fff;font-size:28px;margin-bottom:16px}
+.cta-bottom .btn-primary{background:#fff;color:${p.accent}}
+footer{background:#1a1a1a;color:#888;padding:32px 0;text-align:center;font-size:13px}
+footer a{color:${p.accent};text-decoration:none}
+@media(max-width:768px){.nav{display:none}.hero h1{font-size:32px}.hero p{font-size:16px}.about{grid-template-columns:1fr}.svc-grid{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}.contact-grid{grid-template-columns:1fr}}
 </style></head><body>
-<nav class="bn"><div class="bnl">${data.name}</div><ul class="bnk"><li><a href="#srv">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#hrs">Hours</a></li><li><a href="#" class="bnc">${cta}</a></li></ul></nav>
-<section class="bh">${img(ph[0], data.name)}<div class="bhc">
-<h1>${firstName}'s<span>${data.tagline.split(/\s+/).slice(-2).join(' ')}</span></h1>
-<p class="bhp">${data.subtitle}</p>
-<a href="#srv" class="bbtn">${cta}</a>
+<header><div class="container hdr">
+<div class="logo">${data.name}</div>
+<ul class="nav"><li><a href="#about">About</a></li><li><a href="#services">${navLabel}</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#contact">Contact</a></li><li><a href="#contact" class="btn">${cta}</a></li></ul>
+</div></header>
+
+<section class="hero"><div class="container">
+<h1>${data.tagline}</h1>
+<p>${data.subtitle}</p>
+${ratingHTML}
+<a href="#contact" class="btn-primary">${cta}</a>
+<div class="hero-img">${img(ph[0], data.name)}</div>
 </div></section>
-<div class="bstat">${rating > 0 ? `<div class="bsti"><h4>${rating}</h4><p>Rating</p></div>` : ''}<div class="bsti"><h4>${reviewCount || '—'}</h4><p>Reviews</p></div><div class="bsti"><h4>${data.neighbourhood || data.city}</h4><p>Location</p></div></div>
-<div id="srv">${zigzagItems.map((item, i) => `<div class="bzz${i % 2 ? ' rev' : ''}"><div class="bzi">${img(ph[6+i] || ph[i%5], item.name)}</div><div class="bzt"><h3>${item.emoji||''} ${item.name}</h3><p>${item.description}</p>${item.tag ? `<span class="bztg">${item.tag}</span>` : ''}</div></div>`).join('')}</div>
-<div id="about" style="max-width:700px;margin:0 auto;padding:100px 40px;text-align:center"><h2 style="font-size:40px;font-weight:700;letter-spacing:-1.5px;margin-bottom:24px">About ${firstName}'s</h2><p style="font-size:17px;line-height:1.9;opacity:.5;margin-bottom:12px">${data.about_paragraph}</p><p style="font-size:17px;line-height:1.9;opacity:.5">${data.about_paragraph2}</p><div style="margin-top:24px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${(data.vibe_tags || []).map(t => `<span style="padding:6px 14px;border:1px solid rgba(255,255,255,.1);border-radius:4px;font-size:11px;letter-spacing:1px;text-transform:uppercase;opacity:.5">${t}</span>`).join('')}</div></div>
-${data.review_quote ? `<section class="bqt">${img(ph[5] || ph[0], 'Ambiance')}<blockquote>"${data.review_quote}"</blockquote><cite style="font-size:13px;opacity:.4;font-style:normal">— ${data.review_source || 'Customer Review'}</cite></section>` : ''}
-<div class="bhr" id="hrs"><div class="bhrl"><h2 style="font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:36px">Hours & Location</h2>${hours.map(h => `<div class="bhrd"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}<div style="margin-top:32px;font-size:15px;line-height:1.8;opacity:.5"><strong style="opacity:1">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>${data.phone}` : ''}</div></div><div class="bhrr">${img(ph[4] || ph[0], 'Location')}</div></div>
-<div style="background:${p.accent};padding:48px 60px;text-align:center"><h3 style="font-size:22px;font-weight:700;color:${p.primary};margin-bottom:10px">Like what you see?</h3><p style="font-size:14px;color:${p.primary};opacity:.7;margin-bottom:20px">This mockup was built for you by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;background:${p.primary};color:#fff;padding:14px 36px;border-radius:4px;text-decoration:none;font-weight:700;font-size:13px">Get In Touch →</a></div>
-<footer style="padding:32px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;background:#0a0a0a;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:18px;font-weight:700">${data.name}</span><span style="font-size:12px;opacity:.2">© 2026 ${data.name}</span><span style="font-size:11px;opacity:.15;padding:6px 12px;border:1px solid rgba(255,255,255,.08);border-radius:4px">Built by The Web Guys</span></footer>${interactiveJS}</body></html>`;
+
+<section id="about"><div class="container about">
+<div class="about-img">${img(ph[5] || ph[0], data.name)}</div>
+<div class="about-text">
+<h2>About Us</h2>
+<p>${data.about_paragraph}</p>
+<p>${data.about_paragraph2}</p>
+</div>
+</div></section>
+
+<section id="services" class="services"><div class="container">
+<div class="section-title"><h2>${data.items_label || 'Our Services'}</h2><p>What we offer</p></div>
+<div class="svc-grid">${allItems.slice(0,6).map((item, i) => `<div class="svc-card"><div class="svc-card-img">${img(ph[6+i] || ph[i%5], item.name)}</div><div class="svc-card-body"><h3>${item.name}</h3><p>${item.description}</p></div></div>`).join('')}</div>
+</div></section>
+
+<section id="gallery"><div class="container">
+<div class="section-title"><h2>Gallery</h2><p>Take a look around</p></div>
+<div class="gallery">${[1,2,3,4].map(i => `<div>${img(ph[i] || ph[0], 'Gallery ' + i)}</div>`).join('')}</div>
+</div></section>
+
+<section id="contact" class="contact"><div class="container">
+<div class="section-title"><h2>Get In Touch</h2><p>We'd love to hear from you</p></div>
+<div class="contact-grid">
+<div class="contact-info">
+<h3 style="margin-bottom:16px;font-size:20px">Location</h3>
+<p><strong>${data.address_line1}</strong></p>
+<p>${data.city}, ${data.province_state} ${data.postal_zip}</p>
+${data.phone ? `<p style="margin-top:12px"><strong>Phone:</strong> ${data.phone}</p>` : ''}
+${data.instagram ? `<p><strong>Instagram:</strong> @${data.instagram}</p>` : ''}
+</div>
+<div>
+<h3 style="margin-bottom:16px;font-size:20px">Hours</h3>
+<ul class="hours-list">${hours.map(h => `<li><span>${h.days}</span><span>${h.time}</span></li>`).join('')}</ul>
+</div>
+</div>
+</div></section>
+
+<div class="cta-bottom"><h2>Ready to ${cta.toLowerCase()}?</h2><a href="tel:${data.phone || ''}" class="btn-primary">${data.phone || cta}</a></div>
+
+<footer><div class="container">© 2026 ${data.name} · Website by <a href="https://thewebguys.ca" target="_blank">The Web Guys</a></div></footer>
+${interactiveJS}</body></html>`;
 }
 
-// ═══════════════════════════════════════════════════════
-// TEMPLATE: EDITORIAL — Typography-driven, single column
-// ═══════════════════════════════════════════════════════
-function templateEditorial(data, d) {
-  const { p, ph, img, allItems, hours, firstName, navLabel, cta, rating, reviewCount, head, interactiveJS } = d;
-  const stars = rating > 0 ? `${rating} ★ · ${reviewCount} reviews` : '';
+// ═══════════════════════════════════════════════════════════════════════════
+// PREMIUM — "Award-winning agency" look
+// Goal: feels like a real brand. Custom design, conversion-optimized, trust-built.
+// Includes: FAQ, multiple CTAs, reviews integrated, custom icons, animations,
+// trust badges, featured services, local SEO blocks, interactive map.
+// ═══════════════════════════════════════════════════════════════════════════
+function templatePremium(data, d) {
+  const { p, ph, img, sigItems, allItems, hours, firstName, isFood, navLabel, cta, rating, reviewCount, head, mapEmbed, premiumJS } = d;
+  const reviewCountNum = parseInt(reviewCount) || 0;
+
+  // Custom SVG icons by category
+  const iconMap = {
+    dental: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c-3 0-5 2-5 4 0 1 .5 2 .5 4s-.5 4-.5 6 1 6 2 6 1-3 2-5c.3-.6.7-1 1-1s.7.4 1 1c1 2 1 5 2 5s2-4 2-6-.5-4-.5-6 .5-3 .5-4c0-2-2-4-5-4z"/></svg>',
+    restaurant: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 2v8c0 1 .5 2 2 2h0v10M9 2v6M5 2v6M17 2c-2 0-3 4-3 8 0 1 1 2 3 2v10"/></svg>',
+    cafe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 10h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-6zM16 13h2a3 3 0 0 1 0 6h-2M7 3v3M11 3v3M15 3v3"/></svg>',
+    auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l2-5h14l2 5v6h-3a2 2 0 0 1-4 0H10a2 2 0 0 1-4 0H3v-6zM5 12h14"/></svg>',
+    salon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8 16M14 10l6 10"/></svg>',
+    default: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>'
+  };
+  const icon = iconMap[data.category] || iconMap.default;
+
+  // Build FAQ from business data
+  const faqs = [
+    { q: `What makes ${firstName}'s different?`, a: data.about_paragraph },
+    { q: `Where are you located?`, a: `We're at ${data.address_line1}, ${data.city}, ${data.province_state} ${data.postal_zip}${data.neighbourhood ? ` in the ${data.neighbourhood} neighbourhood` : ''}. ${data.phone ? `Call us at ${data.phone}.` : ''}` },
+    { q: `What are your hours?`, a: data.hours_summary + '. ' + (hours.length ? `Full schedule: ${hours.map(h => `${h.days} ${h.time}`).join('; ')}.` : '') },
+    { q: `Do you offer ${data.has_delivery ? 'delivery' : 'walk-ins'}?`, a: data.has_delivery ? `Yes — we deliver via ${(data.delivery_platforms || []).join(', ') || 'major platforms'}.` : `Yes, walk-ins are welcome. ${data.cta_primary ? `You can also ${data.cta_primary.toLowerCase()}.` : ''}` },
+  ];
+
+  // Multiple synthesized reviews for the testimonials strip
+  const testimonials = [
+    { quote: data.review_quote || `Best ${data.category} in ${data.city}. Highly recommend.`, source: data.review_source || 'Google Reviews', initials: 'JL' },
+    { quote: `${(sigItems[0]?.name || 'Their service')} was incredible. Worth every penny.`, source: 'Yelp Review', initials: 'SM' },
+    { quote: `Came back three times this month. They've earned a loyal customer.`, source: 'Google Reviews', initials: 'AR' },
+  ];
+
   return `${head}<style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:#FAFAF8;color:#1a1a1a;-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
-.en{position:fixed;top:0;width:100%;z-index:100;padding:14px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(250,250,248,0.95);backdrop-filter:blur(12px);border-bottom:1px solid #eee}
-.enl{font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase}
-.enk{display:flex;gap:24px;list-style:none;align-items:center}.enk a{text-decoration:none;color:#aaa;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;transition:color .2s}.enk a:hover{color:#1a1a1a}
-.enc{background:#1a1a1a!important;color:#fff!important;padding:7px 18px!important;border-radius:3px;font-size:10px!important;letter-spacing:1.5px!important}
-.eh{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:180px 40px 80px;border-bottom:1px solid #e8e8e4}
-.ehl{width:60px;height:1px;background:#1a1a1a;margin:0 auto 40px}
-.eh h1{font-family:'Playfair Display',serif;font-size:clamp(56px,9vw,120px);font-weight:700;line-height:.9;letter-spacing:-5px;margin-bottom:28px}
-.eh h1 em{font-style:italic;font-weight:400;display:block;color:${p.accent}}
-.ehsub{font-size:16px;line-height:1.7;color:#888;max-width:420px;margin:0 auto 40px}
-.ehbtn{display:inline-block;border:1.5px solid #1a1a1a;color:#1a1a1a;padding:14px 44px;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:all .2s}.ehbtn:hover{background:#1a1a1a;color:#fff}
-.efull{width:100%;aspect-ratio:2.5/1;overflow:hidden}
-.eab{max-width:560px;margin:0 auto;padding:100px 40px;text-align:center}
-.eab h2{font-family:'Playfair Display',serif;font-size:14px;font-weight:400;letter-spacing:4px;text-transform:uppercase;color:#aaa;margin-bottom:32px}
-.eab p{font-size:17px;line-height:2;color:#555}
-.eab .tags{margin-top:28px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.eab .tags span{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;padding:4px 12px;border:1px solid #ddd;border-radius:2px}
-.edv{height:1px;background:#e8e8e4;max-width:100px;margin:0 auto}
-.esg{max-width:800px;margin:0 auto;padding:80px 40px}
-.esg h2{font-family:'Playfair Display',serif;font-size:48px;text-align:center;margin-bottom:12px;letter-spacing:-2px}
-.esg>p{text-align:center;color:#aaa;font-size:13px;margin-bottom:56px}
-.esr{display:grid;grid-template-columns:1fr 1fr;gap:0}
-.esi{padding:32px 28px;border-bottom:1px solid #e8e8e4}
-.esi:nth-child(odd){border-right:1px solid #e8e8e4}
-.esn{font-size:11px;color:${p.accent};font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
-.esi h3{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;font-weight:700}
-.esi p{font-size:13px;line-height:1.6;color:#888}
-.egal{display:grid;grid-template-columns:2fr 1fr;gap:4px;margin-top:4px}
-.egal>div{overflow:hidden}.egal>div:first-child{grid-row:span 2}
-.egal>div img{transition:transform .6s}.egal>div:hover img{transform:scale(1.04)}
-.eqt{text-align:center;padding:80px 40px;max-width:600px;margin:0 auto}
-.eqt blockquote{font-family:'Playfair Display',serif;font-size:24px;font-style:italic;line-height:1.6;margin-bottom:16px;letter-spacing:-.5px}
-.eqt cite{font-size:11px;color:#aaa;font-style:normal;letter-spacing:2px;text-transform:uppercase}
-.ehs{max-width:480px;margin:0 auto;padding:80px 40px}
-.ehs h2{font-family:'Playfair Display',serif;font-size:14px;font-weight:400;letter-spacing:4px;text-transform:uppercase;color:#aaa;text-align:center;margin-bottom:32px}
-.ehr{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #eee;font-size:14px}.ehr span:last-child{color:#aaa}
-.eadr{text-align:center;margin-top:32px;font-size:14px;line-height:1.9;color:#888}
-@media(max-width:900px){.enk{display:none}.eh h1{font-size:52px;letter-spacing:-3px}.efull{aspect-ratio:16/9}.esr{grid-template-columns:1fr}.esi{border-right:none!important}.egal{grid-template-columns:1fr;gap:4px}.egal>div:first-child{grid-row:auto}.esg{padding:60px 24px}.eab{padding:60px 24px}.ehs{padding:60px 24px}}
-</style></head><body>
-<nav class="en"><div class="enl">${data.name}</div><ul class="enk"><li><a href="#srv">${navLabel}</a></li><li><a href="#about">About</a></li><li><a href="#hrs">Hours</a></li><li><a href="#" class="enc">${cta}</a></li></ul></nav>
-<section class="eh"><div class="ehl"></div>${stars ? `<p style="font-size:12px;color:#aaa;letter-spacing:2px;margin-bottom:20px">${stars}</p>` : ''}<h1>${firstName}'s<em>${data.tagline.split(/\s+/).slice(-2).join(' ')}</em></h1><p class="ehsub">${data.subtitle}</p><a href="#srv" class="ehbtn">${cta}</a></section>
-<div class="efull">${img(ph[0], data.name)}</div>
-<div id="about"><section class="eab"><h2>Our Story</h2><p>${data.about_paragraph}</p><p style="margin-top:16px">${data.about_paragraph2}</p><div class="tags">${(data.vibe_tags || []).map(t => `<span>${t}</span>`).join('')}</div></section></div>
-<div class="edv"></div>
-<section class="esg" id="srv"><h2>${data.items_label || "What We Offer"}</h2><p>What keeps people coming back.</p><div class="esr">${allItems.map((item, i) => `<div class="esi"><div class="esn">${item.tag || ('0' + (i+1)).slice(-2)}</div><h3>${item.emoji||''} ${item.name}</h3><p>${item.description}</p></div>`).join('')}</div></section>
-<div class="egal"><div style="min-height:400px">${img(ph[1] || ph[0], 'Gallery 1')}</div><div style="min-height:198px">${img(ph[2] || ph[0], 'Gallery 2')}</div><div style="min-height:198px">${img(ph[3] || ph[0], 'Gallery 3')}</div></div>
-${data.review_quote ? `<div class="edv" style="margin-top:0"></div><section class="eqt"><blockquote>"${data.review_quote}"</blockquote><cite>— ${data.review_source || 'Customer Review'}</cite></section><div class="edv"></div>` : '<div class="edv"></div>'}
-<section class="ehs" id="hrs"><h2>Visit Us</h2>${hours.map(h => `<div class="ehr"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}<div class="eadr"><strong style="color:#1a1a1a">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>${data.phone}` : ''}</div></section>
-<div style="background:#1a1a1a;padding:44px 60px;text-align:center"><h3 style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:8px">Like what you see?</h3><p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:18px">This mockup was built for you by The Web Guys.</p><a href="https://thewebguys.ca" target="_blank" style="display:inline-block;border:1px solid rgba(255,255,255,.3);color:#fff;padding:12px 32px;border-radius:3px;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s">Get In Touch</a></div>
-<footer style="padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-top:1px solid #eee"><span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">${data.name}</span><span style="font-size:11px;color:#ccc">© 2026</span><span style="font-size:10px;color:#ddd">Built by The Web Guys</span></footer>${interactiveJS}</body></html>`;
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:${p.primary};--a:${p.accent};--bg:${p.bg};--w:${p.white};--ink:#0d0d0d;--mute:#6b6b6b}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--w);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;width:100%;height:100%;object-fit:cover}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+
+/* ── NAV (translucent, sophisticated) ── */
+nav{position:fixed;top:0;width:100%;z-index:100;padding:18px 0;background:rgba(255,255,255,.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.04);transition:padding .3s}
+.nav-row{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.5px}
+.brand-mark{width:32px;height:32px;background:var(--ink);color:var(--w);display:flex;align-items:center;justify-content:center;border-radius:50%;font-family:'Inter';font-weight:700;font-size:13px;letter-spacing:0}
+.nav-links{display:flex;gap:32px;list-style:none;align-items:center}
+.nav-links a{text-decoration:none;color:var(--ink);font-size:13px;font-weight:500;letter-spacing:.3px;position:relative}
+.nav-links a::after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .3s}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-cta{background:var(--ink);color:var(--w);padding:11px 22px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:background .25s}
+.nav-cta:hover{background:var(--a);color:var(--ink)}
+
+/* ── HERO (asymmetric, editorial) ── */
+.hero{padding:140px 0 80px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:center}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--a);margin-bottom:24px}
+.hero-tag::before{content:'';width:32px;height:1px;background:var(--a)}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(56px,7vw,96px);line-height:.92;letter-spacing:-3px;margin-bottom:28px}
+.hero h1 em{font-family:'Playfair Display',serif;font-style:italic;color:var(--a);font-weight:400;display:block}
+.hero-sub{font-size:19px;line-height:1.7;color:var(--mute);max-width:480px;margin-bottom:36px}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:48px}
+.btn-pri{background:var(--ink);color:var(--w);padding:18px 36px;border-radius:100px;font-weight:600;font-size:15px;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:all .3s;border:none;cursor:pointer}
+.btn-pri:hover{background:var(--a);color:var(--ink);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.15)}
+.btn-sec{background:transparent;color:var(--ink);padding:18px 36px;border-radius:100px;font-weight:600;font-size:15px;text-decoration:none;border:1.5px solid var(--ink);transition:all .3s}
+.btn-sec:hover{background:var(--ink);color:var(--w)}
+.hero-trust{display:flex;gap:32px;flex-wrap:wrap;align-items:center;padding-top:24px;border-top:1px solid rgba(0,0,0,.06)}
+.trust-item{display:flex;align-items:center;gap:10px}
+.trust-num{font-family:'DM Serif Display',serif;font-size:32px;color:var(--a);line-height:1}
+.trust-lbl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);line-height:1.3}
+.hero-img{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 30px 80px rgba(0,0,0,.15)}
+.hero-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.25))}
+.hero-badge{position:absolute;bottom:24px;left:24px;right:24px;z-index:2;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);padding:16px 20px;border-radius:14px;display:flex;align-items:center;gap:14px}
+.hero-badge svg{width:36px;height:36px;color:var(--a);flex-shrink:0}
+.hero-badge h4{font-size:13px;font-weight:700;margin-bottom:2px}
+.hero-badge p{font-size:12px;color:var(--mute)}
+
+/* ── PRESS / SOCIAL PROOF STRIP ── */
+.proof{padding:48px 0;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06);background:var(--bg)}
+.proof-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;align-items:center}
+.proof-item{text-align:center;padding:0 24px;border-right:1px solid rgba(0,0,0,.06)}
+.proof-item:last-child{border-right:none}
+.proof-stars{color:var(--a);font-size:20px;margin-bottom:6px;letter-spacing:2px}
+.proof-num{font-family:'DM Serif Display',serif;font-size:36px;color:var(--ink);line-height:1;margin-bottom:4px}
+.proof-lbl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute)}
+
+/* ── FEATURED (large picture story) ── */
+.featured{padding:120px 0}
+.section-kicker{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--a);margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.section-kicker::before{content:'';width:40px;height:1px;background:var(--a)}
+.section-h{font-family:'DM Serif Display',serif;font-size:clamp(40px,5vw,64px);letter-spacing:-2px;line-height:1.05;margin-bottom:24px;max-width:720px}
+.section-h em{font-family:'Playfair Display',serif;font-style:italic;color:var(--a);font-weight:400}
+.featured-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:60px}
+.featured-img{aspect-ratio:4/5;border-radius:20px;overflow:hidden;position:relative}
+.featured-img-tag{position:absolute;top:24px;left:24px;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);padding:8px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink)}
+.featured-content p{font-size:17px;line-height:1.85;color:var(--mute);margin-bottom:20px}
+.featured-content p:first-of-type::first-letter{font-family:'DM Serif Display',serif;font-size:64px;color:var(--a);float:left;line-height:.85;margin:5px 12px 0 0;font-weight:400}
+.values{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:36px}
+.value{padding-top:20px;border-top:2px solid var(--ink)}
+.value h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.value p{font-size:13px;color:var(--mute);line-height:1.6}
+
+/* ── SIGNATURE / FEATURED SERVICES (premium presentation) ── */
+.signature{padding:120px 0;background:var(--bg)}
+.sig-head{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;margin-bottom:60px}
+.sig-head p{font-size:16px;color:var(--mute);line-height:1.7;max-width:440px}
+.sig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.sig-card{background:var(--w);border-radius:24px;overflow:hidden;transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s}
+.sig-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px rgba(0,0,0,.12)}
+.sig-card-img{aspect-ratio:4/5;overflow:hidden;position:relative}
+.sig-card-img img{transition:transform .8s cubic-bezier(.22,1,.36,1)}
+.sig-card:hover .sig-card-img img{transform:scale(1.08)}
+.sig-card-tag{position:absolute;top:20px;left:20px;background:var(--a);color:var(--ink);padding:6px 14px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.sig-card-body{padding:28px}
+.sig-card h3{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-.5px;margin-bottom:10px}
+.sig-card p{font-size:14px;color:var(--mute);line-height:1.7;margin-bottom:20px}
+.sig-card-link{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px;border-bottom:1px solid var(--ink);padding-bottom:2px;transition:gap .3s}
+.sig-card-link:hover{gap:12px}
+
+/* ── ALL SERVICES (numbered list with icons) ── */
+.all-services{padding:120px 0}
+.all-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;margin-top:60px;border-top:1px solid rgba(0,0,0,.08)}
+.all-item{padding:32px 0;border-bottom:1px solid rgba(0,0,0,.08);display:grid;grid-template-columns:60px 1fr auto;gap:32px;align-items:center;transition:padding-left .3s;cursor:default}
+.all-item:nth-child(odd){border-right:1px solid rgba(0,0,0,.08);padding-right:32px}
+.all-item:nth-child(even){padding-left:32px}
+.all-item:hover{padding-left:40px}
+.all-item:nth-child(even):hover{padding-left:40px}
+.all-num{font-family:'DM Serif Display',serif;font-size:32px;color:var(--a);line-height:1}
+.all-info h4{font-size:17px;font-weight:600;margin-bottom:4px}
+.all-info p{font-size:13px;color:var(--mute);line-height:1.6}
+.all-arrow{color:var(--mute);font-size:20px;transition:transform .3s,color .3s}
+.all-item:hover .all-arrow{transform:translateX(4px);color:var(--a)}
+
+/* ── TESTIMONIALS (3-up, with avatars) ── */
+.testimonials{padding:120px 0;background:var(--ink);color:var(--w)}
+.testimonials .section-kicker{color:var(--a)}
+.testimonials .section-h{color:var(--w)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:60px}
+.testi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:36px;transition:all .3s}
+.testi:hover{background:rgba(255,255,255,.06);border-color:var(--a)}
+.testi-stars{color:var(--a);font-size:18px;letter-spacing:2px;margin-bottom:20px}
+.testi blockquote{font-family:'Playfair Display',serif;font-size:19px;font-style:italic;line-height:1.6;margin-bottom:24px;color:var(--w)}
+.testi-author{display:flex;align-items:center;gap:14px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08)}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--a);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.testi-author h5{font-size:14px;font-weight:600;margin-bottom:2px}
+.testi-author p{font-size:12px;color:rgba(255,255,255,.5)}
+
+/* ── LOCATION (map + info) ── */
+.location{padding:120px 0}
+.loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:60px;border-radius:24px;overflow:hidden;border:1px solid rgba(0,0,0,.06)}
+.loc-info{padding:60px;background:var(--bg)}
+.loc-info h3{font-family:'DM Serif Display',serif;font-size:32px;letter-spacing:-1px;margin-bottom:32px}
+.loc-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(0,0,0,.06)}
+.loc-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.loc-lbl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+.loc-val{font-size:16px;line-height:1.7}
+.loc-val strong{font-weight:600}
+.hours-row{display:flex;justify-content:space-between;padding:9px 0;font-size:14px;border-bottom:1px solid rgba(0,0,0,.04)}
+.hours-row:last-child{border-bottom:none}
+.hours-row span:last-child{color:var(--mute)}
+.loc-map{min-height:560px}
+
+/* ── FAQ ── */
+.faq{padding:120px 0;background:var(--bg)}
+.faq-list{max-width:840px;margin:60px auto 0;display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid rgba(0,0,0,.1);padding:24px 0;cursor:pointer}
+.faq-q{display:flex;justify-content:space-between;align-items:center;gap:24px}
+.faq-q h4{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.5px}
+.faq-toggle{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--w);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;line-height:1;transition:transform .3s}
+.faq-item[open] .faq-toggle{transform:rotate(45deg);background:var(--a);color:var(--ink)}
+.faq-a{font-size:15px;line-height:1.8;color:var(--mute);padding-top:16px;max-width:680px}
+
+/* ── FINAL CTA ── */
+.final-cta{padding:120px 0;background:var(--a);text-align:center}
+.final-cta h2{font-family:'DM Serif Display',serif;font-size:clamp(40px,5vw,64px);letter-spacing:-2px;color:var(--ink);margin-bottom:20px;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.05}
+.final-cta p{font-size:18px;color:var(--ink);opacity:.75;margin-bottom:40px;max-width:520px;margin-left:auto;margin-right:auto}
+.final-cta .btn-pri{background:var(--ink);color:var(--w)}
+.final-cta .btn-pri:hover{background:var(--w);color:var(--ink)}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);color:var(--w);padding:80px 0 32px}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:48px}
+.foot-brand{font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:16px}
+.foot-brand-sub{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7;max-width:300px}
+.foot-col h5{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--a);margin-bottom:16px}
+.foot-col a,.foot-col p{display:block;color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;margin-bottom:10px;line-height:1.6}
+.foot-col a:hover{color:var(--w)}
+.foot-bottom{padding-top:32px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-size:12px;color:rgba(255,255,255,.4)}
+.foot-bottom a{color:var(--a);text-decoration:none}
+
+/* ── Mobile ── */
+@media(max-width:900px){
+  .nav-links{display:none}
+  .hero{padding:110px 0 60px}
+  .hero-grid,.featured-grid,.sig-head,.loc-grid{grid-template-columns:1fr;gap:40px}
+  .hero h1{font-size:48px;letter-spacing:-2px}
+  .proof-grid{grid-template-columns:1fr 1fr}
+  .proof-item:nth-child(2n){border-right:none}
+  .sig-grid,.testi-grid{grid-template-columns:1fr}
+  .all-grid{grid-template-columns:1fr}
+  .all-item:nth-child(odd){border-right:none;padding-right:0}
+  .all-item:nth-child(even){padding-left:0}
+  .foot-grid{grid-template-columns:1fr;gap:32px}
+  .loc-info{padding:40px 24px}
+  .values{grid-template-columns:1fr}
+  .featured,.signature,.all-services,.testimonials,.location,.faq,.final-cta{padding:80px 0}
 }
-
-
-// ═══════════════════════════════════════════════════════
-// PREMIUM: SHOWCASE — Bento grid dashboard layout
-// ═══════════════════════════════════════════════════════
-function templateShowcase(data, d) {
-  const { p, ph, img, sigItems, allItems, hours, firstName, navLabel, cta, rating, reviewCount, head, mapEmbed, premiumJS } = d;
-  return `${head}<style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Space Grotesk','Inter',sans-serif;background:${p.bg};color:${p.primary};-webkit-font-smoothing:antialiased;padding:90px 24px 24px}img{display:block;width:100%;height:100%;object-fit:cover}
-nav{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;padding:10px 10px 10px 24px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,.75);backdrop-filter:blur(20px);border-radius:40px;border:1px solid rgba(0,0,0,.06);box-shadow:0 8px 32px rgba(0,0,0,.08)}
-.nl{font-weight:700;font-size:16px;letter-spacing:-.5px;white-space:nowrap}.nl span{color:${p.accent}}
-.nk{display:flex;gap:18px;list-style:none;align-items:center}.nk a{text-decoration:none;color:rgba(0,0,0,.45);font-size:12px;font-weight:600;transition:color .2s}.nk a:hover{color:${p.primary}}
-.nc{background:${p.primary}!important;color:${p.bg}!important;padding:9px 20px!important;border-radius:24px;font-size:12px!important}
-.bento{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:120px;gap:14px;max-width:1280px;margin:0 auto}
-.b{border-radius:24px;overflow:hidden;position:relative;background:${p.white};border:1px solid rgba(0,0,0,.05);transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
-.b:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.1)}
-.b-hero{grid-column:span 4;grid-row:span 3;display:flex;flex-direction:column;justify-content:flex-end;padding:40px;color:#fff}
-.b-hero>img{position:absolute;inset:0;z-index:0}.b-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75),transparent 60%);z-index:1}
-.b-hero>*:not(img){position:relative;z-index:2}
-.b-hero h1{font-size:clamp(36px,4.5vw,58px);font-weight:700;letter-spacing:-2.5px;line-height:1;margin-bottom:10px}
-.b-hero p{font-size:15px;opacity:.85;max-width:420px}
-.b-rate{grid-column:span 2;grid-row:span 1;display:flex;align-items:center;justify-content:center;gap:16px;background:${p.primary};color:${p.bg}}
-.b-rate h3{font-size:42px;font-weight:700;color:${p.accent}}.b-rate p{font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.6}
-.b-cta{grid-column:span 2;grid-row:span 2;background:${p.accent};display:flex;flex-direction:column;justify-content:center;padding:32px;cursor:pointer;text-decoration:none;color:${p.primary}}
-.b-cta h3{font-size:24px;font-weight:700;letter-spacing:-1px;margin-bottom:8px}.b-cta p{font-size:13px;opacity:.7;margin-bottom:16px}
-.b-cta span{font-size:32px;transition:transform .3s}.b-cta:hover span{transform:translateX(8px)}
-.b-img{grid-column:span 2;grid-row:span 2}
-.b-about{grid-column:span 3;grid-row:span 2;padding:32px;display:flex;flex-direction:column;justify-content:center}
-.b-about h2{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${p.accent};margin-bottom:12px}
-.b-about p{font-size:14px;line-height:1.8;opacity:.65}
-.b-tags{grid-column:span 3;grid-row:span 1;display:flex;align-items:center;gap:8px;padding:0 28px;flex-wrap:wrap}
-.b-tags span{padding:7px 16px;background:${p.accent}18;border-radius:20px;font-size:12px;color:${p.accent};font-weight:600}
-.b-srv{grid-column:span 2;grid-row:span 2;display:flex;flex-direction:column}
-.b-srv .bi{flex:1;overflow:hidden;position:relative}.b-srv .bi img{transition:transform .5s}.b-srv:hover .bi img{transform:scale(1.06)}
-.b-srv .bt{padding:18px 20px}.b-srv .bt h3{font-size:15px;font-weight:700;margin-bottom:4px}.b-srv .bt p{font-size:12px;opacity:.55;line-height:1.5}
-.b-quote{grid-column:span 4;grid-row:span 1;display:flex;align-items:center;padding:0 36px;gap:16px;background:${p.primary};color:${p.bg}}
-.b-quote blockquote{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;line-height:1.5;opacity:.9}
-.b-map{grid-column:span 3;grid-row:span 3}
-.b-hours{grid-column:span 3;grid-row:span 3;padding:32px;display:flex;flex-direction:column;justify-content:center}
-.b-hours h2{font-size:20px;font-weight:700;letter-spacing:-.5px;margin-bottom:20px}
-.b-hours .hr{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:13px}.b-hours .hr span:last-child{opacity:.5}
-.b-twg{grid-column:span 6;grid-row:span 1;background:${p.accent};display:flex;align-items:center;justify-content:space-between;padding:0 36px;flex-wrap:wrap;gap:12px}
-.b-twg h3{font-size:18px;font-weight:700;color:${p.primary}}
-.b-twg a{background:${p.primary};color:${p.bg};padding:12px 28px;border-radius:24px;text-decoration:none;font-weight:700;font-size:13px}
-@media(max-width:900px){body{padding:80px 12px 12px}nav{width:calc(100% - 24px);justify-content:space-between}.nk{display:none}.bento{grid-template-columns:repeat(2,1fr);grid-auto-rows:110px}.b-hero{grid-column:span 2;grid-row:span 3}.b-rate,.b-cta,.b-img,.b-srv{grid-column:span 2}.b-about,.b-tags,.b-map,.b-hours{grid-column:span 2}.b-quote{grid-column:span 2;grid-row:span 2;padding:24px}.b-twg{grid-column:span 2;flex-direction:column;justify-content:center;grid-row:span 2}}
 </style></head><body>
-<nav><div class="nl">${firstName}<span>'s</span></div><ul class="nk"><li><a href="#srv">${navLabel}</a></li><li><a href="#hrs">Hours</a></li><li><a href="#" class="nc">${cta}</a></li></ul></nav>
-<div class="bento">
-<div class="b b-hero" data-reveal>${img(ph[0], data.name)}<h1>${data.tagline}</h1><p>${data.subtitle}</p></div>
-${rating > 0 ? `<div class="b b-rate" data-reveal><h3 data-count="${rating}">0</h3><div><p>★ Rating</p><p style="margin-top:2px">${reviewCount} reviews</p></div></div>` : `<div class="b b-rate" data-reveal><h3>📍</h3><p>${data.neighbourhood || data.city}</p></div>`}
-<a href="#" class="b b-cta" data-reveal><h3>${cta}</h3><p>${data.hours_summary}</p><span>→</span></a>
-<div class="b b-img" data-reveal>${img(ph[1] || ph[0], 'Gallery')}</div>
-<div class="b b-about" data-reveal><h2>Our Story</h2><p>${data.about_paragraph}</p></div>
-<div class="b b-tags" data-reveal>${(data.vibe_tags || []).map(t => `<span>${t}</span>`).join('')}</div>
-<div style="grid-column:span 6;padding:28px 8px 8px" id="srv" data-reveal><h2 style="font-size:26px;font-weight:700;letter-spacing:-1px">${data.items_label || 'What We Offer'}</h2></div>
-${allItems.slice(0,6).map((item, i) => `<div class="b b-srv" data-reveal><div class="bi">${img(ph[6+i] || ph[i%5], item.name)}</div><div class="bt"><h3>${item.emoji||''} ${item.name}</h3><p>${item.description.split('.')[0]}.</p></div></div>`).join('')}
-${data.review_quote ? `<div class="b b-quote" data-reveal><span style="font-size:36px;opacity:.3">"</span><blockquote>${data.review_quote} <span style="font-size:11px;opacity:.5;font-style:normal">— ${data.review_source}</span></blockquote></div>` : ''}
-<div class="b b-img" style="grid-row:span 1" data-reveal>${img(ph[2] || ph[0], 'Gallery')}</div>
-<div class="b b-map" id="hrs" data-reveal>${mapEmbed}</div>
-<div class="b b-hours" data-reveal><h2>Visit Us</h2>${hours.map(h => `<div class="hr"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}<div style="margin-top:18px;font-size:13px;line-height:1.7;opacity:.6"><strong style="opacity:1">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>📞 ${data.phone}` : ''}</div></div>
-<div class="b b-twg" data-reveal><h3>Like what you see? Built by The Web Guys.</h3><a href="https://thewebguys.ca" target="_blank">Get In Touch →</a></div>
-</div>
-${premiumJS}</body></html>`;
-}
 
-// ═══════════════════════════════════════════════════════
-// PREMIUM: CINEMATIC — Full-screen scroll-snap slide deck
-// ═══════════════════════════════════════════════════════
-function templateCinematic(data, d) {
-  const { p, ph, img, allItems, hours, firstName, navLabel, cta, rating, reviewCount, head, mapEmbed, premiumJS } = d;
-  const slides = allItems.slice(0, 3);
-  return `${head}<style>
-*{margin:0;padding:0;box-sizing:border-box}html{scroll-snap-type:y mandatory;scroll-behavior:smooth}body{font-family:'Space Grotesk','Inter',sans-serif;background:#000;color:#fff;-webkit-font-smoothing:antialiased}img{display:block;width:100%;height:100%;object-fit:cover}
-.slide{height:100vh;scroll-snap-align:start;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.slide>img{position:absolute;inset:0;filter:brightness(.3)}
-@keyframes kb{0%{transform:scale(1)}100%{transform:scale(1.12)}}
-.slide>img{animation:kb 18s ease-in-out alternate infinite}
-.sc{position:relative;z-index:2;text-align:center;max-width:800px;padding:40px}
-.skick{font-size:12px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:${p.accent};margin-bottom:20px;display:block}
-.sc h1{font-size:clamp(52px,8vw,110px);font-weight:700;line-height:.92;letter-spacing:-4px;margin-bottom:20px}
-.sc h2{font-size:clamp(36px,5vw,64px);font-weight:700;letter-spacing:-2.5px;margin-bottom:16px;line-height:1}
-.sc p{font-size:17px;opacity:.55;line-height:1.7;max-width:520px;margin:0 auto}
-.sdots{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:14px}
-.sdots a{width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);display:block;transition:all .3s}.sdots a:hover{background:#fff;border-color:#fff}
-.snum{position:absolute;bottom:36px;left:48px;font-size:13px;letter-spacing:3px;opacity:.3;z-index:2}
-.sscroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:2;font-size:11px;letter-spacing:3px;text-transform:uppercase;opacity:.35;animation:bounce 2s infinite}
-@keyframes bounce{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
-.cbtn{display:inline-block;margin-top:32px;border:2px solid ${p.accent};color:${p.accent};padding:16px 48px;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;transition:all .3s}.cbtn:hover{background:${p.accent};color:#000}
-.stats{display:flex;gap:64px;justify-content:center;margin-top:40px}
-.stat h3{font-size:56px;font-weight:700;color:${p.accent}}.stat p{font-size:11px;letter-spacing:3px;text-transform:uppercase;opacity:.4;margin-top:4px}
-.stag{display:inline-block;margin-top:20px;padding:8px 20px;border:1px solid rgba(255,255,255,.15);border-radius:4px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${p.accent}}
-.sgrid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;max-width:1100px;width:100%;margin:0 40px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden}
-.sgl{padding:56px 48px;text-align:left}
-.sgl h2{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:28px}
-.sgl .hr{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px}.sgl .hr span:last-child{opacity:.4}
-.sgr{min-height:480px}
-@media(max-width:900px){.sdots{right:12px}.snum{left:24px}.sgrid{grid-template-columns:1fr;margin:0 16px}.sgl{padding:36px 24px}.sgr{min-height:280px}.stats{gap:32px;flex-wrap:wrap}}
-</style></head><body>
-<div class="sdots">${['#s0','#s1','#s2','#s3','#s4'].slice(0, 3 + slides.length > 5 ? 5 : 3 + slides.length).map(h => `<a href="${h}"></a>`).join('')}</div>
+<nav>
+  <div class="wrap nav-row">
+    <a href="#" class="brand"><div class="brand-mark">${firstName.slice(0,1).toUpperCase()}</div>${data.name}</a>
+    <ul class="nav-links">
+      <li><a href="#story">Our Story</a></li>
+      <li><a href="#signature">Featured</a></li>
+      <li><a href="#services">${navLabel}</a></li>
+      <li><a href="#visit">Visit</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact" class="nav-cta">${cta} →</a></li>
+    </ul>
+  </div>
+</nav>
 
-<section class="slide" id="s0">${img(ph[0], data.name)}<div class="sc">
-<span class="skick">${data.neighbourhood || data.city} · Est. ${data.city}</span>
-<h1>${firstName}'s</h1>
-<p style="font-size:22px;opacity:.8;font-family:'Playfair Display',serif;font-style:italic">${data.tagline}</p>
-${rating > 0 ? `<div class="stats"><div class="stat"><h3 data-count="${rating}">0</h3><p>Rating</p></div><div class="stat"><h3 data-count="${reviewCount}">0</h3><p>Reviews</p></div></div>` : ''}
-<a href="#s1" class="cbtn">${cta}</a>
-</div><div class="snum">01</div><div class="sscroll">↓ Scroll</div></section>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div data-reveal>
+      <span class="hero-tag">${data.address_line1} · ${data.neighbourhood || data.city}</span>
+      <h1>${data.tagline.split(/\s+/).slice(0, -2).join(' ')}<em>${data.tagline.split(/\s+/).slice(-2).join(' ')}</em></h1>
+      <p class="hero-sub">${data.subtitle}</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-pri">${cta} <span>→</span></a>
+        <a href="#signature" class="btn-sec">Explore ${navLabel}</a>
+      </div>
+      <div class="hero-trust">
+        ${rating > 0 ? `<div class="trust-item"><div class="trust-num" data-count="${rating}">0</div><div><div class="trust-lbl">Star rating</div><div class="trust-lbl">${reviewCount} reviews</div></div></div>` : ''}
+        <div class="trust-item"><div class="trust-num">${data.neighbourhood ? '' : '📍'}${data.neighbourhood ? '★' : ''}</div><div><div class="trust-lbl">Located in</div><div class="trust-lbl">${data.neighbourhood || data.city}</div></div></div>
+        <div class="trust-item"><div class="trust-num">${data.has_delivery ? '✓' : '★'}</div><div><div class="trust-lbl">${data.has_delivery ? 'Delivery' : 'Trusted'}</div><div class="trust-lbl">${data.has_delivery ? (data.delivery_platforms || []).slice(0,2).join(', ') || 'Available' : 'Local favourite'}</div></div></div>
+      </div>
+    </div>
+    <div class="hero-img" data-reveal>
+      ${img(ph[0], data.name)}
+      <div class="hero-badge">
+        <div style="color:var(--a)">${icon}</div>
+        <div><h4>${data.vibe_tags?.[0] || 'Local Favourite'}</h4><p>${data.hours_summary}</p></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-${slides.map((item, i) => `<section class="slide" id="s${i+1}">${img(ph[6+i] || ph[(i+1)%5], item.name)}<div class="sc">
-<span class="skick">${data.items_label || 'What We Offer'} — ${String(i+1).padStart(2,'0')}</span>
-<h2>${item.emoji||''} ${item.name}</h2>
-<p>${item.description}</p>
-${item.tag ? `<span class="stag">${item.tag}</span>` : ''}
-</div><div class="snum">${String(i+2).padStart(2,'0')}</div></section>`).join('')}
+<section class="proof">
+  <div class="wrap proof-grid">
+    ${rating > 0 ? `<div class="proof-item"><div class="proof-stars">${'★'.repeat(Math.round(rating))}</div><div class="proof-num" data-count="${rating}">0</div><div class="proof-lbl">Average rating</div></div>` : ''}
+    <div class="proof-item"><div class="proof-num" data-count="${reviewCountNum}">0</div><div class="proof-lbl">Happy customers</div></div>
+    <div class="proof-item"><div class="proof-num">${data.neighbourhood || data.city}</div><div class="proof-lbl">Proudly serving</div></div>
+    <div class="proof-item"><div class="proof-num">${data.vibe_tags?.[0] || 'Local'}</div><div class="proof-lbl">What we're known for</div></div>
+  </div>
+</section>
 
-<section class="slide" id="s${slides.length+1}">${img(ph[5] || ph[0], data.name)}<div class="sc">
-<span class="skick">Our Story</span>
-<p style="font-size:20px;opacity:.75;line-height:1.9">${data.about_paragraph}</p>
-${data.review_quote ? `<p style="margin-top:32px;font-family:'Playfair Display',serif;font-style:italic;font-size:18px;opacity:.5">"${data.review_quote}" — ${data.review_source}</p>` : ''}
-</div><div class="snum">${String(slides.length+2).padStart(2,'0')}</div></section>
+<section class="featured" id="story">
+  <div class="wrap">
+    <div data-reveal>
+      <div class="section-kicker">Our Story</div>
+      <h2 class="section-h">More than a ${data.category}.<em>A neighbourhood institution.</em></h2>
+    </div>
+    <div class="featured-grid">
+      <div class="featured-img" data-reveal>
+        ${img(ph[5] || ph[1] || ph[0], data.name)}
+        <span class="featured-img-tag">Since day one</span>
+      </div>
+      <div class="featured-content" data-reveal>
+        <p>${data.about_paragraph}</p>
+        <p>${data.about_paragraph2}</p>
+        <div class="values">
+          ${(data.vibe_tags || []).slice(0,4).map((tag, i) => `<div class="value"><h4>${tag}</h4><p>${['Made with intention.', 'Crafted with care.', 'Built to last.', 'For everyone.'][i % 4]}</p></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<section class="slide" id="s${slides.length+2}">${img(ph[4] || ph[0], 'Location')}
-<div class="sgrid"><div class="sgl">
-<h2>Find Us</h2>
-${hours.map(h => `<div class="hr"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}
-<div style="margin-top:24px;font-size:14px;line-height:1.8;opacity:.55"><strong style="opacity:1">${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.phone ? `<br>📞 ${data.phone}` : ''}</div>
-<a href="https://thewebguys.ca" target="_blank" style="display:inline-block;margin-top:28px;background:${p.accent};color:#000;padding:13px 32px;border-radius:4px;text-decoration:none;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase">Built by The Web Guys →</a>
-</div><div class="sgr">${mapEmbed.replace('style="', 'style="filter:invert(0.9) hue-rotate(180deg) grayscale(0.4);')}</div></div>
-<div class="snum">${String(slides.length+3).padStart(2,'0')}</div></section>
-${premiumJS}</body></html>`;
-}
+<section class="signature" id="signature">
+  <div class="wrap">
+    <div class="sig-head" data-reveal>
+      <div>
+        <div class="section-kicker">Featured</div>
+        <h2 class="section-h">What we're<em>known for.</em></h2>
+      </div>
+      <p>Our most-loved offerings, hand-picked and perfected over years. These are the ones our regulars keep coming back for.</p>
+    </div>
+    <div class="sig-grid">
+      ${sigItems.slice(0,3).map((item, i) => `<div class="sig-card" data-reveal>
+        <div class="sig-card-img">${img(ph[6+i] || ph[i%5], item.name)}<span class="sig-card-tag">${item.tag || 'Signature'}</span></div>
+        <div class="sig-card-body">
+          <h3>${item.emoji || ''} ${item.name}</h3>
+          <p>${item.description}</p>
+          <a href="#contact" class="sig-card-link">Try it now <span>→</span></a>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>
+</section>
 
-// ═══════════════════════════════════════════════════════
-// PREMIUM: MAGAZINE — Newspaper front page layout
-// ═══════════════════════════════════════════════════════
-function templateMagazine(data, d) {
-  const { p, ph, img, sigItems, allItems, hours, firstName, navLabel, cta, rating, reviewCount, head, mapEmbed, premiumJS } = d;
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  return `${head}<style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Playfair Display',Georgia,serif;background:#F4F1EA;color:#1a1a1a;-webkit-font-smoothing:antialiased;padding:32px 24px}img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
-.paper{max-width:1100px;margin:0 auto;background:#FBF9F4;border:1px solid #DDD8CC;box-shadow:0 8px 40px rgba(0,0,0,.08);padding:48px 56px}
-.mast{text-align:center;border-bottom:4px double #1a1a1a;padding-bottom:24px;margin-bottom:8px}
-.mast .ears{display:flex;justify-content:space-between;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px}
-.mast h1{font-size:clamp(48px,7vw,84px);font-weight:900;letter-spacing:-2px;line-height:.95}
-.mast .sub{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#666;margin-top:10px}
-.dateline{display:flex;justify-content:space-between;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#999;padding:10px 0;border-bottom:1px solid #1a1a1a;margin-bottom:32px}
-.lead{display:grid;grid-template-columns:1.6fr 1fr;gap:36px;margin-bottom:36px;padding-bottom:32px;border-bottom:1px solid #DDD8CC}
-.lead-img{aspect-ratio:16/10;overflow:hidden;border:1px solid #DDD8CC}
-.lead-cap{font-family:'Inter',sans-serif;font-size:10px;color:#999;margin-top:6px;font-style:italic}
-.lead h2{font-size:clamp(30px,3.6vw,46px);font-weight:900;line-height:1.05;letter-spacing:-1px;margin:18px 0 12px}
-.lead .deck{font-size:17px;font-style:italic;color:#555;line-height:1.6;margin-bottom:16px}
-.byline{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#999;margin-bottom:14px}
-.lead .body{font-size:14px;line-height:1.85;color:#333;column-count:1}
-.lead .body::first-letter{font-size:52px;font-weight:900;float:left;line-height:.85;margin:4px 8px 0 0}
-.sidebar{border-left:1px solid #DDD8CC;padding-left:32px;display:flex;flex-direction:column;gap:24px}
-.sb-box{border:2px solid #1a1a1a;padding:20px}
-.sb-box h3{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;text-align:center;border-bottom:1px solid #1a1a1a;padding-bottom:10px}
-.sb-rating{text-align:center}.sb-rating .big{font-size:62px;font-weight:900;line-height:1}.sb-rating p{font-family:'Inter',sans-serif;font-size:11px;color:#888;margin-top:6px}
-.sb-hours .hr{display:flex;justify-content:space-between;font-family:'Inter',sans-serif;font-size:12px;padding:7px 0;border-bottom:1px dotted #ccc}
-.sb-cta{background:#1a1a1a;color:#FBF9F4;text-align:center;padding:24px;text-decoration:none;display:block}
-.sb-cta h3{font-size:22px;font-weight:900;margin-bottom:6px;color:#FBF9F4}.sb-cta p{font-family:'Inter',sans-serif;font-size:11px;opacity:.6}
-.secrule{display:flex;align-items:center;gap:16px;margin:0 0 24px}
-.secrule h2{font-family:'Inter',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;white-space:nowrap}
-.secrule::before,.secrule::after{content:'';height:1px;background:#1a1a1a;flex:1}
-.cols{column-count:3;column-gap:32px;column-rule:1px solid #DDD8CC;margin-bottom:36px;padding-bottom:32px;border-bottom:1px solid #DDD8CC}
-.colitem{break-inside:avoid;margin-bottom:24px}
-.colitem .ci{aspect-ratio:3/2;overflow:hidden;margin-bottom:10px;border:1px solid #DDD8CC}
-.colitem h3{font-size:19px;font-weight:900;line-height:1.15;margin-bottom:6px}
-.colitem p{font-size:13px;line-height:1.7;color:#444}
-.colitem .tag{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:${p.accent};font-weight:700;display:block;margin-bottom:6px}
-.pullq{break-inside:avoid;border-top:3px solid #1a1a1a;border-bottom:3px solid #1a1a1a;padding:20px 0;margin-bottom:24px;text-align:center}
-.pullq blockquote{font-size:20px;font-style:italic;font-weight:700;line-height:1.4}
-.pullq cite{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#999;font-style:normal;display:block;margin-top:10px}
-.bottom{display:grid;grid-template-columns:1fr 1.4fr;gap:36px}
-.btm-map{aspect-ratio:4/3;border:1px solid #DDD8CC;overflow:hidden}
-.btm-map iframe{filter:grayscale(1) sepia(.15)}
-.btm h2{font-size:28px;font-weight:900;margin-bottom:14px}
-.btm p{font-size:14px;line-height:1.85;color:#333;margin-bottom:14px}
-.footer-rule{border-top:4px double #1a1a1a;margin-top:40px;padding-top:16px;display:flex;justify-content:space-between;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#999;flex-wrap:wrap;gap:8px}
-@media(max-width:900px){body{padding:12px}.paper{padding:24px 20px}.lead{grid-template-columns:1fr}.sidebar{border-left:none;padding-left:0;border-top:1px solid #DDD8CC;padding-top:24px}.cols{column-count:1}.bottom{grid-template-columns:1fr}}
-</style></head><body>
-<div class="paper">
-<div class="mast" data-reveal><div class="ears"><span>${data.city}, ${data.province_state}</span><span>${data.hours_summary}</span></div>
-<h1>The ${firstName} Times</h1>
-<div class="sub">${data.name} · ${data.neighbourhood || data.city}'s Finest</div></div>
-<div class="dateline"><span>${today}</span><span>Vol. 1, No. 1</span><span>Complimentary</span></div>
+<section class="all-services" id="services">
+  <div class="wrap">
+    <div data-reveal>
+      <div class="section-kicker">Full ${navLabel}</div>
+      <h2 class="section-h">Everything we<em>offer.</em></h2>
+    </div>
+    <div class="all-grid">
+      ${allItems.slice(0,8).map((item, i) => `<div class="all-item" data-reveal>
+        <div class="all-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="all-info"><h4>${item.emoji || ''} ${item.name}</h4><p>${item.description}</p></div>
+        <div class="all-arrow">→</div>
+      </div>`).join('')}
+    </div>
+  </div>
+</section>
 
-<div class="lead">
-<div data-reveal>
-<div class="lead-img">${img(ph[0], data.name)}</div>
-<div class="lead-cap">${data.name}, ${data.address_line1}, ${data.city}</div>
-<h2>${data.tagline}</h2>
-<p class="deck">${data.subtitle}</p>
-<div class="byline">By The ${firstName} Times Staff</div>
-<p class="body">${data.about_paragraph} ${data.about_paragraph2}</p>
-</div>
-<div class="sidebar">
-${rating > 0 ? `<div class="sb-box sb-rating" data-reveal><h3>The Verdict</h3><div class="big" data-count="${rating}">0</div><p>★★★★★ from ${reviewCount} readers</p></div>` : ''}
-<div class="sb-box sb-hours" data-reveal><h3>Hours</h3>${hours.map(h => `<div class="hr"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}</div>
-<a href="#" class="sb-cta" data-reveal><h3>${cta}</h3><p>${data.phone || data.address_line1}</p></a>
-</div>
-</div>
+<section class="testimonials">
+  <div class="wrap">
+    <div data-reveal>
+      <div class="section-kicker">Reviews</div>
+      <h2 class="section-h">What our<em>customers say.</em></h2>
+    </div>
+    <div class="testi-grid">
+      ${testimonials.map(t => `<div class="testi" data-reveal>
+        <div class="testi-stars">★★★★★</div>
+        <blockquote>"${t.quote}"</blockquote>
+        <div class="testi-author">
+          <div class="avatar">${t.initials}</div>
+          <div><h5>Verified customer</h5><p>${t.source}</p></div>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>
+</section>
 
-<div class="secrule" data-reveal><h2>${data.items_label || 'In This Issue'}</h2></div>
-<div class="cols">
-${allItems.slice(0,4).map((item, i) => `<div class="colitem" data-reveal>${i < 2 ? `<div class="ci">${img(ph[6+i] || ph[i%5], item.name)}</div>` : ''}<span class="tag">${item.tag || 'Feature'}</span><h3>${item.name}</h3><p>${item.description}</p></div>`).join('')}
-${data.review_quote ? `<div class="pullq" data-reveal><blockquote>"${data.review_quote}"</blockquote><cite>— ${data.review_source}</cite></div>` : ''}
-${allItems.slice(4,6).map((item) => `<div class="colitem" data-reveal><span class="tag">${item.tag || 'Feature'}</span><h3>${item.name}</h3><p>${item.description}</p></div>`).join('')}
-</div>
+<section class="location" id="visit">
+  <div class="wrap">
+    <div data-reveal>
+      <div class="section-kicker">Visit Us</div>
+      <h2 class="section-h">Find us in<em>${data.neighbourhood || data.city}.</em></h2>
+    </div>
+    <div class="loc-grid" data-reveal>
+      <div class="loc-info">
+        <h3>Plan Your Visit</h3>
+        <div class="loc-block">
+          <div class="loc-lbl">Address</div>
+          <div class="loc-val"><strong>${data.address_line1}</strong><br>${data.city}, ${data.province_state} ${data.postal_zip}${data.neighbourhood ? `<br><span style="color:var(--mute)">${data.neighbourhood}</span>` : ''}</div>
+        </div>
+        ${data.phone ? `<div class="loc-block"><div class="loc-lbl">Phone</div><div class="loc-val"><a href="tel:${data.phone}" style="color:var(--ink);text-decoration:none;font-weight:600">${data.phone}</a></div></div>` : ''}
+        <div class="loc-block">
+          <div class="loc-lbl">Hours</div>
+          <div class="loc-val">${hours.map(h => `<div class="hours-row"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}</div>
+        </div>
+        ${data.instagram ? `<div class="loc-block"><div class="loc-lbl">Follow</div><div class="loc-val"><a href="https://instagram.com/${data.instagram}" target="_blank" style="color:var(--a);text-decoration:none;font-weight:600">@${data.instagram} →</a></div></div>` : ''}
+      </div>
+      <div class="loc-map">${mapEmbed}</div>
+    </div>
+  </div>
+</section>
 
-<div class="bottom">
-<div class="btm-map" data-reveal>${mapEmbed}</div>
-<div class="btm" data-reveal><h2>Where To Find Us</h2>
-<p><strong>${data.address_line1}, ${data.city}, ${data.province_state} ${data.postal_zip}</strong>${data.phone ? ` · ${data.phone}` : ''}</p>
-<p>${(data.vibe_tags || []).join(' · ')}</p>
-<a href="https://thewebguys.ca" target="_blank" style="font-family:'Inter',sans-serif;display:inline-block;background:#1a1a1a;color:#FBF9F4;padding:14px 32px;text-decoration:none;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase">This mockup by The Web Guys →</a>
-</div>
-</div>
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div data-reveal>
+      <div class="section-kicker">Common Questions</div>
+      <h2 class="section-h">Good to<em>know.</em></h2>
+    </div>
+    <div class="faq-list">
+      ${faqs.map((f, i) => `<details class="faq-item"${i === 0 ? ' open' : ''} data-reveal>
+        <summary class="faq-q"><h4>${f.q}</h4><div class="faq-toggle">+</div></summary>
+        <p class="faq-a">${f.a}</p>
+      </details>`).join('')}
+    </div>
+  </div>
+</section>
 
-<div class="footer-rule"><span>© 2026 ${data.name}</span><span>The ${firstName} Times</span><span>Built by The Web Guys</span></div>
-</div>
+<section class="final-cta" id="contact">
+  <div class="wrap" data-reveal>
+    <h2>Ready to experience<br>${firstName}'s for yourself?</h2>
+    <p>${data.subtitle}</p>
+    <a href="${data.phone ? `tel:${data.phone}` : '#'}" class="btn-pri">${cta} <span>→</span></a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">${data.name}</div>
+        <p class="foot-brand-sub">${data.subtitle}</p>
+      </div>
+      <div class="foot-col">
+        <h5>Visit</h5>
+        <p>${data.address_line1}</p>
+        <p>${data.city}, ${data.province_state} ${data.postal_zip}</p>
+        ${data.phone ? `<a href="tel:${data.phone}">${data.phone}</a>` : ''}
+      </div>
+      <div class="foot-col">
+        <h5>Hours</h5>
+        ${hours.slice(0,3).map(h => `<p>${h.days}: ${h.time}</p>`).join('')}
+      </div>
+      <div class="foot-col">
+        <h5>Connect</h5>
+        ${data.instagram ? `<a href="https://instagram.com/${data.instagram}" target="_blank">Instagram</a>` : ''}
+        ${data.website ? `<a href="${data.website.startsWith('http') ? data.website : 'https://' + data.website}" target="_blank">Website</a>` : ''}
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 ${data.name}. All rights reserved.</span>
+      <span>Built by <a href="https://thewebguys.ca" target="_blank">The Web Guys</a></span>
+    </div>
+  </div>
+</footer>
 ${premiumJS}</body></html>`;
 }
 
@@ -715,7 +856,7 @@ export default function MockupAdmin() {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [category, setCategory] = useState("");
-  const [template, setTemplate] = useState("classic");
+  const [template, setTemplate] = useState("standard");
   const [model, setModel] = useState("standard");
   const [notes, setNotes] = useState("");
 
@@ -1015,7 +1156,7 @@ export default function MockupAdmin() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {history.map((h, i) => (
                     <div key={i} style={{ padding: "10px 12px", background: "#111", border: "1px solid #1A1A1A", borderRadius: 6, cursor: "pointer" }}
-                      onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setName(h.name); setAddress(h.address || ""); setNotes(h.notes || ""); setCategory(h.category || ""); setTemplate(h.template || "classic"); }}>
+                      onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setName(h.name); setAddress(h.address || ""); setNotes(h.notes || ""); setCategory(h.category || ""); setTemplate(["premium","showcase","cinematic","magazine"].includes(h.template) ? "premium" : "standard"); }}>
                       <div style={{ fontSize: 13, color: "#aaa", fontWeight: 500 }}>{h.name}</div>
                       <div style={{ fontSize: 10, color: "#444", marginTop: 3 }}>{h.category} · {h.photoSource === "google" ? "📸" : "🖼"} · {new Date(h.date).toLocaleDateString()}</div>
                     </div>
@@ -1073,26 +1214,18 @@ export default function MockupAdmin() {
                   </div>
 
                   <div>
-                    <label style={S.label}>Template</label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, color: "#444", width: 60, flexShrink: 0 }}>FREE</span>
-                        {["classic", "bold", "editorial"].map(t => (
-                          <button key={t} onClick={() => { setTemplate(t); setModel("standard"); }}
-                            style={{ flex: 1, padding: "10px 4px", background: template === t ? "#1A2A1A" : "#141414", border: template === t ? "2px solid #3EA843" : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: template === t ? 600 : 400, color: template === t ? "#3EA843" : "#777", fontFamily: "inherit", textTransform: "capitalize" }}>
-                            {t}
-                          </button>
-                        ))}
-                      </div>
-                      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, color: "#6B8AFF", width: 60, flexShrink: 0 }}>⚡ PRO</span>
-                        {["showcase", "cinematic", "magazine"].map(t => (
-                          <button key={t} onClick={() => { setTemplate(t); setModel("premium"); }}
-                            style={{ flex: 1, padding: "10px 4px", background: template === t ? "#1A1A2A" : "#141414", border: template === t ? "2px solid #6B8AFF" : "1px solid #222", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: template === t ? 600 : 400, color: template === t ? "#6B8AFF" : "#777", fontFamily: "inherit", textTransform: "capitalize" }}>
-                            {t}
-                          </button>
-                        ))}
-                      </div>
+                    <label style={S.label}>Tier</label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                      <button onClick={() => { setTemplate("standard"); setModel("standard"); }}
+                        style={{ padding: "16px 14px", background: template === "standard" ? "#1A2A1A" : "#141414", border: template === "standard" ? "2px solid #3EA843" : "1px solid #222", borderRadius: 10, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: template === "standard" ? "#3EA843" : "#aaa", marginBottom: 4 }}>Standard</div>
+                        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Clean template look · Hero, about, services, gallery, contact · ~$500</div>
+                      </button>
+                      <button onClick={() => { setTemplate("premium"); setModel("premium"); }}
+                        style={{ padding: "16px 14px", background: template === "premium" ? "#1A1A2A" : "#141414", border: template === "premium" ? "2px solid #6B8AFF" : "1px solid #222", borderRadius: 10, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: template === "premium" ? "#6B8AFF" : "#aaa", marginBottom: 4 }}>⚡ Premium</div>
+                        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Custom agency look · Reviews, FAQ, map, animations, multi-CTA · ~$2,500+</div>
+                      </button>
                     </div>
                   </div>
 
@@ -1139,25 +1272,18 @@ export default function MockupAdmin() {
                 {/* Template & style controls */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
                   <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#444", marginRight: 4 }}>Standard</span>
-                    {["classic", "bold", "editorial"].map(t => (
-                      <button key={t} onClick={() => {
-                        setTemplate(t); setModel("standard");
-                        if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t));
-                      }} style={{ padding: "5px 14px", background: template === t ? "#1A2A1A" : "transparent", border: template === t ? "1.5px solid #3EA843" : "1px solid #222", borderRadius: 5, cursor: "pointer", fontSize: 11, fontWeight: template === t ? 600 : 400, color: template === t ? "#3EA843" : "#555", fontFamily: "inherit", textTransform: "capitalize" }}>
-                        {t}
-                      </button>
-                    ))}
-                    <div style={{ borderLeft: "1px solid #1A1A1A", height: 20, margin: "0 6px" }} />
-                    <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#6B8AFF", marginRight: 4 }}>⚡ Premium</span>
-                    {["showcase", "cinematic", "magazine"].map(t => (
-                      <button key={t} onClick={() => {
-                        setTemplate(t); setModel("premium");
-                        if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, t));
-                      }} style={{ padding: "5px 14px", background: template === t ? "#1A1A2A" : "transparent", border: template === t ? "1.5px solid #6B8AFF" : "1px solid #222", borderRadius: 5, cursor: "pointer", fontSize: 11, fontWeight: template === t ? 600 : 400, color: template === t ? "#6B8AFF" : "#555", fontFamily: "inherit", textTransform: "capitalize" }}>
-                        {t}
-                      </button>
-                    ))}
+                    <button onClick={() => {
+                      setTemplate("standard"); setModel("standard");
+                      if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, "standard"));
+                    }} style={{ padding: "8px 24px", background: template === "standard" ? "#1A2A1A" : "transparent", border: template === "standard" ? "1.5px solid #3EA843" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "standard" ? "#3EA843" : "#666", fontFamily: "inherit" }}>
+                      Standard
+                    </button>
+                    <button onClick={() => {
+                      setTemplate("premium"); setModel("premium");
+                      if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, "premium"));
+                    }} style={{ padding: "8px 24px", background: template === "premium" ? "#1A1A2A" : "transparent", border: template === "premium" ? "1.5px solid #6B8AFF" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "premium" ? "#6B8AFF" : "#666", fontFamily: "inherit" }}>
+                      ⚡ Premium
+                    </button>
                   </div>
                   <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                     <select value={businessData?.palette || "warm"} onChange={(e) => {
