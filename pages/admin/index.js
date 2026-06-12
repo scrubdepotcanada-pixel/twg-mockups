@@ -1275,12 +1275,14 @@ export default function MockupAdmin() {
                     <button onClick={() => {
                       setTemplate("standard"); setModel("standard");
                       if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, "standard"));
+                      else if (businessData) setError("No photos cached. Click 🔄 Re-research to fetch fresh photos.");
                     }} style={{ padding: "8px 24px", background: template === "standard" ? "#1A2A1A" : "transparent", border: template === "standard" ? "1.5px solid #3EA843" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "standard" ? "#3EA843" : "#666", fontFamily: "inherit" }}>
                       Standard
                     </button>
                     <button onClick={() => {
                       setTemplate("premium"); setModel("premium");
                       if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, "premium"));
+                      else if (businessData) setError("No photos cached. Click 🔄 Re-research to fetch fresh photos.");
                     }} style={{ padding: "8px 24px", background: template === "premium" ? "#1A1A2A" : "transparent", border: template === "premium" ? "1.5px solid #6B8AFF" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "premium" ? "#6B8AFF" : "#666", fontFamily: "inherit" }}>
                       ⚡ Premium
                     </button>
@@ -1308,7 +1310,7 @@ export default function MockupAdmin() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", background: "#0A1A0A", borderRadius: 8, border: "1px solid #1A3A1A", marginBottom: 12 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 12, color: "#4CAF50", fontWeight: 600 }}>✓ Live</span>
-                      <a href={publishedUrl} target="_blank" rel="noopener" style={{ fontSize: 12, color: "#3EA843", textDecoration: "underline", fontFamily: "monospace" }}>{publishedUrl.replace("https://", "")}</a>
+                      <a href={`${publishedUrl}?v=${Date.now()}`} target="_blank" rel="noopener" style={{ fontSize: 12, color: "#3EA843", textDecoration: "underline", fontFamily: "monospace" }}>{publishedUrl.replace("https://", "")}</a>
                     </div>
                     <button onClick={() => { navigator.clipboard.writeText(publishedUrl); }} style={{ background: "none", border: "1px solid #1A3A1A", borderRadius: 4, color: "#3EA843", fontSize: 10, cursor: "pointer", padding: "4px 10px", fontFamily: "inherit" }}>Copy</button>
                   </div>

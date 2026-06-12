@@ -13,9 +13,11 @@ export async function getServerSideProps({ params, res }) {
       return { notFound: true };
     }
 
-    // Serve raw HTML directly
+    // Serve raw HTML — NEVER cache, so republishes show immediately
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.write(rows[0].html);
     res.end();
 
