@@ -22,6 +22,7 @@ export default async function handler(req, res) {
 
   try {
     if (action === 'research') return await handleResearch(req, res);
+    if (action === 'refine') return await handleRefine(req, res);
     if (action === 'photos') return await handlePhotos(req, res);
     if (action === 'save') return await handleSave(req, res);
     if (action === 'list') return await handleList(req, res);
@@ -175,6 +176,50 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
     const errBody = await response.text().catch(() => '');
     throw new Error(`API error ${response.status}: ${errBody.slice(0, 200) || 'Unknown error'}`);
   }
+
+  const data = await response.json();
+  if (data.error) throw new Error(errStr(data.error));
+
+  const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  const cleaned = textBlocks.replace(/```json\s*|```\s*/g, '').replace(/<\/?cite[^>]*>/g, '').replace(/<\/?antml:cite[^>]*>/g, '').trim();
+
+  let parsed;
+  try { parsed = JSON.parse(cleaned); }
+  catch { const m = cleaned.match(/\{[\s\S]*\}/); if (m) parsed = JSON.parse(m[0]); else throw new Error('Could not parse response'); }
+
+  return res.status(200).json({ success: true, data: parsed });
+}
+
+// ── REFINE existing mockup: tweak business_data based on user request ──
+async function handleRefine(req, res) {
+  const { business_data, request, model } = req.body;
+  if (!business_data || !request) return res.status(400).json({ error: 'business_data and request required' });
+
+  const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
+
+  const modelId = model === 'premium' ? 'claude-fable-5' : 'claude-sonnet-4-20250514';
+
+  const systemPrompt = `You are editing a business website's content. The user will give you the current business JSON and a change request. Return ONLY valid JSON with the same schema, applying their requested changes. No markdown fences, no preamble, no explanation.
+
+Rules:
+- Keep ALL existing fields. Only modify what the user asked for.
+- Preserve the original structure (signature_items, all_items, hours_detail, etc.).
+- If the request is about visual styling (colors, layout, fonts, spacing) rather than content, DO NOT change the JSON — instead set a field "_styling_note" with a brief description of what they want, and return the original JSON otherwise unchanged.
+- If they ask to add something not in the schema, find the most relevant existing field to put it in.
+- Keep all values plain text. No HTML tags, no citations.`;
+
+  const userPrompt = `Current business data:\n${JSON.stringify(business_data, null, 2)}\n\nChange request: ${request}\n\nReturn the updated JSON.`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: modelId, max_tokens: 4096, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }] }),
+  });
+
+  if (response.status === 529) throw new Error('Claude API is overloaded — try again in a minute');
+  if (response.status === 429) throw new Error('Rate limited — wait a moment and try again');
+  if (!response.ok) { const t = await response.text().catch(() => ''); throw new Error(`API error ${response.status}: ${t.slice(0, 200)}`); }
 
   const data = await response.json();
   if (data.error) throw new Error(errStr(data.error));

@@ -464,8 +464,9 @@ nav{position:fixed;top:0;width:100%;z-index:100;padding:18px 0;background:rgba(2
 .nav-links a{text-decoration:none;color:var(--ink);font-size:13px;font-weight:500;letter-spacing:.3px;position:relative}
 .nav-links a::after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .3s}
 .nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
-.nav-cta{background:var(--ink);color:var(--w);padding:11px 22px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:background .25s}
-.nav-cta:hover{background:var(--a);color:var(--ink)}
+.nav-cta{background:var(--ink,#0d0d0d);color:#fff !important;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .25s;white-space:nowrap}
+.nav-cta::after{display:none}
+.nav-cta:hover{background:var(--a);color:var(--ink) !important}
 
 /* ── HERO (asymmetric, editorial) ── */
 .hero{padding:140px 0 80px;position:relative;overflow:hidden}
@@ -866,6 +867,8 @@ export default function MockupAdmin() {
   const [mockupHTML, setMockupHTML] = useState("");
   const [businessData, setBusinessData] = useState(null);
   const [cachedPhotos, setCachedPhotos] = useState([]);
+  const [refineText, setRefineText] = useState("");
+  const [refining, setRefining] = useState(false);
   const [photoSource, setPhotoSource] = useState(""); // "google" or "stock"
   const [error, setError] = useState("");
 
@@ -885,6 +888,29 @@ export default function MockupAdmin() {
       const data = await res.json();
       if (data.success) setPublished(data.mockups || []);
     } catch {}
+  };
+
+  const refineMockup = async () => {
+    if (!refineText.trim() || !businessData) return;
+    setRefining(true); setError("");
+    try {
+      const res = await fetch("/api/mockup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "refine", pin: storedPin, business_data: businessData, request: refineText, model }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(typeof data.error === "string" ? data.error : "Refine failed");
+      setBusinessData(data.data);
+      if (cachedPhotos.length) setMockupHTML(buildMockupHTML(data.data, cachedPhotos, template));
+      const stylingNote = data.data._styling_note;
+      setRefineText("");
+      if (stylingNote) setError(`Logged styling request: "${stylingNote}". Visual/layout fixes need template updates — content changes apply automatically.`);
+    } catch (err) {
+      setError(err.message || "Refine failed");
+    } finally {
+      setRefining(false);
+    }
   };
 
   const publishMockup = async () => {
@@ -1251,6 +1277,25 @@ export default function MockupAdmin() {
             ) : (
               /* ─── PREVIEW VIEW ─── */
               <div>
+                {/* Refine row — tell the system what to change */}
+                <div style={{ display: "flex", gap: 8, marginBottom: 16, padding: 10, background: "#0F0F0F", border: "1px solid #1F1F1F", borderRadius: 10 }}>
+                  <input
+                    type="text"
+                    value={refineText}
+                    onChange={(e) => setRefineText(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !refining && refineText.trim()) refineMockup(); }}
+                    placeholder="Tell us what to change — e.g. 'shorten the tagline' or 'add walk-ins welcome'"
+                    style={{ flex: 1, background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 6, color: "#fff", padding: "10px 14px", fontSize: 13, fontFamily: "inherit", outline: "none" }}
+                  />
+                  <button
+                    onClick={refineMockup}
+                    disabled={refining || !refineText.trim() || !businessData}
+                    style={{ padding: "10px 22px", background: refining ? "#222" : "#3EA843", color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: refining || !refineText.trim() ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: !refineText.trim() || !businessData ? 0.5 : 1 }}
+                  >
+                    {refining ? "Applying..." : "Apply →"}
+                  </button>
+                </div>
+
                 {/* Header row */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
                   <div>
