@@ -99,7 +99,7 @@ async function handleResearch(req, res) {
   const { name, address, notes, category, model } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
 
-  const useOpenAI = model === 'premium-dark';
+  const useOpenAI = model === 'premium' || model === 'premium-dark';
   const isPremium = model === 'premium' || model === 'premium-dark';
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
   const OPENAI_KEY = process.env.OPENAI_API_KEY;
@@ -223,7 +223,7 @@ async function handleRefine(req, res) {
   const { business_data, request, model } = req.body;
   if (!business_data || !request) return res.status(400).json({ error: 'business_data and request required' });
 
-  const useOpenAI = model === 'premium-dark';
+  const useOpenAI = model === 'premium' || model === 'premium-dark';
   const isPremium = model === 'premium' || model === 'premium-dark';
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
   const OPENAI_KEY = process.env.OPENAI_API_KEY;

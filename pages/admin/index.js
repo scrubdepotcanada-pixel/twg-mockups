@@ -1623,7 +1623,7 @@ export default function MockupAdmin() {
                         style={{ padding: "14px 16px", background: template === "premium" ? "#1A1A2A" : "#141414", border: template === "premium" ? "2px solid #6B8AFF" : "1px solid #222", borderRadius: 10, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
                           <span style={{ fontSize: 13, fontWeight: 700, color: template === "premium" ? "#6B8AFF" : "#aaa" }}>⚡ Premium · Editorial</span>
-                          <span style={{ fontSize: 10, color: "#555" }}>Sonnet 4.6 · ~$2,500+</span>
+                          <span style={{ fontSize: 10, color: "#555" }}>GPT-5.5 · ~$2,500+</span>
                         </div>
                         <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Light editorial agency look · Glass nav, social proof, signature cards, FAQ, map</div>
                       </button>
@@ -1733,7 +1733,7 @@ export default function MockupAdmin() {
                     <div style={{ borderLeft: "1px solid #1A1A1A", height: 20, margin: "0 4px" }} />
                     <button onClick={() => { setTimeout(generate, 0); }} disabled={loading}
                       style={{ padding: "5px 12px", background: "transparent", border: "1px solid #222", borderRadius: 5, cursor: "pointer", fontSize: 11, color: "#888", fontFamily: "inherit" }}>
-                      🔄 Re-research {model === "premium-dark" ? "(GPT-5.5)" : "(Sonnet)"}
+                      🔄 Re-research {(model === "premium" || model === "premium-dark") ? "(GPT-5.5)" : "(Sonnet)"}
                     </button>
                   </div>
                 </div>
