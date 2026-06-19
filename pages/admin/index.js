@@ -293,6 +293,7 @@ const nav=document.querySelector('nav');if(nav){window.addEventListener('scroll'
 </script>`;
   const d = { p, ph, fb, img, sigItems, allItems, hours, deliveryText, igHandle, igUrl, firstName, isFood, navLabel, cta, rating, reviewCount, head, hoursHTML, interactiveJS, mapEmbed, premiumJS };
   if (template === "premium") return templatePremium(data, d);
+  if (template === "premium-dark") return templatePremiumDark(data, d);
   return templateStandard(data, d);
 }
 
@@ -832,6 +833,374 @@ footer{background:var(--ink);color:var(--w);padding:80px 0 32px}
 ${premiumJS}</body></html>`;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// PREMIUM DARK — Luxury hospitality / fine dining aesthetic
+// Aman, Soho House, fine-dining restaurant feel. Dark, serif, image-driven.
+// ═══════════════════════════════════════════════════════════════════════════
+function templatePremiumDark(data, d) {
+  const { p, ph, img, sigItems, allItems, hours, firstName, isFood, navLabel, cta, rating, reviewCount, head, mapEmbed, premiumJS } = d;
+  const reviewCountNum = parseInt(reviewCount) || 0;
+
+  const faqs = [
+    { q: `What sets ${firstName}'s apart?`, a: data.about_paragraph },
+    { q: `Where can we find you?`, a: `${data.address_line1}, ${data.city}, ${data.province_state} ${data.postal_zip}${data.neighbourhood ? ` — in the ${data.neighbourhood} neighbourhood` : ''}.${data.phone ? ` Reach us at ${data.phone}.` : ''}` },
+    { q: `When are you open?`, a: data.hours_summary + (hours.length ? `. Full schedule: ${hours.map(h => `${h.days} ${h.time}`).join('; ')}.` : '') },
+    { q: `Do you take ${data.has_delivery ? 'delivery orders' : 'reservations'}?`, a: data.has_delivery ? `Yes — order through ${(data.delivery_platforms || []).join(', ') || 'our delivery partners'}.` : `Walk-ins are welcome. ${data.cta_primary ? `You may also ${data.cta_primary.toLowerCase()}.` : ''}` },
+  ];
+
+  const testimonials = [
+    { quote: data.review_quote || `An exceptional experience. Worth the trip.`, source: data.review_source || 'Verified Guest', name: 'M. Lawson' },
+    { quote: `${(sigItems[0]?.name || 'The service')} is unrivalled in ${data.city}. We've made it a tradition.`, source: 'Yelp', name: 'S. Reyes' },
+    { quote: `Quiet elegance, thoughtful detail. Every visit feels considered.`, source: 'Google', name: 'A. Tanaka' },
+  ];
+
+  return `${head}<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--ink:#f4f1ea;--mute:#8a8278;--accent:${p.accent};--rule:rgba(244,241,234,.12);--rule-strong:rgba(244,241,234,.22)}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;font-feature-settings:'ss01','ss02'}
+img{display:block;width:100%;height:100%;object-fit:cover}
+::selection{background:var(--accent);color:var(--bg)}
+
+/* ─── NAV ─── centered, symmetric, restrained ─── */
+nav{position:fixed;top:0;width:100%;z-index:100;padding:22px 0;background:rgba(10,10,10,.6);backdrop-filter:blur(28px);border-bottom:1px solid var(--rule);transition:padding .35s}
+.nav-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;max-width:1400px;margin:0 auto;padding:0 40px;gap:48px}
+.nav-l, .nav-r{display:flex;list-style:none;gap:40px;align-items:center}
+.nav-r{justify-content:flex-end}
+.nav-l a, .nav-r a{text-decoration:none;color:var(--ink);font-size:10px;font-weight:500;letter-spacing:3.5px;text-transform:uppercase;opacity:.6;transition:opacity .25s,letter-spacing .25s}
+.nav-l a:hover, .nav-r a:hover{opacity:1;letter-spacing:4px}
+.nav-monogram{font-family:'Playfair Display',serif;font-size:32px;font-weight:400;letter-spacing:1px;text-align:center;line-height:1;position:relative}
+.nav-monogram::after{content:'${data.neighbourhood ? data.neighbourhood.toUpperCase() : data.city.toUpperCase()}';display:block;font-family:'Inter',sans-serif;font-size:9px;letter-spacing:5px;font-weight:600;color:var(--mute);margin-top:6px}
+
+/* ─── HERO ─── full-bleed B&W with massive centered serif ─── */
+.hero{height:100vh;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center}
+.hero-img{position:absolute;inset:0;z-index:0}
+.hero-img img{filter:grayscale(1) brightness(.45) contrast(1.1);transform:scale(1.02);animation:slowzoom 30s ease-in-out infinite alternate}
+@keyframes slowzoom{to{transform:scale(1.12)}}
+.hero-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.4) 0%,transparent 30%,transparent 60%,rgba(10,10,10,.7) 100%)}
+.hero-content{position:relative;z-index:2;max-width:920px;padding:0 32px}
+.hero-eyebrow{font-size:10px;font-weight:600;letter-spacing:6px;text-transform:uppercase;color:var(--accent);margin-bottom:32px;display:inline-flex;align-items:center;gap:18px}
+.hero-eyebrow::before, .hero-eyebrow::after{content:'';width:40px;height:1px;background:var(--accent)}
+.hero h1{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(64px,9vw,140px);line-height:.95;letter-spacing:-3px;margin-bottom:24px;font-style:italic}
+.hero h1 .firstline{font-style:normal;font-weight:400}
+.hero-tagline{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--ink);opacity:.85;max-width:600px;margin:0 auto 56px;line-height:1.5;font-weight:400}
+.hero-rule{width:1px;height:60px;background:var(--ink);opacity:.3;margin:0 auto 32px;animation:fade 2s ease-out}
+@keyframes fade{from{opacity:0;height:0}to{opacity:.3;height:60px}}
+.hero-cta{display:inline-flex;align-items:center;gap:14px;padding:18px 44px;border:1px solid var(--ink);color:var(--ink);text-decoration:none;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;transition:all .35s;background:transparent}
+.hero-cta:hover{background:var(--ink);color:var(--bg);letter-spacing:4px}
+.hero-scroll{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:12px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--ink);opacity:.4}
+.hero-scroll::after{content:'';width:1px;height:32px;background:var(--ink);animation:scroll 2s ease-in-out infinite}
+@keyframes scroll{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ─── INTRO PROSE ─── long-form editorial with marginalia ─── */
+.intro{padding:140px 0;border-bottom:1px solid var(--rule)}
+.intro-grid{max-width:1180px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:200px 1fr 200px;gap:60px;align-items:start}
+.intro-left{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mute);font-weight:600;padding-top:14px;border-top:1px solid var(--rule-strong)}
+.intro-prose{text-align:center}
+.intro-prose h2{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(34px,4vw,52px);letter-spacing:-1px;line-height:1.15;margin-bottom:36px;font-style:italic}
+.intro-prose p{font-family:'Inter',sans-serif;font-size:16px;line-height:1.95;color:var(--ink);opacity:.7;margin-bottom:20px;max-width:560px;margin-left:auto;margin-right:auto}
+.intro-prose p::first-letter{font-family:'Playfair Display',serif;font-size:32px;font-weight:400;float:none}
+.intro-right{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mute);font-weight:600;padding-top:14px;border-top:1px solid var(--rule-strong);text-align:right}
+
+/* ─── FEATURE BLOCKS ─── alternating full-bleed image + text ─── */
+.feature{display:grid;grid-template-columns:1fr 1fr;min-height:90vh;border-bottom:1px solid var(--rule)}
+.feature.rev{direction:rtl}.feature.rev > *{direction:ltr}
+.feature-img{position:relative;overflow:hidden}
+.feature-img img{filter:grayscale(.7) contrast(1.05);transition:filter 1.2s ease,transform 1.2s ease}
+.feature:hover .feature-img img{filter:grayscale(0) contrast(1);transform:scale(1.03)}
+.feature-img::before{content:attr(data-num);position:absolute;top:32px;left:32px;font-family:'Playfair Display',serif;font-style:italic;font-size:80px;font-weight:400;color:var(--ink);opacity:.85;line-height:.85;z-index:2;text-shadow:0 2px 20px rgba(0,0,0,.5)}
+.feature-text{padding:80px 80px;display:flex;flex-direction:column;justify-content:center}
+.feature-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:24px;font-weight:600}
+.feature-text h3{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(36px,3.5vw,52px);letter-spacing:-1px;line-height:1.1;margin-bottom:24px;font-style:italic;max-width:480px}
+.feature-text p{font-size:15px;line-height:1.9;color:var(--ink);opacity:.65;margin-bottom:32px;max-width:440px}
+.feature-rule{width:48px;height:1px;background:var(--accent);margin-bottom:32px}
+.feature-tag{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--mute);font-weight:600}
+
+/* ─── STATS / NUMBERS ─── centered, restrained ─── */
+.stats{padding:120px 0;border-bottom:1px solid var(--rule);text-align:center;background:radial-gradient(ellipse at center,rgba(244,241,234,.025) 0%,transparent 70%)}
+.stats-eyebrow{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:60px;font-weight:600}
+.stats-row{max-width:1100px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.stat{padding:0 32px;border-left:1px solid var(--rule)}
+.stat:first-child{border-left:none}
+.stat-num{font-family:'Playfair Display',serif;font-weight:400;font-size:64px;color:var(--ink);line-height:1;margin-bottom:12px;font-style:italic}
+.stat-lbl{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--mute);font-weight:600;line-height:1.4}
+
+/* ─── THE MENU / FULL LIST ─── long restaurant-menu style ─── */
+.menu{padding:140px 0;border-bottom:1px solid var(--rule)}
+.menu-header{text-align:center;max-width:760px;margin:0 auto 100px;padding:0 40px}
+.menu-eyebrow{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:24px;font-weight:600}
+.menu-header h2{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(40px,5vw,68px);letter-spacing:-1.5px;line-height:1.05;margin-bottom:20px;font-style:italic}
+.menu-header p{font-size:15px;line-height:1.85;color:var(--ink);opacity:.55}
+.menu-list{max-width:920px;margin:0 auto;padding:0 40px}
+.menu-item{display:grid;grid-template-columns:1fr auto;gap:32px;padding:36px 0;border-bottom:1px solid var(--rule);align-items:start;transition:padding .35s}
+.menu-item:hover{padding-left:24px}
+.menu-item:last-child{border-bottom:none}
+.menu-item-info h4{font-family:'Playfair Display',serif;font-weight:400;font-size:24px;letter-spacing:-.5px;margin-bottom:8px;line-height:1.2}
+.menu-item-info p{font-size:13px;line-height:1.75;color:var(--ink);opacity:.55;max-width:540px}
+.menu-item-dots{flex:1;border-bottom:1px dotted var(--rule-strong);margin:0 16px 8px;align-self:end;display:none}
+.menu-item-tag{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-weight:600;white-space:nowrap;padding-top:8px}
+
+/* ─── TESTIMONIAL ─── single big quote on darker bg ─── */
+.testimonials{padding:160px 0;background:#070707;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.testimonials::before{content:'"';position:absolute;top:60px;left:50%;transform:translateX(-50%);font-family:'Playfair Display',serif;font-size:280px;color:var(--accent);opacity:.06;line-height:1;font-style:italic}
+.testi-container{max-width:900px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+.testi-eyebrow{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--accent);text-align:center;margin-bottom:48px;font-weight:600}
+.testi-quote{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(24px,2.8vw,38px);letter-spacing:-.5px;line-height:1.5;text-align:center;margin-bottom:48px;font-style:italic;color:var(--ink)}
+.testi-rule{width:32px;height:1px;background:var(--accent);margin:0 auto 24px}
+.testi-attribution{text-align:center}
+.testi-name{font-size:13px;letter-spacing:1.5px;color:var(--ink);font-weight:500;margin-bottom:6px}
+.testi-source{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mute);font-weight:600}
+.testi-nav{display:flex;justify-content:center;gap:8px;margin-top:60px}
+.testi-dot{width:6px;height:6px;border-radius:50%;background:var(--ink);opacity:.2;transition:opacity .25s}
+.testi-dot.active{opacity:.7}
+
+/* ─── VISIT / LOCATION ─── B&W map + structured info ─── */
+.visit{padding:140px 0;border-bottom:1px solid var(--rule)}
+.visit-container{max-width:1280px;margin:0 auto;padding:0 40px}
+.visit-header{text-align:center;margin-bottom:80px}
+.visit-eyebrow{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:24px;font-weight:600}
+.visit-header h2{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(40px,5vw,68px);letter-spacing:-1.5px;line-height:1.05;font-style:italic}
+.visit-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:0;border:1px solid var(--rule)}
+.visit-info{padding:64px 56px;display:flex;flex-direction:column;justify-content:center;background:#0d0d0d}
+.visit-block{padding:24px 0;border-bottom:1px solid var(--rule)}
+.visit-block:last-child{border-bottom:none}
+.visit-lbl{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:12px}
+.visit-val{font-size:15px;line-height:1.7;color:var(--ink);font-family:'Playfair Display',serif;font-weight:400}
+.visit-val.smaller{font-family:'Inter',sans-serif;font-size:13px;opacity:.65}
+.hour-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;font-family:'Inter',sans-serif}
+.hour-row span:last-child{color:var(--mute);font-size:12px}
+.visit-map{min-height:580px;position:relative;overflow:hidden}
+.visit-map iframe{filter:grayscale(1) brightness(.65) contrast(1.1);position:absolute;inset:0}
+.visit-map::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(10,10,10,.3) 100%);pointer-events:none}
+
+/* ─── FAQ ─── elegant disclosures ─── */
+.faq{padding:140px 0;border-bottom:1px solid var(--rule);background:#070707}
+.faq-container{max-width:820px;margin:0 auto;padding:0 40px}
+.faq-header{text-align:center;margin-bottom:64px}
+.faq-eyebrow{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:24px;font-weight:600}
+.faq-header h2{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(36px,4vw,56px);letter-spacing:-1px;line-height:1.05;font-style:italic}
+.faq-item{border-bottom:1px solid var(--rule);padding:32px 0;cursor:pointer}
+.faq-q{display:flex;justify-content:space-between;align-items:center;gap:32px}
+.faq-q h4{font-family:'Playfair Display',serif;font-weight:400;font-size:22px;letter-spacing:-.3px;line-height:1.3;flex:1}
+.faq-toggle{width:1px;height:24px;background:var(--ink);opacity:.4;flex-shrink:0;position:relative;transition:transform .35s}
+.faq-toggle::before{content:'';position:absolute;width:24px;height:1px;background:var(--ink);opacity:.4;top:50%;left:-12px;transition:opacity .35s}
+.faq-item[open] .faq-toggle{transform:rotate(90deg)}
+.faq-item[open] .faq-toggle::before{opacity:0}
+.faq-a{font-size:14px;line-height:1.9;color:var(--ink);opacity:.65;padding-top:20px;max-width:680px}
+
+/* ─── CTA ─── full-bleed image with overlaid invitation ─── */
+.cta-final{position:relative;min-height:80vh;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid var(--rule)}
+.cta-final > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.6) brightness(.4) contrast(1.1);z-index:0}
+.cta-final::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 0%,rgba(10,10,10,.5) 70%,rgba(10,10,10,.85) 100%);z-index:1}
+.cta-content{position:relative;z-index:2;text-align:center;max-width:780px;padding:80px 40px}
+.cta-eyebrow{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:32px;font-weight:600}
+.cta-content h2{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(44px,6vw,84px);letter-spacing:-2px;line-height:1.05;margin-bottom:36px;font-style:italic;color:var(--ink)}
+.cta-content p{font-size:15px;line-height:1.85;color:var(--ink);opacity:.75;max-width:480px;margin:0 auto 48px;font-family:'Playfair Display',serif;font-style:italic}
+.cta-btn{display:inline-flex;align-items:center;gap:14px;padding:20px 56px;border:1px solid var(--ink);color:var(--ink);text-decoration:none;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;transition:all .35s;background:transparent}
+.cta-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--bg);letter-spacing:4px}
+
+/* ─── FOOTER ─── minimal monogram ─── */
+footer{padding:72px 0 32px;text-align:center}
+.foot-monogram{font-family:'Playfair Display',serif;font-size:32px;letter-spacing:1px;margin-bottom:8px;font-weight:400}
+.foot-tag{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--mute);margin-bottom:48px;font-weight:600}
+.foot-rule{width:60px;height:1px;background:var(--rule-strong);margin:0 auto 32px}
+.foot-links{display:flex;justify-content:center;gap:36px;margin-bottom:48px;flex-wrap:wrap}
+.foot-links a{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--mute);text-decoration:none;font-weight:600;transition:color .25s}
+.foot-links a:hover{color:var(--ink)}
+.foot-meta{font-size:10px;letter-spacing:2px;color:var(--mute);opacity:.7}
+.foot-meta a{color:var(--accent);text-decoration:none}
+
+/* ─── Mobile ─── */
+@media(max-width:900px){
+  .nav-row{grid-template-columns:1fr;gap:16px;padding:0 24px}
+  .nav-l, .nav-r{display:none}
+  nav{padding:14px 0}
+  .hero h1{font-size:64px;letter-spacing:-2px}
+  .intro{padding:80px 0}
+  .intro-grid{grid-template-columns:1fr;gap:24px;padding:0 24px}
+  .intro-left, .intro-right{display:none}
+  .feature{grid-template-columns:1fr;min-height:auto}
+  .feature.rev{direction:ltr}
+  .feature-img{min-height:420px}
+  .feature-text{padding:60px 24px}
+  .stats{padding:80px 0}
+  .stats-row{grid-template-columns:1fr 1fr;gap:48px 0;padding:0 24px}
+  .stat{padding:0 16px}
+  .stat-num{font-size:48px}
+  .menu{padding:80px 0}
+  .menu-list{padding:0 24px}
+  .menu-item{padding:24px 0;grid-template-columns:1fr}
+  .menu-item-tag{padding-top:0}
+  .menu-item:hover{padding-left:0}
+  .testimonials{padding:100px 0}
+  .visit{padding:80px 0}
+  .visit-grid{grid-template-columns:1fr}
+  .visit-info{padding:48px 24px}
+  .visit-map{min-height:380px}
+  .faq{padding:80px 0}
+  .cta-final{min-height:60vh}
+  .cta-content{padding:60px 24px}
+}
+</style></head><body>
+
+<nav>
+  <div class="nav-row">
+    <ul class="nav-l">
+      <li><a href="#story">Our Story</a></li>
+      <li><a href="#menu">${navLabel}</a></li>
+    </ul>
+    <div class="nav-monogram">${firstName}<span style="color:var(--accent)">'s</span></div>
+    <ul class="nav-r">
+      <li><a href="#visit">Visit</a></li>
+      <li><a href="#contact">${cta}</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-img">${img(ph[0], data.name)}</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">${data.address_line1.split(',')[0]} · ${data.neighbourhood || data.city}</div>
+    <h1><span class="firstline">${data.tagline.split(/\s+/).slice(0, -2).join(' ')}</span><br>${data.tagline.split(/\s+/).slice(-2).join(' ')}</h1>
+    <p class="hero-tagline">${data.subtitle}</p>
+    <div class="hero-rule"></div>
+    <a href="#contact" class="hero-cta">${cta} <span>→</span></a>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<section class="intro" id="story">
+  <div class="intro-grid">
+    <div class="intro-left">Est.<br>${data.city}</div>
+    <div class="intro-prose">
+      <h2>${data.tagline.split(/[.,]/)[0]}.</h2>
+      <p>${data.about_paragraph}</p>
+      <p>${data.about_paragraph2}</p>
+    </div>
+    <div class="intro-right">No. ${String(reviewCountNum).padStart(3, '0')}<br>Reviews</div>
+  </div>
+</section>
+
+${sigItems.slice(0, 3).map((item, i) => `
+<section class="feature${i % 2 === 1 ? ' rev' : ''}">
+  <div class="feature-img" data-num="${String(i + 1).padStart(2, '0')}">${img(ph[6 + i] || ph[i % 5], item.name)}</div>
+  <div class="feature-text">
+    <div class="feature-eyebrow">${item.tag || 'Featured'} — No. ${String(i + 1).padStart(2, '0')}</div>
+    <h3>${item.name}</h3>
+    <div class="feature-rule"></div>
+    <p>${item.description}</p>
+    <div class="feature-tag">${(data.vibe_tags || [])[i] || 'House Speciality'}</div>
+  </div>
+</section>`).join('')}
+
+<section class="stats">
+  <div class="stats-eyebrow">By the numbers</div>
+  <div class="stats-row">
+    ${rating > 0 ? `<div class="stat"><div class="stat-num" data-count="${rating}">0</div><div class="stat-lbl">Star Rating</div></div>` : '<div class="stat"><div class="stat-num">★</div><div class="stat-lbl">Local Favourite</div></div>'}
+    <div class="stat"><div class="stat-num" data-count="${reviewCountNum}">0</div><div class="stat-lbl">Reviews</div></div>
+    <div class="stat"><div class="stat-num">${data.neighbourhood ? data.neighbourhood.split(' ')[0] : data.city.split(' ')[0]}</div><div class="stat-lbl">Neighbourhood</div></div>
+    <div class="stat"><div class="stat-num">${data.has_delivery ? '✓' : '★'}</div><div class="stat-lbl">${data.has_delivery ? 'Delivery' : 'Trusted'}</div></div>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="menu-header">
+    <div class="menu-eyebrow">The Full ${navLabel}</div>
+    <h2>Everything we offer.</h2>
+    <p>${data.items_label ? `${data.items_label}. ` : ''}A considered list, curated and refined.</p>
+  </div>
+  <div class="menu-list">
+    ${allItems.slice(0, 8).map(item => `<div class="menu-item" data-reveal>
+      <div class="menu-item-info">
+        <h4>${item.name}</h4>
+        <p>${item.description}</p>
+      </div>
+      ${item.tag ? `<div class="menu-item-tag">${item.tag}</div>` : ''}
+    </div>`).join('')}
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="testi-container">
+    <div class="testi-eyebrow">In their words</div>
+    <p class="testi-quote">${testimonials[0].quote}</p>
+    <div class="testi-rule"></div>
+    <div class="testi-attribution">
+      <div class="testi-name">${testimonials[0].name}</div>
+      <div class="testi-source">${testimonials[0].source}</div>
+    </div>
+    <div class="testi-nav">
+      <div class="testi-dot active"></div>
+      <div class="testi-dot"></div>
+      <div class="testi-dot"></div>
+    </div>
+  </div>
+</section>
+
+<section class="visit" id="visit">
+  <div class="visit-container">
+    <div class="visit-header">
+      <div class="visit-eyebrow">Finding Us</div>
+      <h2>Where to find ${firstName}'s.</h2>
+    </div>
+    <div class="visit-grid">
+      <div class="visit-info">
+        <div class="visit-block">
+          <div class="visit-lbl">Address</div>
+          <div class="visit-val">${data.address_line1}</div>
+          <div class="visit-val smaller">${data.city}, ${data.province_state} ${data.postal_zip}</div>
+        </div>
+        ${data.phone ? `<div class="visit-block"><div class="visit-lbl">Reservations</div><div class="visit-val"><a href="tel:${data.phone}" style="color:var(--ink);text-decoration:none">${data.phone}</a></div></div>` : ''}
+        <div class="visit-block">
+          <div class="visit-lbl">Hours</div>
+          <div class="visit-val smaller">${hours.map(h => `<div class="hour-row"><span>${h.days}</span><span>${h.time}</span></div>`).join('')}</div>
+        </div>
+        ${data.instagram ? `<div class="visit-block"><div class="visit-lbl">Follow</div><div class="visit-val smaller"><a href="https://instagram.com/${data.instagram}" target="_blank" style="color:var(--accent);text-decoration:none">@${data.instagram}</a></div></div>` : ''}
+      </div>
+      <div class="visit-map">${mapEmbed}</div>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="faq-container">
+    <div class="faq-header">
+      <div class="faq-eyebrow">Frequently Asked</div>
+      <h2>Good to know.</h2>
+    </div>
+    ${faqs.map((f, i) => `<details class="faq-item"${i === 0 ? ' open' : ''}>
+      <summary class="faq-q"><h4>${f.q}</h4><div class="faq-toggle"></div></summary>
+      <p class="faq-a">${f.a}</p>
+    </details>`).join('')}
+  </div>
+</section>
+
+<section class="cta-final" id="contact">
+  ${img(ph[1] || ph[0], data.name)}
+  <div class="cta-content">
+    <div class="cta-eyebrow">An Invitation</div>
+    <h2>Come and see for yourself.</h2>
+    <p>${data.subtitle}</p>
+    <a href="${data.phone ? `tel:${data.phone}` : '#visit'}" class="cta-btn">${cta} <span>→</span></a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-monogram">${firstName}<span style="color:var(--accent)">'s</span></div>
+  <div class="foot-tag">${data.city} · Est. ${data.address_line1.split(' ').pop() || ''}</div>
+  <div class="foot-rule"></div>
+  <div class="foot-links">
+    <a href="#story">Story</a>
+    <a href="#menu">${navLabel}</a>
+    <a href="#visit">Visit</a>
+    <a href="#faq">FAQ</a>
+    ${data.instagram ? `<a href="https://instagram.com/${data.instagram}" target="_blank">Instagram</a>` : ''}
+  </div>
+  <div class="foot-meta">© 2026 ${data.name} · Crafted by <a href="https://thewebguys.ca" target="_blank">The Web Guys</a></div>
+</footer>
+${premiumJS}</body></html>`;
+}
+
+
 // ── Styles ──
 const S = {
   page: { minHeight: "100vh", background: "#0A0A0A", color: "#E5E5E5", fontFamily: "'Inter', -apple-system, sans-serif" },
@@ -1182,7 +1551,7 @@ export default function MockupAdmin() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {history.map((h, i) => (
                     <div key={i} style={{ padding: "10px 12px", background: "#111", border: "1px solid #1A1A1A", borderRadius: 6, cursor: "pointer" }}
-                      onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setName(h.name); setAddress(h.address || ""); setNotes(h.notes || ""); setCategory(h.category || ""); setTemplate(["premium","showcase","cinematic","magazine"].includes(h.template) ? "premium" : "standard"); }}>
+                      onClick={() => { setMockupHTML(""); setBusinessData(null); setPublishedUrl(""); setName(h.name); setAddress(h.address || ""); setNotes(h.notes || ""); setCategory(h.category || ""); setTemplate(h.template === "premium-dark" ? "premium-dark" : ["premium","showcase","cinematic","magazine"].includes(h.template) ? "premium" : "standard"); }}>
                       <div style={{ fontSize: 13, color: "#aaa", fontWeight: 500 }}>{h.name}</div>
                       <div style={{ fontSize: 10, color: "#444", marginTop: 3 }}>{h.category} · {h.photoSource === "google" ? "📸" : "🖼"} · {new Date(h.date).toLocaleDateString()}</div>
                     </div>
@@ -1241,16 +1610,30 @@ export default function MockupAdmin() {
 
                   <div>
                     <label style={S.label}>Tier</label>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
                       <button onClick={() => { setTemplate("standard"); setModel("standard"); }}
-                        style={{ padding: "16px 14px", background: template === "standard" ? "#1A2A1A" : "#141414", border: template === "standard" ? "2px solid #3EA843" : "1px solid #222", borderRadius: 10, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: template === "standard" ? "#3EA843" : "#aaa", marginBottom: 4 }}>Standard</div>
-                        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Clean template look · Hero, about, services, gallery, contact · ~$500</div>
+                        style={{ padding: "14px 16px", background: template === "standard" ? "#1A2A1A" : "#141414", border: template === "standard" ? "2px solid #3EA843" : "1px solid #222", borderRadius: 10, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: template === "standard" ? "#3EA843" : "#aaa" }}>Standard</span>
+                          <span style={{ fontSize: 10, color: "#555" }}>Sonnet 4.6 · ~$500 site</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Wix/Squarespace template look · Hero, about, services, gallery, contact</div>
                       </button>
                       <button onClick={() => { setTemplate("premium"); setModel("premium"); }}
-                        style={{ padding: "16px 14px", background: template === "premium" ? "#1A1A2A" : "#141414", border: template === "premium" ? "2px solid #6B8AFF" : "1px solid #222", borderRadius: 10, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: template === "premium" ? "#6B8AFF" : "#aaa", marginBottom: 4 }}>⚡ Premium</div>
-                        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Custom agency look · Reviews, FAQ, map, animations, multi-CTA · ~$2,500+</div>
+                        style={{ padding: "14px 16px", background: template === "premium" ? "#1A1A2A" : "#141414", border: template === "premium" ? "2px solid #6B8AFF" : "1px solid #222", borderRadius: 10, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: template === "premium" ? "#6B8AFF" : "#aaa" }}>⚡ Premium · Editorial</span>
+                          <span style={{ fontSize: 10, color: "#555" }}>Sonnet 4.6 · ~$2,500+</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Light editorial agency look · Glass nav, social proof, signature cards, FAQ, map</div>
+                      </button>
+                      <button onClick={() => { setTemplate("premium-dark"); setModel("premium-dark"); }}
+                        style={{ padding: "14px 16px", background: template === "premium-dark" ? "#1A0F1A" : "#141414", border: template === "premium-dark" ? "2px solid #C9A961" : "1px solid #222", borderRadius: 10, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: template === "premium-dark" ? "#C9A961" : "#aaa" }}>⚡ Premium · Luxury</span>
+                          <span style={{ fontSize: 10, color: "#555" }}>GPT-5.5 · ~$2,500+</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Dark hospitality look · Full-bleed B&W hero, serif typography, restaurant-menu list, marginalia</div>
                       </button>
                     </div>
                   </div>
@@ -1321,15 +1704,22 @@ export default function MockupAdmin() {
                       setTemplate("standard"); setModel("standard");
                       if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, "standard"));
                       else if (businessData) setError("No photos cached. Click 🔄 Re-research to fetch fresh photos.");
-                    }} style={{ padding: "8px 24px", background: template === "standard" ? "#1A2A1A" : "transparent", border: template === "standard" ? "1.5px solid #3EA843" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "standard" ? "#3EA843" : "#666", fontFamily: "inherit" }}>
+                    }} style={{ padding: "8px 20px", background: template === "standard" ? "#1A2A1A" : "transparent", border: template === "standard" ? "1.5px solid #3EA843" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "standard" ? "#3EA843" : "#666", fontFamily: "inherit" }}>
                       Standard
                     </button>
                     <button onClick={() => {
                       setTemplate("premium"); setModel("premium");
                       if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, "premium"));
                       else if (businessData) setError("No photos cached. Click 🔄 Re-research to fetch fresh photos.");
-                    }} style={{ padding: "8px 24px", background: template === "premium" ? "#1A1A2A" : "transparent", border: template === "premium" ? "1.5px solid #6B8AFF" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "premium" ? "#6B8AFF" : "#666", fontFamily: "inherit" }}>
-                      ⚡ Premium
+                    }} style={{ padding: "8px 20px", background: template === "premium" ? "#1A1A2A" : "transparent", border: template === "premium" ? "1.5px solid #6B8AFF" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "premium" ? "#6B8AFF" : "#666", fontFamily: "inherit" }}>
+                      ⚡ Editorial
+                    </button>
+                    <button onClick={() => {
+                      setTemplate("premium-dark"); setModel("premium-dark");
+                      if (businessData && cachedPhotos.length) setMockupHTML(buildMockupHTML(businessData, cachedPhotos, "premium-dark"));
+                      else if (businessData) setError("No photos cached. Click 🔄 Re-research to fetch fresh photos.");
+                    }} style={{ padding: "8px 20px", background: template === "premium-dark" ? "#1A0F1A" : "transparent", border: template === "premium-dark" ? "1.5px solid #C9A961" : "1px solid #222", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: template === "premium-dark" ? "#C9A961" : "#666", fontFamily: "inherit" }}>
+                      ⚡ Luxury
                     </button>
                   </div>
                   <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
@@ -1343,7 +1733,7 @@ export default function MockupAdmin() {
                     <div style={{ borderLeft: "1px solid #1A1A1A", height: 20, margin: "0 4px" }} />
                     <button onClick={() => { setTimeout(generate, 0); }} disabled={loading}
                       style={{ padding: "5px 12px", background: "transparent", border: "1px solid #222", borderRadius: 5, cursor: "pointer", fontSize: 11, color: "#888", fontFamily: "inherit" }}>
-                      🔄 Re-research {model === "premium" ? "(GPT-5.5)" : "(Sonnet)"}
+                      🔄 Re-research {model === "premium-dark" ? "(GPT-5.5)" : "(Sonnet)"}
                     </button>
                   </div>
                 </div>

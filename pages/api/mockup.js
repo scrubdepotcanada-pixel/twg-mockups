@@ -99,11 +99,12 @@ async function handleResearch(req, res) {
   const { name, address, notes, category, model } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
 
-  const isPremium = model === 'premium';
+  const useOpenAI = model === 'premium-dark';
+  const isPremium = model === 'premium' || model === 'premium-dark';
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
   const OPENAI_KEY = process.env.OPENAI_API_KEY;
-  if (!ANTHROPIC_KEY && !isPremium) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
-  if (isPremium && !OPENAI_KEY) return res.status(500).json({ error: 'OPENAI_API_KEY not set — add it in Vercel env vars to use Premium' });
+  if (!ANTHROPIC_KEY && !useOpenAI) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
+  if (useOpenAI && !OPENAI_KEY) return res.status(500).json({ error: 'OPENAI_API_KEY not set — add it in Vercel env vars to use Premium ⚡' });
 
   const systemPrompt = `You are a business researcher for a web design agency. Given a business name, address, and optionally a business type, search the web to find everything about this business — Google Maps, Yelp, Instagram, review sites, their website (if any), industry directories.
 
@@ -157,7 +158,7 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
   const userPrompt = `Research this business:\n\nBusiness: ${name}\nAddress: ${address}${category ? `\nBusiness Type: ${category}` : ''}${notes ? `\nContext: ${notes}` : ''}`;
 
   let response;
-  if (isPremium) {
+  if (useOpenAI) {
     // ── OpenAI GPT-5.5 path ──
     response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -203,7 +204,7 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
 
   // Extract text — different shape per provider
   let rawText;
-  if (isPremium) {
+  if (useOpenAI) {
     rawText = data.choices?.[0]?.message?.content || '';
   } else {
     rawText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
@@ -222,11 +223,12 @@ async function handleRefine(req, res) {
   const { business_data, request, model } = req.body;
   if (!business_data || !request) return res.status(400).json({ error: 'business_data and request required' });
 
-  const isPremium = model === 'premium';
+  const useOpenAI = model === 'premium-dark';
+  const isPremium = model === 'premium' || model === 'premium-dark';
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
   const OPENAI_KEY = process.env.OPENAI_API_KEY;
-  if (!ANTHROPIC_KEY && !isPremium) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
-  if (isPremium && !OPENAI_KEY) return res.status(500).json({ error: 'OPENAI_API_KEY not set — add it in Vercel env vars to use Premium' });
+  if (!ANTHROPIC_KEY && !useOpenAI) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
+  if (useOpenAI && !OPENAI_KEY) return res.status(500).json({ error: 'OPENAI_API_KEY not set — add it in Vercel env vars to use Premium ⚡' });
 
   const systemPrompt = `You are editing a business website's content. The user will give you the current business JSON and a change request. Return ONLY valid JSON with the same schema, applying their requested changes. No markdown fences, no preamble, no explanation.
 
@@ -240,7 +242,7 @@ Rules:
   const userPrompt = `Current business data:\n${JSON.stringify(business_data, null, 2)}\n\nChange request: ${request}\n\nReturn the updated JSON.`;
 
   let response;
-  if (isPremium) {
+  if (useOpenAI) {
     response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_KEY}` },
@@ -270,7 +272,7 @@ Rules:
   if (data.error) throw new Error(errStr(data.error));
 
   let rawText;
-  if (isPremium) {
+  if (useOpenAI) {
     rawText = data.choices?.[0]?.message?.content || '';
   } else {
     rawText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
