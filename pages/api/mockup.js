@@ -99,11 +99,11 @@ async function handleResearch(req, res) {
   const { name, address, notes, category, model } = req.body;
   if (!name || !address) return res.status(400).json({ error: 'name and address required' });
 
-  const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
-  if (!ANTHROPIC_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
-
   const isPremium = model === 'premium';
-  const modelId = isPremium ? 'claude-fable-5' : 'claude-sonnet-4-6';
+  const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+  const OPENAI_KEY = process.env.OPENAI_API_KEY;
+  if (!ANTHROPIC_KEY && !isPremium) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
+  if (isPremium && !OPENAI_KEY) return res.status(500).json({ error: 'OPENAI_API_KEY not set — add it in Vercel env vars to use Premium' });
 
   const systemPrompt = `You are a business researcher for a web design agency. Given a business name, address, and optionally a business type, search the web to find everything about this business — Google Maps, Yelp, Instagram, review sites, their website (if any), industry directories.
 
@@ -154,23 +154,44 @@ The "category" field MUST be one of the enum values above — pick the closest m
 
 Be accurate. Use real info. If you can't find something, infer reasonably. Return ${isPremium ? '4' : '3'} signature_items and ${isPremium ? '9' : '6'} all_items.${isPremium ? ' Write richer, more compelling descriptions. Make the tagline creative and memorable. Write a longer, more engaging about_paragraph.' : ''} Do NOT include any HTML tags, citations, or source references in the JSON values — plain text only.`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: modelId,
-      max_tokens: 4096,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: `Research this business:\n\nBusiness: ${name}\nAddress: ${address}${category ? `\nBusiness Type: ${category}` : ''}${notes ? `\nContext: ${notes}` : ''}` }],
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-    }),
-  });
+  const userPrompt = `Research this business:\n\nBusiness: ${name}\nAddress: ${address}${category ? `\nBusiness Type: ${category}` : ''}${notes ? `\nContext: ${notes}` : ''}`;
 
-  if (response.status === 529) throw new Error('Claude API is overloaded — try again in a minute, or switch to Standard model');
+  let response;
+  if (isPremium) {
+    // ── OpenAI GPT-5.5 path ──
+    response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_KEY}` },
+      body: JSON.stringify({
+        model: 'gpt-5.5',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        response_format: { type: 'json_object' },
+        max_completion_tokens: 4096,
+      }),
+    });
+  } else {
+    // ── Anthropic Sonnet 4.6 + web search path ──
+    response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      }),
+    });
+  }
+
+  if (response.status === 529) throw new Error('API is overloaded — try again in a minute, or switch tier');
   if (response.status === 429) throw new Error('Rate limited — wait a moment and try again');
   if (!response.ok && response.status !== 200) {
     const errBody = await response.text().catch(() => '');
@@ -180,8 +201,14 @@ Be accurate. Use real info. If you can't find something, infer reasonably. Retur
   const data = await response.json();
   if (data.error) throw new Error(errStr(data.error));
 
-  const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  const cleaned = textBlocks.replace(/```json\s*|```\s*/g, '').replace(/<\/?cite[^>]*>/g, '').replace(/<\/?antml:cite[^>]*>/g, '').trim();
+  // Extract text — different shape per provider
+  let rawText;
+  if (isPremium) {
+    rawText = data.choices?.[0]?.message?.content || '';
+  } else {
+    rawText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  }
+  const cleaned = rawText.replace(/```json\s*|```\s*/g, '').replace(/<\/?cite[^>]*>/g, '').replace(/<\/?antml:cite[^>]*>/g, '').trim();
 
   let parsed;
   try { parsed = JSON.parse(cleaned); }
@@ -195,10 +222,11 @@ async function handleRefine(req, res) {
   const { business_data, request, model } = req.body;
   if (!business_data || !request) return res.status(400).json({ error: 'business_data and request required' });
 
+  const isPremium = model === 'premium';
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
-  if (!ANTHROPIC_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
-
-  const modelId = model === 'premium' ? 'claude-fable-5' : 'claude-sonnet-4-6';
+  const OPENAI_KEY = process.env.OPENAI_API_KEY;
+  if (!ANTHROPIC_KEY && !isPremium) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
+  if (isPremium && !OPENAI_KEY) return res.status(500).json({ error: 'OPENAI_API_KEY not set — add it in Vercel env vars to use Premium' });
 
   const systemPrompt = `You are editing a business website's content. The user will give you the current business JSON and a change request. Return ONLY valid JSON with the same schema, applying their requested changes. No markdown fences, no preamble, no explanation.
 
@@ -211,21 +239,43 @@ Rules:
 
   const userPrompt = `Current business data:\n${JSON.stringify(business_data, null, 2)}\n\nChange request: ${request}\n\nReturn the updated JSON.`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: modelId, max_tokens: 4096, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }] }),
-  });
+  let response;
+  if (isPremium) {
+    response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_KEY}` },
+      body: JSON.stringify({
+        model: 'gpt-5.5',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        response_format: { type: 'json_object' },
+        max_completion_tokens: 4096,
+      }),
+    });
+  } else {
+    response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 4096, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }] }),
+    });
+  }
 
-  if (response.status === 529) throw new Error('Claude API is overloaded — try again in a minute');
+  if (response.status === 529) throw new Error('API is overloaded — try again in a minute');
   if (response.status === 429) throw new Error('Rate limited — wait a moment and try again');
   if (!response.ok) { const t = await response.text().catch(() => ''); throw new Error(`API error ${response.status}: ${t.slice(0, 200)}`); }
 
   const data = await response.json();
   if (data.error) throw new Error(errStr(data.error));
 
-  const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  const cleaned = textBlocks.replace(/```json\s*|```\s*/g, '').replace(/<\/?cite[^>]*>/g, '').replace(/<\/?antml:cite[^>]*>/g, '').trim();
+  let rawText;
+  if (isPremium) {
+    rawText = data.choices?.[0]?.message?.content || '';
+  } else {
+    rawText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  }
+  const cleaned = rawText.replace(/```json\s*|```\s*/g, '').replace(/<\/?cite[^>]*>/g, '').replace(/<\/?antml:cite[^>]*>/g, '').trim();
 
   let parsed;
   try { parsed = JSON.parse(cleaned); }

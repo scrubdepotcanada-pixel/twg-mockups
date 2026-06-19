@@ -1343,7 +1343,7 @@ export default function MockupAdmin() {
                     <div style={{ borderLeft: "1px solid #1A1A1A", height: 20, margin: "0 4px" }} />
                     <button onClick={() => { setTimeout(generate, 0); }} disabled={loading}
                       style={{ padding: "5px 12px", background: "transparent", border: "1px solid #222", borderRadius: 5, cursor: "pointer", fontSize: 11, color: "#888", fontFamily: "inherit" }}>
-                      🔄 Re-research {model === "premium" ? "(Fable 5)" : "(Sonnet)"}
+                      🔄 Re-research {model === "premium" ? "(GPT-5.5)" : "(Sonnet)"}
                     </button>
                   </div>
                 </div>
