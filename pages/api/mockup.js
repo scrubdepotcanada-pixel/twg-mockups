@@ -103,7 +103,7 @@ async function handleResearch(req, res) {
   if (!ANTHROPIC_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
 
   const isPremium = model === 'premium';
-  const modelId = isPremium ? 'claude-fable-5' : 'claude-sonnet-4-20250514';
+  const modelId = isPremium ? 'claude-fable-5' : 'claude-sonnet-4-6';
 
   const systemPrompt = `You are a business researcher for a web design agency. Given a business name, address, and optionally a business type, search the web to find everything about this business — Google Maps, Yelp, Instagram, review sites, their website (if any), industry directories.
 
@@ -198,7 +198,7 @@ async function handleRefine(req, res) {
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
   if (!ANTHROPIC_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
 
-  const modelId = model === 'premium' ? 'claude-fable-5' : 'claude-sonnet-4-20250514';
+  const modelId = model === 'premium' ? 'claude-fable-5' : 'claude-sonnet-4-6';
 
   const systemPrompt = `You are editing a business website's content. The user will give you the current business JSON and a change request. Return ONLY valid JSON with the same schema, applying their requested changes. No markdown fences, no preamble, no explanation.
 
